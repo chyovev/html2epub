@@ -1,0 +1,6 @@
+Options -Indexes
+Options +SymLinksIfOwnerMatch
+
+RewriteEngine on
+
+RewriteRule ^(.*)$    public/$1     [L]
