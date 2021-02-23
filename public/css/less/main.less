@@ -29,9 +29,11 @@ html, body {
 body {
     background-color: @darkblue;
     font-family: sans-serif;
-    padding: 1.5cm 0px;
+    @media @desktop {
+        padding: 1.5cm 0px;
+    }
     @media @mobile {
-        padding-top: 140px;
+        padding: 140px 0px 20px 0px;
     }
 }
 h1, h2, h3, h4, h5, h6 {
@@ -54,7 +56,6 @@ h1, h2, h3, h4, h5, h6 {
 header {
     display: table;
     @media @desktop {
-        width: 500px;
         margin: 0px auto 1.5cm auto;
     }
     @media @mobile {
@@ -84,6 +85,7 @@ header {
         padding-left: 30px;
         @media @desktop {
             font-size: 30px;
+            width: 260px;
         }
         @media @mobile {
             font-size: 20px;
@@ -171,6 +173,12 @@ section {
         padding: 0.5cm 0px;
         border-top: 1px solid mix(black, white, 20%);
     }
+}
+footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.95em;
+    color: white;
 }
 .center {
     text-align: center;

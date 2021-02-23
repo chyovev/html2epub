@@ -1,0 +1,14 @@
+{
+    "name": "chyovev/html2epub",
+    "description": "A simple ePub generator",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Christo Yovev",
+            "email": "yovev@xroads-bg.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "^2.13"
+    }
+}
