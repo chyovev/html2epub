@@ -1,0 +1,29 @@
+{{ include('elements/breadcrumb.twig', {'breadcrumbs': ['Books']}) }}
+
+<div class="d-flex d-sm-block flex-column text-center mb-4">
+    <span class="font-weight-bold align-middle h4">Books list</span>
+    <a href="{{ custom_url('generateBooksAddUrl') }}" class="btn btn-sm text-uppercase btn-outline-primary add ml-md-3 order-first mb-4 mb-sm-0">Add new book</a>
+</div>
+
+<div class="table-responsive mb-4">
+    <table class="table table-striped table-hover table-bordered">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Author(s)</th>
+            <th scope="col">Actions</th>
+            <th scope="col">Created</th>
+            <th scope="col">Last modified</th>
+        </tr>
+        {% for book in books %}
+        <tr>
+            <td scope="row">{{ loop.index }}.</td>
+            <td>{{ book.title|e }}</td>
+            <td>{{ book.author|e }}</td>
+            <td><a href="{{ custom_url('generateBookUrl', book.slug) }}">Edit</a></td>
+            <td>{{ book.created_at|date('d.m.Y @ H:i') }}</td>
+            <td>{{ book.updated_at|date('d.m.Y @ H:i') }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>

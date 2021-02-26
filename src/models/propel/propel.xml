@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<config>
+    <propel>
+        <database>
+            <connections>
+                <connection id="html2epub">
+                    <adapter>mysql</adapter>
+                    <dsn>mysql:host=localhost;port=3306;dbname=html2epub</dsn>
+                    <user>username</user>
+                    <password>password</password>
+                    <settings>
+                        <charset>utf8mb4</charset>
+                    </settings>
+                </connection>
+            </connections>
+        </database>
+    </propel>
+</config>

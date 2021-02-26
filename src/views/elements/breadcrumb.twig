@@ -1,0 +1,31 @@
+<nav aria-label="breadcrumb" class="mb-5">
+    <ol class="breadcrumb text-nowrap overflow-auto flex-nowrap">
+        <li class="breadcrumb-item">
+            {% if breadcrumbs %}
+                <a href="{{ root }}">Home</a>
+            {% else %}
+                Home
+            {% endif %}
+        </li>
+        {% for crumb in breadcrumbs %}
+            {% if crumb is iterable %}
+                {% set label = crumb[0] %}
+                {% set link  = crumb[1] %}
+            {% else %}
+                {% set label = crumb %}
+            {% endif %}
+
+            {% if label %}
+                <li class="breadcrumb-item">
+                    {% if link and not loop.last %}
+                        <a href="{{ link }}">
+                            {{ label }}
+                        </a>
+                    {% else %}
+                            {{ label }}
+                    {% endif %}
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</nav>

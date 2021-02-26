@@ -9,6 +9,11 @@
         }
     ],
     "require": {
-        "twig/twig": "^2.13"
+        "propel/propel": "~2.0@dev",
+        "twig/twig": "^2.13",
+        "twbs/bootstrap": "4.4.1"
+    },
+    "autoload": {
+        "classmap": ["src/models/propel/generated-classes/"]
     }
 }

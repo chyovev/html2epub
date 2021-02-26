@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="html2epub">
+    
+    <table name="books" phpName="Book">
+        <unique name="slug">
+            <unique-column name="slug" />
+        </unique>
+        <column name="id" type="integer" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true" />
+        <column name="title" type="varchar" size="255" required="true" />
+        <column name="subtitle" type="varchar" size="255" />
+        <column name="slug" type="varchar" size="255" required="true" />
+        <column name="author" type="varchar" size="255" />
+        <column name="dedication" type="varchar" size="255" />
+        <column name="language_id" type="integer" sqlType="int(11) unsigned" default="0" required="true" />
+        <column name="publisher" type="varchar" size="255" />
+        <column name="year" type="integer" sqlType="int(11) unsigned" />
+        <column name="isbn" type="varchar" size="255" />
+        <column name="extra_info" type="longvarchar" />
+
+        <foreign-key foreignTable="languages" phpName="Language">
+            <reference local="language_id" foreign="id"/>
+        </foreign-key>
+
+        <!-- Auto-update created_at and updated_at fields -->
+        <behavior name="timestampable" />
+
+        <!-- Validation rules  -->
+        <behavior name="validate">
+            <parameter name="title_notnull"   value="{column: title, validator: NotBlank, options: {allowNull: false}}" />
+            <parameter name="title_maxlength" value="{column: title, validator: Length,   options: {max: 255, allowEmptyString: false}}" />
+
+            <parameter name="slug_notnull"   value="{column: slug, validator: NotBlank, options: {allowNull: false}}" />
+            <parameter name="slug_maxlength" value="{column: slug, validator: Length,   options: {max: 255, allowEmptyString: false}}" />
+            <parameter name="slug_unique"    value="{column: slug, validator: Unique,   options: {message: A book with this slug already exists.}}" />
+            <parameter name="slug_regex"     value="{column: slug, validator: Regex,    options: {pattern: /^[a-z0-9\-]+$/,         message: Please use only lowercase latin letters and dashes.}}" />
+            <parameter name="slug_reserved"  value="{column: slug, validator: Regex,    options: {pattern: /^(?!add$)[a-z0-9\-]+$/, message: Reserved words are not allowed.}}" />
+
+            <parameter name="language_notnull" value="{column: language_id, validator: NotBlank,    options: {allowNull: false, message: Please select a language from the dropdown menu.}}" />
+            <parameter name="language_int"     value="{column: language_id, validator: GreaterThan, options: {value: 0,         message: Please select a language from the dropdown menu.}}" />
+        </behavior>
+    </table>
+
+    <table name="languages" phpName="Language">
+        <unique name="locale">
+            <unique-column name="locale" />
+        </unique>
+
+        <column name="id" type="integer" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true" />
+        <column name="locale" type="varchar" size="10" required="true" />
+        <column name="language" type="varchar" size="30" required="true" />
+    </table>
+
+</database>

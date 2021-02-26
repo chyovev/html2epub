@@ -1,188 +1,64 @@
+@import (inline) "../../../vendor/twbs/bootstrap/dist/css/bootstrap.min.css";
+
 /* ----------------------------- */
 @mobile:     ~"(max-width: 720px)";
 @desktop:    ~"(min-width: 721px)";
-@extrasmall: ~"(max-width: 340px)";
 /* ----------------------------- */
-@blue:     #2846FF;
 @darkblue: #28468C;
 @white:    #F0F0F0;
 /* ----------------------------- */
 * {
     box-sizing: border-box;
 }
-.mobile-only {
-    @media @desktop {
-        display: none;
-    }
-}
-.desktop-only {
-    @media @mobile {
-        display: none;
-    }
-}
 /* ----------------------------- */
-
-html, body {
-    margin: 0px;
-    min-height: 100%;
-}
 body {
     background-color: @darkblue;
-    font-family: sans-serif;
-    @media @desktop {
-        padding: 1.5cm 0px;
-    }
     @media @mobile {
-        padding: 140px 0px 20px 0px;
+        padding-top: 100px;
     }
 }
-h1, h2, h3, h4, h5, h6 {
-    margin: 0px;
+textarea {
+    min-height: 5em;
+    max-height: 15em;
 }
 .body-wrap {
-    margin: 0px auto;
     background-color: @white;
+    max-width: 1280px;
     @media @desktop {
-        border-radius: 10px;
-        padding: 40px;
-        max-width: 1280px;
-    }
-    @media @mobile {
-        border-radius: 5px;
-        max-width: calc(~"100% - 20px");
-        padding: 20px;
+        border-radius: 10px !important;
     }
 }
 header {
-    display: table;
-    @media @desktop {
-        margin: 0px auto 1.5cm auto;
-    }
     @media @mobile {
+        width: 100%;
         position: fixed;
         top: 0px;
         left: 0px;
         background-color: @white;
-        padding: 10px;
+        z-index: 1;
         box-shadow: 0px 2px 5px fade(black, 45%);
     }
     .logo-wrapper {
-        display: table-cell;
         @media @desktop {
-            width: 150px;
+            width: 130px;
         }
         @media @mobile {
-            .logo {
-                width: 100%;
-            }
+            width: 70px;
         }
     }
     .title {
-        display: table-cell;
-        vertical-align: middle;
-        font-weight: bold;
-        text-transform: uppercase;
-        padding-left: 30px;
+        font-family: sans-serif;
         @media @desktop {
             font-size: 30px;
             width: 260px;
         }
-        @media @mobile {
-            font-size: 20px;
-        }
     }
 }
-section {
-}
-.section-title {
-    @media @desktop {
-        font-size: 24px;
-        margin-bottom: 1cm;
-        .button {
-            margin-left: 0.5cm;
-        }
-    }
-    @media @mobile {
-        display: flex;
-        flex-direction: column; 
-        text-transform: uppercase;
-        font-size: 16px;
-        margin-bottom: 20px;
-        .button {
-            order: 1;
-        }
-        span {
-            margin-top: 1cm;
-            order: 2;
-        }
-    }
-}
-.button {
-    font-size: 14px;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: @darkblue;
-    background-color: @white;
-    border: 2px solid mix(black, white, 20%);
-    border-radius: 5px;
-    padding: 10px 20px;
-    line-height: 1.6em;
-    vertical-align: middle;
-    transition: all 0.3s;
-    &:hover {
-        border-color: @darkblue;
-        background-color: fade(white, 75%);
-        /*box-shadow: 1px 1px 3px fade(black, 25%);*/
-        cursor: pointer;
-    }
-    &.add {
-        background-image: url(../img/add.png);
-        background-repeat: no-repeat;
-        background-position: 15px 50%;
-        padding-left: 40px;
-    }
-}
-@media @desktop {
-    .table-wrapper {
-        margin-top: 1cm;
-    }
-    .table {
-        display: table;
-        width: 100%;
-        border-collapse: collapse;
-        .table-row {
-            display: table-row;
-            background-color: mix(white, black, 98%);
-            transition: background-color 100ms;
-            &:nth-child(2n + 1) {
-                background-color: mix(white, black, 95%);
-            }
-            &:hover {
-                background-color: mix(white, black, 92%);
-            }
-            .table-cell {
-                border: 1px solid mix(black, white, 20%);
-                padding: 10px;
-                display: table-cell;
-            }
-        }
-    }
-}
-@media @mobile {
-    .table-row {
-        padding: 0.5cm 0px;
-        border-top: 1px solid mix(black, white, 20%);
-    }
-}
-footer {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 0.95em;
-    color: white;
-}
-.center {
-    text-align: center;
-}
-.bold {
-    font-weight: bold;
+
+.btn.add {
+    background-image: url(../img/add.png);
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-position: 10px 50%;
+    padding-left: 30px;
 }
