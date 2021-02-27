@@ -19,5 +19,10 @@ abstract class Url {
         return self::generateBooksIndexUrl() . '/' . $slug;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    public static function generateBooksDeleteUrl(string $slug): string {
+        return self::generateBookUrl($slug) . '/delete';
+    }
+
 
 }

@@ -35,6 +35,26 @@ class BooksController extends AppController {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    public function delete() {
+        $slug = getGetRequestVar('slug');
+        $book = BookQuery::create()->findOneBySlug($slug);
+
+        $this->_throw404OnEmpty($book);
+
+        try {
+            $book->delete();
+            FlashMessage::setFlashMessage(true, 'Item successfully deleted!');
+        }
+        catch (Exception $e) {
+            FlashMessage::setFlashMessage(false, 'Item could not be deleted!');
+            // TODO: log error
+        }
+
+        header("Location: " . Url::generateBooksIndexUrl());
+        exit;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
     protected function _saveBook(Book &$book): void {
         if (isRequest('POST')) {
             $book->fromArray($_POST, 'fieldName');
