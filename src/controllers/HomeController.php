@@ -1,6 +1,4 @@
 <?php
-require_once('../src/autoload.php');
-
 class HomeController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 <?php
-require_once('../src/autoload.php');
+use Propel\Runtime\Map\TableMap;
 
 class BooksController extends AppController {
 
@@ -17,7 +17,7 @@ class BooksController extends AppController {
         $this->_saveBook($book);
 
         $viewVars = [
-            'book'       => $book->toArray('fieldName'),
+            'book'       => $book->toArray(TableMap::TYPE_FIELDNAME),
             'metaTitle'  => 'Add new book',
             'wideHeader' => true,
         ];
@@ -27,9 +27,9 @@ class BooksController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     public function edit() {
-        $slug = getGetRequestVar('slug');
-        $book = BookQuery::create()->findOneBySlug($slug);
-        $chapters = ChapterQuery::create()->getChaptersTreeByBook($book);
+        $slug     = getGetRequestVar('slug');
+        $book     = BookQuery::create()->findOneBySlug($slug);
+        $chapters = BookQuery::getChaptersAsNestedSet($book);
 
         $this->_throw404OnEmpty($book);
 
@@ -38,7 +38,7 @@ class BooksController extends AppController {
         $this->_saveBook($book);
 
         $viewVars = [
-            'book'       => $book->toArray('fieldName'),
+            'book'       => $book->toArray(TableMap::TYPE_FIELDNAME),
             'metaTitle'  => $book->getTitle(),
             'chapters'   => $chapters,
             'wideHeader' => true,
@@ -71,7 +71,7 @@ class BooksController extends AppController {
     ///////////////////////////////////////////////////////////////////////////
     protected function _saveBook(Book &$book): void {
         if (isRequest('POST')) {
-            $book->fromArray($_POST, 'fieldName');
+            $book->fromArray($_POST, TableMap::TYPE_FIELDNAME);
 
             $chapterData = $_POST['chapters'];
             $chapters    = $book->getChapters();
