@@ -1,14 +1,41 @@
 <?php
 
+use Twig\TwigFunction;
+use Twig\Loader\FilesystemLoader;
+
 abstract class AppController {
 
-    protected $twig;
+    public $twig;
 
     ///////////////////////////////////////////////////////////////////////////
     public function __construct() {
-        global $twig;
+        $this->_initiateTwigTemplateEngine();
+    }
 
-        $this->twig = $twig;
+    ///////////////////////////////////////////////////////////////////////////
+    protected function _initiateTwigTemplateEngine(): void {
+        if ( ! isset($this->twig)) {
+            $loader = new FilesystemLoader(TEMPLATES_PATH);
+            $twig   = new ExtendedTwig($loader);
+
+            // registering the Url abstract class as custom_url function in twig
+            $urlFunction = new TwigFunction('custom_url', function($method, ...$args) {
+                return forward_static_call_array(['Url', $method], $args);    
+            });
+            $twig->addFunction($urlFunction);
+
+            $this->twig = $twig;
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    protected function _setView(string $template, array $viewVars = []): void {
+        $this->twig->view($template, $viewVars);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    protected function _setViewVars(array $viewVars) {
+        $this->twig->addGlobals($viewVars);
     }
 
     ///////////////////////////////////////////////////////////////////////////

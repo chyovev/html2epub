@@ -1,0 +1,17 @@
+<ol class="dd-list"{% if level == 0 %} id="chapters"{% endif %} data-level="{{ level }}">
+    {% for chapter in chapters %}
+    <li class="dd-item" data-id="{{ chapter['id'] }}">
+        <input type="hidden" name="chapters[{{ chapter['id'] }}][id]" value="{{ chapter['id'] }}" />
+        <input type="hidden" name="chapters[{{ chapter['id'] }}][tree_left]" value="{{ chapter['tree_left'] }}" />
+        <input type="hidden" name="chapters[{{ chapter['id'] }}][tree_right]" value="{{ chapter['tree_right'] }}" />
+        <input type="hidden" name="chapters[{{ chapter['id'] }}][tree_level]" value="{{ chapter['tree_level'] }}" />
+        
+        <div class="dd-handle">
+            <span class="title">{{ chapter['title']|e }}</span>
+        </div>
+        {% if chapter['children'] %}
+            {{ include('elements/chapters.twig', {chapters: chapter['children'], level: level+1}) }}
+        {% endif %}
+    </li>
+    {% endfor %}
+</ol>

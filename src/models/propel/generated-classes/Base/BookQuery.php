@@ -66,7 +66,17 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildBookQuery rightJoinWithLanguage() Adds a RIGHT JOIN clause and with to the query using the Language relation
  * @method     ChildBookQuery innerJoinWithLanguage() Adds a INNER JOIN clause and with to the query using the Language relation
  *
- * @method     \LanguageQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildBookQuery leftJoinChapter($relationAlias = null) Adds a LEFT JOIN clause to the query using the Chapter relation
+ * @method     ChildBookQuery rightJoinChapter($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Chapter relation
+ * @method     ChildBookQuery innerJoinChapter($relationAlias = null) Adds a INNER JOIN clause to the query using the Chapter relation
+ *
+ * @method     ChildBookQuery joinWithChapter($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Chapter relation
+ *
+ * @method     ChildBookQuery leftJoinWithChapter() Adds a LEFT JOIN clause and with to the query using the Chapter relation
+ * @method     ChildBookQuery rightJoinWithChapter() Adds a RIGHT JOIN clause and with to the query using the Chapter relation
+ * @method     ChildBookQuery innerJoinWithChapter() Adds a INNER JOIN clause and with to the query using the Chapter relation
+ *
+ * @method     \LanguageQuery|\ChapterQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildBook findOne(ConnectionInterface $con = null) Return the first ChildBook matching the query
  * @method     ChildBook findOneOrCreate(ConnectionInterface $con = null) Return the first ChildBook matching the query, or a new ChildBook object populated from the query conditions when no match is found
@@ -790,6 +800,79 @@ abstract class BookQuery extends ModelCriteria
         return $this
             ->joinLanguage($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Language', '\LanguageQuery');
+    }
+
+    /**
+     * Filter the query by a related \Chapter object
+     *
+     * @param \Chapter|ObjectCollection $chapter the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildBookQuery The current query, for fluid interface
+     */
+    public function filterByChapter($chapter, $comparison = null)
+    {
+        if ($chapter instanceof \Chapter) {
+            return $this
+                ->addUsingAlias(BookTableMap::COL_ID, $chapter->getBookId(), $comparison);
+        } elseif ($chapter instanceof ObjectCollection) {
+            return $this
+                ->useChapterQuery()
+                ->filterByPrimaryKeys($chapter->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByChapter() only accepts arguments of type \Chapter or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Chapter relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildBookQuery The current query, for fluid interface
+     */
+    public function joinChapter($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Chapter');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Chapter');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Chapter relation Chapter object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ChapterQuery A secondary query class using the current class as primary query
+     */
+    public function useChapterQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinChapter($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Chapter', '\ChapterQuery');
     }
 
     /**

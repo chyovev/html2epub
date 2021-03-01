@@ -3,16 +3,16 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>HTML 2 ePub</title>
+    <title>{% if metaTitle %}{{ metaTitle|e }} | {% endif %}HTML 2 ePub</title>
     <script type="text/javascript" src="{{root}}js/script.js"></script>
     <link type="text/css" rel="stylesheet" href="{{root}}css/style.css" />
 </head>
 <body class="pt-sm-5 pb-sm-1 pl-3 pr-3">
     <div class="body-wrap mx-auto p-4 rounded-lg">
-        <header class="d-table mx-auto mb-4 pl-3 pr-3 pt-2 pb-2 p-sm-3">
+        <header class="d-table mx-auto mb-4 pl-3 pr-3 pt-2 pb-2 p-sm-3{% if wideHeader %} w-100{% endif %}">
             <div class="logo-wrapper d-table-cell align-middle">
                 <a href="{{ root }}"><img src="{{root}}img/html2epub.svg" class="logo w-100" alt="Logo" /></a>
             </div>
-            <div class="title font-weight-bold text-uppercase d-table-cell align-middle pl-4 h5">Free online ePub generator</div>
+            <div class="title{% if not wideHeader %} homepage{% else %} text-center{% endif %} font-weight-bold text-uppercase d-table-cell align-middle pl-4 h5">{% if metaTitle %}{{ metaTitle|e }}{% else %}Free online ePub generator{% endif %}</div>
         </header>
         <section>

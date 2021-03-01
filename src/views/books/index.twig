@@ -21,7 +21,7 @@
             <th scope="col">Author(s)</th>
             <th scope="col">Created</th>
             <th scope="col">Last modified</th>
-            <th scope="col">Actions</th>
+            <th scope="col" class="text-center">Actions</th>
         </tr>
         {% for book in books %}
         <tr>
@@ -30,7 +30,7 @@
             <td>{{ book.author|e|default('--') }}</td>
             <td>{{ book.created_at|date('d.m.Y @ H:i') }}</td>
             <td>{{ book.updated_at|date('d.m.Y @ H:i') }}</td>
-            <td>
+            <td class="text-center">
                 <a href="{{ custom_url('generateBookUrl', book.slug) }}" class="btn btn-sm btn-primary">Edit</a>
                 <a href="{{ custom_url('generateBooksDeleteUrl', book.slug) }}" class="btn btn-sm btn-danger delete">Delete</a>
             </td>

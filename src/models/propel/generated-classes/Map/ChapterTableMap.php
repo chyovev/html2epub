@@ -2,8 +2,8 @@
 
 namespace Map;
 
-use \Book;
-use \BookQuery;
+use \Chapter;
+use \ChapterQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'books' table.
+ * This class defines the structure of the 'chapters' table.
  *
  *
  *
@@ -25,7 +25,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * ORDER BY clause to know whether it needs to apply SQL to make the ORDER BY case-insensitive
  * (i.e. if it's a text column type).
  */
-class BookTableMap extends TableMap
+class ChapterTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -33,7 +33,7 @@ class BookTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = '.Map.BookTableMap';
+    const CLASS_NAME = '.Map.ChapterTableMap';
 
     /**
      * The default database name for this class
@@ -43,22 +43,22 @@ class BookTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'books';
+    const TABLE_NAME = 'chapters';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Book';
+    const OM_CLASS = '\\Chapter';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Book';
+    const CLASS_DEFAULT = 'Chapter';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 13;
+    const NUM_COLUMNS = 10;
 
     /**
      * The number of lazy-loaded columns
@@ -68,72 +68,57 @@ class BookTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 13;
+    const NUM_HYDRATE_COLUMNS = 10;
 
     /**
      * the column name for the id field
      */
-    const COL_ID = 'books.id';
+    const COL_ID = 'chapters.id';
+
+    /**
+     * the column name for the book_id field
+     */
+    const COL_BOOK_ID = 'chapters.book_id';
 
     /**
      * the column name for the title field
      */
-    const COL_TITLE = 'books.title';
-
-    /**
-     * the column name for the subtitle field
-     */
-    const COL_SUBTITLE = 'books.subtitle';
+    const COL_TITLE = 'chapters.title';
 
     /**
      * the column name for the slug field
      */
-    const COL_SLUG = 'books.slug';
+    const COL_SLUG = 'chapters.slug';
 
     /**
-     * the column name for the author field
+     * the column name for the body field
      */
-    const COL_AUTHOR = 'books.author';
+    const COL_BODY = 'chapters.body';
 
     /**
-     * the column name for the dedication field
+     * the column name for the tree_left field
      */
-    const COL_DEDICATION = 'books.dedication';
+    const COL_TREE_LEFT = 'chapters.tree_left';
 
     /**
-     * the column name for the language_id field
+     * the column name for the tree_right field
      */
-    const COL_LANGUAGE_ID = 'books.language_id';
+    const COL_TREE_RIGHT = 'chapters.tree_right';
 
     /**
-     * the column name for the publisher field
+     * the column name for the tree_level field
      */
-    const COL_PUBLISHER = 'books.publisher';
-
-    /**
-     * the column name for the year field
-     */
-    const COL_YEAR = 'books.year';
-
-    /**
-     * the column name for the isbn field
-     */
-    const COL_ISBN = 'books.isbn';
-
-    /**
-     * the column name for the extra_info field
-     */
-    const COL_EXTRA_INFO = 'books.extra_info';
+    const COL_TREE_LEVEL = 'chapters.tree_level';
 
     /**
      * the column name for the created_at field
      */
-    const COL_CREATED_AT = 'books.created_at';
+    const COL_CREATED_AT = 'chapters.created_at';
 
     /**
      * the column name for the updated_at field
      */
-    const COL_UPDATED_AT = 'books.updated_at';
+    const COL_UPDATED_AT = 'chapters.updated_at';
 
     /**
      * The default string format for model objects of the related table
@@ -147,11 +132,11 @@ class BookTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Title', 'Subtitle', 'Slug', 'Author', 'Dedication', 'LanguageId', 'Publisher', 'Year', 'Isbn', 'ExtraInfo', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'title', 'subtitle', 'slug', 'author', 'dedication', 'languageId', 'publisher', 'year', 'isbn', 'extraInfo', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(BookTableMap::COL_ID, BookTableMap::COL_TITLE, BookTableMap::COL_SUBTITLE, BookTableMap::COL_SLUG, BookTableMap::COL_AUTHOR, BookTableMap::COL_DEDICATION, BookTableMap::COL_LANGUAGE_ID, BookTableMap::COL_PUBLISHER, BookTableMap::COL_YEAR, BookTableMap::COL_ISBN, BookTableMap::COL_EXTRA_INFO, BookTableMap::COL_CREATED_AT, BookTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'title', 'subtitle', 'slug', 'author', 'dedication', 'language_id', 'publisher', 'year', 'isbn', 'extra_info', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, )
+        self::TYPE_PHPNAME       => array('Id', 'BookId', 'Title', 'Slug', 'Body', 'TreeLeft', 'TreeRight', 'TreeLevel', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'bookId', 'title', 'slug', 'body', 'treeLeft', 'treeRight', 'treeLevel', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(ChapterTableMap::COL_ID, ChapterTableMap::COL_BOOK_ID, ChapterTableMap::COL_TITLE, ChapterTableMap::COL_SLUG, ChapterTableMap::COL_BODY, ChapterTableMap::COL_TREE_LEFT, ChapterTableMap::COL_TREE_RIGHT, ChapterTableMap::COL_TREE_LEVEL, ChapterTableMap::COL_CREATED_AT, ChapterTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'book_id', 'title', 'slug', 'body', 'tree_left', 'tree_right', 'tree_level', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -161,11 +146,11 @@ class BookTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Title' => 1, 'Subtitle' => 2, 'Slug' => 3, 'Author' => 4, 'Dedication' => 5, 'LanguageId' => 6, 'Publisher' => 7, 'Year' => 8, 'Isbn' => 9, 'ExtraInfo' => 10, 'CreatedAt' => 11, 'UpdatedAt' => 12, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'title' => 1, 'subtitle' => 2, 'slug' => 3, 'author' => 4, 'dedication' => 5, 'languageId' => 6, 'publisher' => 7, 'year' => 8, 'isbn' => 9, 'extraInfo' => 10, 'createdAt' => 11, 'updatedAt' => 12, ),
-        self::TYPE_COLNAME       => array(BookTableMap::COL_ID => 0, BookTableMap::COL_TITLE => 1, BookTableMap::COL_SUBTITLE => 2, BookTableMap::COL_SLUG => 3, BookTableMap::COL_AUTHOR => 4, BookTableMap::COL_DEDICATION => 5, BookTableMap::COL_LANGUAGE_ID => 6, BookTableMap::COL_PUBLISHER => 7, BookTableMap::COL_YEAR => 8, BookTableMap::COL_ISBN => 9, BookTableMap::COL_EXTRA_INFO => 10, BookTableMap::COL_CREATED_AT => 11, BookTableMap::COL_UPDATED_AT => 12, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'title' => 1, 'subtitle' => 2, 'slug' => 3, 'author' => 4, 'dedication' => 5, 'language_id' => 6, 'publisher' => 7, 'year' => 8, 'isbn' => 9, 'extra_info' => 10, 'created_at' => 11, 'updated_at' => 12, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'BookId' => 1, 'Title' => 2, 'Slug' => 3, 'Body' => 4, 'TreeLeft' => 5, 'TreeRight' => 6, 'TreeLevel' => 7, 'CreatedAt' => 8, 'UpdatedAt' => 9, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'bookId' => 1, 'title' => 2, 'slug' => 3, 'body' => 4, 'treeLeft' => 5, 'treeRight' => 6, 'treeLevel' => 7, 'createdAt' => 8, 'updatedAt' => 9, ),
+        self::TYPE_COLNAME       => array(ChapterTableMap::COL_ID => 0, ChapterTableMap::COL_BOOK_ID => 1, ChapterTableMap::COL_TITLE => 2, ChapterTableMap::COL_SLUG => 3, ChapterTableMap::COL_BODY => 4, ChapterTableMap::COL_TREE_LEFT => 5, ChapterTableMap::COL_TREE_RIGHT => 6, ChapterTableMap::COL_TREE_LEVEL => 7, ChapterTableMap::COL_CREATED_AT => 8, ChapterTableMap::COL_UPDATED_AT => 9, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'book_id' => 1, 'title' => 2, 'slug' => 3, 'body' => 4, 'tree_left' => 5, 'tree_right' => 6, 'tree_level' => 7, 'created_at' => 8, 'updated_at' => 9, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -178,24 +163,21 @@ class BookTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('books');
-        $this->setPhpName('Book');
+        $this->setName('chapters');
+        $this->setPhpName('Chapter');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\Book');
+        $this->setClassName('\\Chapter');
         $this->setPackage('');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
+        $this->addForeignKey('book_id', 'BookId', 'INTEGER', 'books', 'id', true, null, 0);
         $this->addColumn('title', 'Title', 'VARCHAR', true, 255, null);
-        $this->addColumn('subtitle', 'Subtitle', 'VARCHAR', false, 255, null);
         $this->addColumn('slug', 'Slug', 'VARCHAR', true, 255, null);
-        $this->addColumn('author', 'Author', 'VARCHAR', false, 255, null);
-        $this->addColumn('dedication', 'Dedication', 'VARCHAR', false, 255, null);
-        $this->addForeignKey('language_id', 'LanguageId', 'INTEGER', 'languages', 'id', true, null, 0);
-        $this->addColumn('publisher', 'Publisher', 'VARCHAR', false, 255, null);
-        $this->addColumn('year', 'Year', 'INTEGER', false, null, null);
-        $this->addColumn('isbn', 'Isbn', 'VARCHAR', false, 255, null);
-        $this->addColumn('extra_info', 'ExtraInfo', 'LONGVARCHAR', false, null, null);
+        $this->addColumn('body', 'Body', 'LONGVARCHAR', false, null, null);
+        $this->addColumn('tree_left', 'TreeLeft', 'INTEGER', false, null, null);
+        $this->addColumn('tree_right', 'TreeRight', 'INTEGER', false, null, null);
+        $this->addColumn('tree_level', 'TreeLevel', 'INTEGER', false, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -205,20 +187,13 @@ class BookTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Language', '\\Language', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':language_id',
-    1 => ':id',
-  ),
-), null, null, null, false);
-        $this->addRelation('Chapter', '\\Chapter', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('Book', '\\Book', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':book_id',
     1 => ':id',
   ),
-), null, null, 'Chapters', false);
+), null, null, null, false);
     } // buildRelations()
 
     /**
@@ -230,8 +205,9 @@ class BookTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
+            'nested_set' => array('left_column' => 'tree_left', 'right_column' => 'tree_right', 'level_column' => 'tree_level', 'use_scope' => 'true', 'scope_column' => 'book_id', 'method_proxies' => 'false', ),
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
-            'validate' => array('title_notnull' => array ('column' => 'title','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'title_maxlength' => array ('column' => 'title','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_notnull' => array ('column' => 'slug','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'slug_maxlength' => array ('column' => 'slug','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_unique' => array ('column' => 'slug','validator' => 'Unique','options' => array ('message' => 'A book with this slug already exists.',),), 'slug_regex' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^[a-z0-9\\-]+$/','message' => 'Please use only lowercase latin letters and dashes.',),), 'slug_reserved' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^(?!add$)[a-z0-9\\-]+$/','message' => 'Reserved words are not allowed.',),), 'language_notnull' => array ('column' => 'language_id','validator' => 'NotBlank','options' => array ('allowNull' => false,'message' => 'Please select a language from the dropdown menu.',),), 'language_int' => array ('column' => 'language_id','validator' => 'GreaterThan','options' => array ('value' => 0,'message' => 'Please select a language from the dropdown menu.',),), 'author_maxlength' => array ('column' => 'author','validator' => 'Length','options' => array ('max' => 255,),), 'dedication_maxlength' => array ('column' => 'dedication','validator' => 'Length','options' => array ('max' => 255,),), 'publisher_maxlength' => array ('column' => 'publisher','validator' => 'Length','options' => array ('max' => 255,),), 'isbn_maxlength' => array ('column' => 'isbn','validator' => 'Length','options' => array ('max' => 255,),), 'extra_info_maxlength' => array ('column' => 'extra_info','validator' => 'Length','options' => array ('max' => 65535,),), ),
+            'validate' => array('title_notnull' => array ('column' => 'title','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'title_maxlength' => array ('column' => 'title','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_notnull' => array ('column' => 'slug','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'slug_maxlength' => array ('column' => 'slug','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_unique' => array ('column' => 'slug','validator' => 'Unique','options' => array ('message' => 'A chapter with this slug already exists.',),), 'slug_regex' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^[a-z0-9\\-]+$/','message' => 'Please use only lowercase latin letters and dashes.',),), 'slug_reserved' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^(?!delete$)[a-z0-9\\-]+$/','message' => 'Reserved words are not allowed.',),), 'body_maxlength' => array ('column' => 'body','validator' => 'Length','options' => array ('max' => 65535,),), ),
         );
     } // getBehaviors()
 
@@ -292,7 +268,7 @@ class BookTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? BookTableMap::CLASS_DEFAULT : BookTableMap::OM_CLASS;
+        return $withPrefix ? ChapterTableMap::CLASS_DEFAULT : ChapterTableMap::OM_CLASS;
     }
 
     /**
@@ -306,22 +282,22 @@ class BookTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Book object, last column rank)
+     * @return array           (Chapter object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = BookTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = BookTableMap::getInstanceFromPool($key))) {
+        $key = ChapterTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = ChapterTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + BookTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + ChapterTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = BookTableMap::OM_CLASS;
-            /** @var Book $obj */
+            $cls = ChapterTableMap::OM_CLASS;
+            /** @var Chapter $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            BookTableMap::addInstanceToPool($obj, $key);
+            ChapterTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -344,18 +320,18 @@ class BookTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = BookTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = BookTableMap::getInstanceFromPool($key))) {
+            $key = ChapterTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = ChapterTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Book $obj */
+                /** @var Chapter $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                BookTableMap::addInstanceToPool($obj, $key);
+                ChapterTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -376,31 +352,25 @@ class BookTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(BookTableMap::COL_ID);
-            $criteria->addSelectColumn(BookTableMap::COL_TITLE);
-            $criteria->addSelectColumn(BookTableMap::COL_SUBTITLE);
-            $criteria->addSelectColumn(BookTableMap::COL_SLUG);
-            $criteria->addSelectColumn(BookTableMap::COL_AUTHOR);
-            $criteria->addSelectColumn(BookTableMap::COL_DEDICATION);
-            $criteria->addSelectColumn(BookTableMap::COL_LANGUAGE_ID);
-            $criteria->addSelectColumn(BookTableMap::COL_PUBLISHER);
-            $criteria->addSelectColumn(BookTableMap::COL_YEAR);
-            $criteria->addSelectColumn(BookTableMap::COL_ISBN);
-            $criteria->addSelectColumn(BookTableMap::COL_EXTRA_INFO);
-            $criteria->addSelectColumn(BookTableMap::COL_CREATED_AT);
-            $criteria->addSelectColumn(BookTableMap::COL_UPDATED_AT);
+            $criteria->addSelectColumn(ChapterTableMap::COL_ID);
+            $criteria->addSelectColumn(ChapterTableMap::COL_BOOK_ID);
+            $criteria->addSelectColumn(ChapterTableMap::COL_TITLE);
+            $criteria->addSelectColumn(ChapterTableMap::COL_SLUG);
+            $criteria->addSelectColumn(ChapterTableMap::COL_BODY);
+            $criteria->addSelectColumn(ChapterTableMap::COL_TREE_LEFT);
+            $criteria->addSelectColumn(ChapterTableMap::COL_TREE_RIGHT);
+            $criteria->addSelectColumn(ChapterTableMap::COL_TREE_LEVEL);
+            $criteria->addSelectColumn(ChapterTableMap::COL_CREATED_AT);
+            $criteria->addSelectColumn(ChapterTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.book_id');
             $criteria->addSelectColumn($alias . '.title');
-            $criteria->addSelectColumn($alias . '.subtitle');
             $criteria->addSelectColumn($alias . '.slug');
-            $criteria->addSelectColumn($alias . '.author');
-            $criteria->addSelectColumn($alias . '.dedication');
-            $criteria->addSelectColumn($alias . '.language_id');
-            $criteria->addSelectColumn($alias . '.publisher');
-            $criteria->addSelectColumn($alias . '.year');
-            $criteria->addSelectColumn($alias . '.isbn');
-            $criteria->addSelectColumn($alias . '.extra_info');
+            $criteria->addSelectColumn($alias . '.body');
+            $criteria->addSelectColumn($alias . '.tree_left');
+            $criteria->addSelectColumn($alias . '.tree_right');
+            $criteria->addSelectColumn($alias . '.tree_level');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }
@@ -415,7 +385,7 @@ class BookTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(BookTableMap::DATABASE_NAME)->getTable(BookTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(ChapterTableMap::DATABASE_NAME)->getTable(ChapterTableMap::TABLE_NAME);
     }
 
     /**
@@ -423,16 +393,16 @@ class BookTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(BookTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(BookTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new BookTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(ChapterTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(ChapterTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new ChapterTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Book or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Chapter or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Book object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Chapter object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -443,27 +413,27 @@ class BookTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(BookTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(ChapterTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Book) { // it's a model object
+        } elseif ($values instanceof \Chapter) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(BookTableMap::DATABASE_NAME);
-            $criteria->add(BookTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(ChapterTableMap::DATABASE_NAME);
+            $criteria->add(ChapterTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = BookQuery::create()->mergeWith($criteria);
+        $query = ChapterQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            BookTableMap::clearInstancePool();
+            ChapterTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                BookTableMap::removeInstanceFromPool($singleval);
+                ChapterTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -471,20 +441,20 @@ class BookTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the books table.
+     * Deletes all rows from the chapters table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return BookQuery::create()->doDeleteAll($con);
+        return ChapterQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Book or Criteria object.
+     * Performs an INSERT on the database, given a Chapter or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Book object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Chapter object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -493,22 +463,22 @@ class BookTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(BookTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(ChapterTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Book object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Chapter object
         }
 
-        if ($criteria->containsKey(BookTableMap::COL_ID) && $criteria->keyContainsValue(BookTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.BookTableMap::COL_ID.')');
+        if ($criteria->containsKey(ChapterTableMap::COL_ID) && $criteria->keyContainsValue(ChapterTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.ChapterTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = BookQuery::create()->mergeWith($criteria);
+        $query = ChapterQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -517,7 +487,7 @@ class BookTableMap extends TableMap
         });
     }
 
-} // BookTableMap
+} // ChapterTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-BookTableMap::buildTableMap();
+ChapterTableMap::buildTableMap();

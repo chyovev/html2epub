@@ -33,6 +33,32 @@ CREATE TABLE `books`
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
+-- chapters
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `chapters`;
+
+CREATE TABLE `chapters`
+(
+    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+    `book_id` int(11) unsigned DEFAULT 0 NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `slug` VARCHAR(255) NOT NULL,
+    `body` TEXT,
+    `tree_left` INTEGER,
+    `tree_right` INTEGER,
+    `tree_level` INTEGER,
+    `created_at` DATETIME,
+    `updated_at` DATETIME,
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `slug` (`slug`),
+    INDEX `chapters_fi_19cfd3` (`book_id`),
+    CONSTRAINT `chapters_fk_19cfd3`
+        FOREIGN KEY (`book_id`)
+        REFERENCES `books` (`id`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
 -- languages
 -- ---------------------------------------------------------------------
 

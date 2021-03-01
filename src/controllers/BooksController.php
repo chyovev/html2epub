@@ -6,7 +6,7 @@ class BooksController extends AppController {
     ///////////////////////////////////////////////////////////////////////////
     public function index() {
         $books = BookQuery::create()->orderByIdAsArray();
-        $this->twig->view('books/index', ['books' => $books]);
+        $this->_setView('books/index', ['books' => $books]);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -16,13 +16,20 @@ class BooksController extends AppController {
         $book = new Book();
         $this->_saveBook($book);
 
-        $this->twig->view('books/add', ['book' => $book->toArray('fieldName')]);
+        $viewVars = [
+            'book'       => $book->toArray('fieldName'),
+            'metaTitle'  => 'Add new book',
+            'wideHeader' => true,
+        ];
+
+        $this->_setView('books/add', $viewVars);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     public function edit() {
         $slug = getGetRequestVar('slug');
         $book = BookQuery::create()->findOneBySlug($slug);
+        $chapters = ChapterQuery::create()->getChaptersTreeByBook($book);
 
         $this->_throw404OnEmpty($book);
 
@@ -30,7 +37,14 @@ class BooksController extends AppController {
 
         $this->_saveBook($book);
 
-        $this->twig->view('books/add', ['book' => $book->toArray('fieldName')]);
+        $viewVars = [
+            'book'       => $book->toArray('fieldName'),
+            'metaTitle'  => $book->getTitle(),
+            'chapters'   => $chapters,
+            'wideHeader' => true,
+        ];
+
+        $this->_setView('books/add', $viewVars);
 
     }
 
@@ -59,6 +73,24 @@ class BooksController extends AppController {
         if (isRequest('POST')) {
             $book->fromArray($_POST, 'fieldName');
 
+            $chapterData = $_POST['chapters'];
+            $chapters    = $book->getChapters();
+
+            // iterate through all chapters
+            // and set new values for the tree properties using the POST request
+            foreach ($chapters as $chapter) {
+                $id = $chapter->getId();
+
+                if (isset($chapterData[$id])) {
+                    $chapter->setTreeLeft($chapterData[$id]['tree_left']);
+                    $chapter->setTreeRight($chapterData[$id]['tree_right']);
+                    $chapter->setTreeLevel($chapterData[$id]['tree_level']);
+                }
+            }
+
+            $book->setChapters($chapters);
+
+
             if ( ! $book->saveWithValidation()) {
                 $this->twig->addGlobalValidationFailures($book->getValidationFailures());
             }
@@ -72,7 +104,7 @@ class BooksController extends AppController {
     ///////////////////////////////////////////////////////////////////////////
     protected function _setLanguages() {
         $languages = LanguageQuery::create()->orderByLanguage();
-        $this->twig->addGlobal('languages', $languages);
+        $this->_setViewVars(['languages' => $languages]);
     }
 
 }

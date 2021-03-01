@@ -4,17 +4,21 @@ namespace Base;
 
 use \Book as ChildBook;
 use \BookQuery as ChildBookQuery;
+use \Chapter as ChildChapter;
+use \ChapterQuery as ChildChapterQuery;
 use \Language as ChildLanguage;
 use \LanguageQuery as ChildLanguageQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
 use Map\BookTableMap;
+use Map\ChapterTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
+use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -176,6 +180,12 @@ abstract class Book implements ActiveRecordInterface
     protected $aLanguage;
 
     /**
+     * @var        ObjectCollection|ChildChapter[] Collection to store aggregation of ChildChapter objects.
+     */
+    protected $collChapters;
+    protected $collChaptersPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -199,6 +209,12 @@ abstract class Book implements ActiveRecordInterface
      * @var     ConstraintViolationList
      */
     protected $validationFailures;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildChapter[]
+     */
+    protected $chaptersScheduledForDeletion = null;
 
     /**
      * Applies default values to this object.
@@ -1009,6 +1025,8 @@ abstract class Book implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aLanguage = null;
+            $this->collChapters = null;
+
         } // if (deep)
     }
 
@@ -1146,6 +1164,23 @@ abstract class Book implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
+            }
+
+            if ($this->chaptersScheduledForDeletion !== null) {
+                if (!$this->chaptersScheduledForDeletion->isEmpty()) {
+                    \ChapterQuery::create()
+                        ->filterByPrimaryKeys($this->chaptersScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->chaptersScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collChapters !== null) {
+                foreach ($this->collChapters as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             $this->alreadyInSave = false;
@@ -1436,6 +1471,21 @@ abstract class Book implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aLanguage->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collChapters) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'chapters';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'chapterss';
+                        break;
+                    default:
+                        $key = 'Chapters';
+                }
+
+                $result[$key] = $this->collChapters->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1753,6 +1803,20 @@ abstract class Book implements ActiveRecordInterface
         $copyObj->setExtraInfo($this->getExtraInfo());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
+
+        if ($deepCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+
+            foreach ($this->getChapters() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addChapter($relObj->copy($deepCopy));
+                }
+            }
+
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1832,6 +1896,248 @@ abstract class Book implements ActiveRecordInterface
         return $this->aLanguage;
     }
 
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param      string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('Chapter' == $relationName) {
+            $this->initChapters();
+            return;
+        }
+    }
+
+    /**
+     * Clears out the collChapters collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addChapters()
+     */
+    public function clearChapters()
+    {
+        $this->collChapters = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collChapters collection loaded partially.
+     */
+    public function resetPartialChapters($v = true)
+    {
+        $this->collChaptersPartial = $v;
+    }
+
+    /**
+     * Initializes the collChapters collection.
+     *
+     * By default this just sets the collChapters collection to an empty array (like clearcollChapters());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initChapters($overrideExisting = true)
+    {
+        if (null !== $this->collChapters && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = ChapterTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collChapters = new $collectionClassName;
+        $this->collChapters->setModel('\Chapter');
+    }
+
+    /**
+     * Gets an array of ChildChapter objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildBook is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildChapter[] List of ChildChapter objects
+     * @throws PropelException
+     */
+    public function getChapters(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collChaptersPartial && !$this->isNew();
+        if (null === $this->collChapters || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collChapters) {
+                // return empty collection
+                $this->initChapters();
+            } else {
+                $collChapters = ChildChapterQuery::create(null, $criteria)
+                    ->filterByBook($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collChaptersPartial && count($collChapters)) {
+                        $this->initChapters(false);
+
+                        foreach ($collChapters as $obj) {
+                            if (false == $this->collChapters->contains($obj)) {
+                                $this->collChapters->append($obj);
+                            }
+                        }
+
+                        $this->collChaptersPartial = true;
+                    }
+
+                    return $collChapters;
+                }
+
+                if ($partial && $this->collChapters) {
+                    foreach ($this->collChapters as $obj) {
+                        if ($obj->isNew()) {
+                            $collChapters[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collChapters = $collChapters;
+                $this->collChaptersPartial = false;
+            }
+        }
+
+        return $this->collChapters;
+    }
+
+    /**
+     * Sets a collection of ChildChapter objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $chapters A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildBook The current object (for fluent API support)
+     */
+    public function setChapters(Collection $chapters, ConnectionInterface $con = null)
+    {
+        /** @var ChildChapter[] $chaptersToDelete */
+        $chaptersToDelete = $this->getChapters(new Criteria(), $con)->diff($chapters);
+
+
+        $this->chaptersScheduledForDeletion = $chaptersToDelete;
+
+        foreach ($chaptersToDelete as $chapterRemoved) {
+            $chapterRemoved->setBook(null);
+        }
+
+        $this->collChapters = null;
+        foreach ($chapters as $chapter) {
+            $this->addChapter($chapter);
+        }
+
+        $this->collChapters = $chapters;
+        $this->collChaptersPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Chapter objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Chapter objects.
+     * @throws PropelException
+     */
+    public function countChapters(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collChaptersPartial && !$this->isNew();
+        if (null === $this->collChapters || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collChapters) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getChapters());
+            }
+
+            $query = ChildChapterQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByBook($this)
+                ->count($con);
+        }
+
+        return count($this->collChapters);
+    }
+
+    /**
+     * Method called to associate a ChildChapter object to this object
+     * through the ChildChapter foreign key attribute.
+     *
+     * @param  ChildChapter $l ChildChapter
+     * @return $this|\Book The current object (for fluent API support)
+     */
+    public function addChapter(ChildChapter $l)
+    {
+        if ($this->collChapters === null) {
+            $this->initChapters();
+            $this->collChaptersPartial = true;
+        }
+
+        if (!$this->collChapters->contains($l)) {
+            $this->doAddChapter($l);
+
+            if ($this->chaptersScheduledForDeletion and $this->chaptersScheduledForDeletion->contains($l)) {
+                $this->chaptersScheduledForDeletion->remove($this->chaptersScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildChapter $chapter The ChildChapter object to add.
+     */
+    protected function doAddChapter(ChildChapter $chapter)
+    {
+        $this->collChapters[]= $chapter;
+        $chapter->setBook($this);
+    }
+
+    /**
+     * @param  ChildChapter $chapter The ChildChapter object to remove.
+     * @return $this|ChildBook The current object (for fluent API support)
+     */
+    public function removeChapter(ChildChapter $chapter)
+    {
+        if ($this->getChapters()->contains($chapter)) {
+            $pos = $this->collChapters->search($chapter);
+            $this->collChapters->remove($pos);
+            if (null === $this->chaptersScheduledForDeletion) {
+                $this->chaptersScheduledForDeletion = clone $this->collChapters;
+                $this->chaptersScheduledForDeletion->clear();
+            }
+            $this->chaptersScheduledForDeletion[]= clone $chapter;
+            $chapter->setBook(null);
+        }
+
+        return $this;
+    }
+
     /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
@@ -1874,8 +2180,14 @@ abstract class Book implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collChapters) {
+                foreach ($this->collChapters as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
+        $this->collChapters = null;
         $this->aLanguage = null;
     }
 
@@ -1922,6 +2234,11 @@ abstract class Book implements ActiveRecordInterface
         $metadata->addPropertyConstraint('slug', new Regex(array ('pattern' => '/^(?!add$)[a-z0-9\\-]+$/','message' => 'Reserved words are not allowed.',)));
         $metadata->addPropertyConstraint('language_id', new NotBlank(array ('allowNull' => false,'message' => 'Please select a language from the dropdown menu.',)));
         $metadata->addPropertyConstraint('language_id', new GreaterThan(array ('value' => 0,'message' => 'Please select a language from the dropdown menu.',)));
+        $metadata->addPropertyConstraint('author', new Length(array ('max' => 255,)));
+        $metadata->addPropertyConstraint('dedication', new Length(array ('max' => 255,)));
+        $metadata->addPropertyConstraint('publisher', new Length(array ('max' => 255,)));
+        $metadata->addPropertyConstraint('isbn', new Length(array ('max' => 255,)));
+        $metadata->addPropertyConstraint('extra_info', new Length(array ('max' => 65535,)));
     }
 
     /**
@@ -1964,6 +2281,15 @@ abstract class Book implements ActiveRecordInterface
                 $failureMap->addAll($retval);
             }
 
+            if (null !== $this->collChapters) {
+                foreach ($this->collChapters as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
 
             $this->alreadyInValidation = false;
         }

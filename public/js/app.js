@@ -7,6 +7,7 @@ var App = {
             return;
         }
         App.bind();
+        App.initNestable();
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -37,6 +38,23 @@ var App = {
             }
         }
     },
+
+    ///////////////////////////////////////////////////////////////////////////
+    initNestable: function() {
+        $('.dd').nestable({
+            callback: function(l, e) {
+                var chapters = l.nestable('asNestedSet');
+                chapters.forEach(function(element) {
+                    var id = element.id;
+
+                    $('input[name="chapters[' + id + '][tree_left]"]').val(element.lft);
+                    $('input[name="chapters[' + id + '][tree_right]"]').val(element.rgt);
+                    $('input[name="chapters[' + id + '][tree_level]"]').val(element.depth);
+                });
+            }
+        });
+    },
+    
 }
 
 $(document).ready(function() {

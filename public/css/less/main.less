@@ -1,4 +1,5 @@
 @import (inline) "../../../vendor/twbs/bootstrap/dist/css/bootstrap.min.css";
+@import "nestable2.less";
 
 /* ----------------------------- */
 @mobile:     ~"(max-width: 720px)";
@@ -18,7 +19,7 @@ body {
     }
 }
 textarea {
-    min-height: 5em;
+    min-height: 8em;
     max-height: 15em;
 }
 .body-wrap {
@@ -50,7 +51,11 @@ header {
         font-family: sans-serif;
         @media @desktop {
             font-size: 30px;
-            width: 260px;
+        }
+        &.homepage {
+            @media @desktop {
+                width: 260px;
+            }
         }
     }
 }

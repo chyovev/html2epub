@@ -11,4 +11,4 @@ require_once(CORE_PATH   . '/Url.php');
 require_once(CORE_PATH   . '/FlashMessage.php');
 require_once(VENDOR_PATH . '/autoload.php');
 require_once(PROPEL_PATH . '/generated-conf/config.php');
-require_once(TWIG_PATH   . '/twig.php');
+require_once(TWIG_PATH   . '/ExtendedTwig.php');

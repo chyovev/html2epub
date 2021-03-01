@@ -1,10 +1,8 @@
 <?php
 use Twig\Environment;
-use Twig\TwigFunction;
-use Twig\Loader\FilesystemLoader;
 use Twig\Loader\LoaderInterface;
 
-class CustomTwig extends Environment {
+class ExtendedTwig extends Environment {
 
     ///////////////////////////////////////////////////////////////////////////
     // setting global variables used in all templates
@@ -19,13 +17,22 @@ class CustomTwig extends Environment {
     public function view(string $template, array $viewVars = []): void {
         // set the flash message if any
         $this->addGlobal('flash', FlashMessage::getFlashMessage());
+
+        $this->addGlobals($viewVars);
         
         $html  = parent::render('/layout/header.twig');
-        $html .= parent::render($template . '.twig', $viewVars);
+        $html .= parent::render($template . '.twig');
         $html .= parent::render('/layout/footer.twig');
 
         print($html);
         exit;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function addGlobals(array $viewVars = []): void {
+        foreach ($viewVars as $var => $value) {
+            $this->addGlobal($var, $value);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -43,12 +50,3 @@ class CustomTwig extends Environment {
         $this->addGlobal('errors', $errors);
     }
 }
-
-$loader = new FilesystemLoader(TEMPLATES_PATH);
-$twig   = new CustomTwig($loader);
-
-// registering the Url abstract class as custom_url function in twig
-$urlFunction = new TwigFunction('custom_url', function($method, ...$args) {
-    return forward_static_call_array(['Url', $method], $args);    
-});
-$twig->addFunction($urlFunction);

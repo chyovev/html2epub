@@ -5,6 +5,7 @@
         <unique name="slug">
             <unique-column name="slug" />
         </unique>
+
         <column name="id" type="integer" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true" />
         <column name="title" type="varchar" size="255" required="true" />
         <column name="subtitle" type="varchar" size="255" />
@@ -37,8 +38,53 @@
 
             <parameter name="language_notnull" value="{column: language_id, validator: NotBlank,    options: {allowNull: false, message: Please select a language from the dropdown menu.}}" />
             <parameter name="language_int"     value="{column: language_id, validator: GreaterThan, options: {value: 0,         message: Please select a language from the dropdown menu.}}" />
+
+            <parameter name="author_maxlength"     value="{column: author,     validator: Length, options: {max: 255}}" />
+            <parameter name="dedication_maxlength" value="{column: dedication, validator: Length, options: {max: 255}}" />
+            <parameter name="publisher_maxlength"  value="{column: publisher,  validator: Length, options: {max: 255}}" />
+            <parameter name="isbn_maxlength"       value="{column: isbn,       validator: Length, options: {max: 255}}" />
+            <parameter name="extra_info_maxlength" value="{column: extra_info, validator: Length, options: {max: 65535}}" />
         </behavior>
     </table>
+
+
+    <table name="chapters" phpName="Chapter">
+        <unique name="slug">
+            <unique-column name="slug" />
+        </unique>
+
+        <column name="id" type="integer" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true" />
+        <column name="book_id" type="integer" sqlType="int(11) unsigned" default="0" required="true" />
+        <column name="title" type="varchar" size="255" required="true" />
+        <column name="slug" type="varchar" size="255" required="true" />
+        <column name="body" type="longvarchar" />
+
+        <foreign-key foreignTable="books" phpName="Book">
+            <reference local="book_id" foreign="id"/>
+        </foreign-key>
+
+        <behavior name="nested_set">
+            <parameter name="use_scope" value="true" />
+            <parameter name="scope_column" value="book_id" />
+        </behavior>
+
+        <behavior name="timestampable" />
+
+        <!-- Validation rules  -->
+        <behavior name="validate">
+            <parameter name="title_notnull"   value="{column: title, validator: NotBlank, options: {allowNull: false}}" />
+            <parameter name="title_maxlength" value="{column: title, validator: Length,   options: {max: 255, allowEmptyString: false}}" />
+
+            <parameter name="slug_notnull"   value="{column: slug, validator: NotBlank, options: {allowNull: false}}" />
+            <parameter name="slug_maxlength" value="{column: slug, validator: Length,   options: {max: 255, allowEmptyString: false}}" />
+            <parameter name="slug_unique"    value="{column: slug, validator: Unique,   options: {message: A chapter with this slug already exists.}}" />
+            <parameter name="slug_regex"     value="{column: slug, validator: Regex,    options: {pattern: /^[a-z0-9\-]+$/,         message: Please use only lowercase latin letters and dashes.}}" />
+            <parameter name="slug_reserved"  value="{column: slug, validator: Regex,    options: {pattern: /^(?!delete$)[a-z0-9\-]+$/, message: Reserved words are not allowed.}}" />
+
+            <parameter name="body_maxlength" value="{column: body, validator: Length,   options: {max: 65535}}" />
+        </behavior>
+    </table>
+
 
     <table name="languages" phpName="Language">
         <unique name="locale">
