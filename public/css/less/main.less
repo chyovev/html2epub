@@ -4,6 +4,9 @@
 /* ----------------------------- */
 @mobile:     ~"(max-width: 720px)";
 @desktop:    ~"(min-width: 721px)";
+@min-lg:     ~"(min-width: 992px)";
+@max-lg:     ~"(max-width: 991px)";
+@extrasmall: ~"(max-width: 340px)";
 /* ----------------------------- */
 @darkblue: #28468C;
 @white:    #F0F0F0;
@@ -18,7 +21,7 @@ body {
         padding-top: 100px;
     }
 }
-textarea {
+textarea:not(.tox-textarea) {
     min-height: 8em;
     max-height: 15em;
 }
@@ -36,7 +39,7 @@ header {
         top: 0px;
         left: 0px;
         background-color: @white;
-        z-index: 1;
+        z-index: 3;
         box-shadow: 0px 2px 5px fade(black, 45%);
     }
     .logo-wrapper {
@@ -66,4 +69,72 @@ header {
     background-repeat: no-repeat;
     background-position: 10px 50%;
     padding-left: 30px;
+}
+@media @max-lg {
+    .toc-wrapper {
+        position: fixed;
+        top: 0px;
+        left: -85%;
+        width: 85%;
+        height: 100vh;
+        background-color: white;
+        z-index: 2;
+        transition: left 0.5s;
+        padding: 0px;
+        &.open {
+            left: 0px;
+            #toc {
+                box-shadow: 2px 0px 10px 0px fade(black, 25%);
+            }
+        }
+        #toc {
+            height: 100%;
+            overflow: auto;
+            padding-top: 100px !important;
+            padding: 20px;
+            @media @extrasmall {
+                .toc-title {
+                    font-size: 20px;
+                }
+            }
+        }
+    }
+    #toc-toggler {
+        .android-highlight-fix;
+        position: absolute;
+        top: 45vh;
+        width: 180px;
+        right: -179px;
+        transform: rotate(-90deg) translateX(-50%);
+        transform-origin: 0 0;
+        cursor: pointer;
+        box-shadow: -3px 3px 3px 0 fade(black, 15%);
+        border: 1px solid mix(black, white, 40%);
+        border-top: 0px;
+        border-radius: 0px 0px 5px 5px;
+        background:  linear-gradient(#F2F2F2, fade(#F2F2F2, 70%));
+        font-size: 14px;
+        padding: 0px 15px;
+        text-transform: uppercase;
+        line-height: 2em;
+        transition: color 0.3s;
+        text-align: center;
+        &.open, &:hover {
+            color: @darkblue;
+        }
+    }
+}
+
+#toc {
+    background-color: fade(black, 5%);
+    @media @min-lg {
+        border-radius: 10px;
+    }
+}
+
+ /* fix android highlight color */
+.android-highlight-fix {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-focus-ring-color: rgba(255, 255, 255, 0) !important; 
+    outline: none !important;
 }

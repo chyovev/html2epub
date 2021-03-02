@@ -13,5 +13,5 @@ use Base\Chapter as BaseChapter;
  */
 class Chapter extends BaseChapter
 {
-
+    use SaveTrait;
 }

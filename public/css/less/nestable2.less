@@ -1,15 +1,18 @@
+@lightblue:           #2ea8e5;
+@backgroundColor:     #fafafa;
+@inactiveBorderColor: #ccc;
 .dd {
     position: relative;
     display: block;
     margin: 0;
     padding: 0;
-    max-width: 600px;
     list-style: none;
     line-height: 20px;
 }
 
 .dd-list {
-    display: block;
+    display: inline-block;
+    width: 100%;
     position: relative;
     margin: 0;
     padding: 0;
@@ -24,7 +27,7 @@
 .dd-placeholder {
     display: block;
     position: relative;
-    margin: 0;
+    margin: 5px 0px 0px 0px;
     padding: 0;
     min-height: 20px;
     font-size: 15px;
@@ -32,28 +35,65 @@
 }
 
 .dd-handle {
+    position: relative;
     display: block;
     height: 40px;
-    margin: 5px 0;
     padding: 5px 10px;
     text-decoration: none;
     font-weight: bold;
-    border: 1px solid #ccc;
-    background-color: #fafafa;
+    border: 1px solid @inactiveBorderColor;
+    background-color: @backgroundColor;
     border-radius: 4px;
     box-sizing: border-box;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, border-color 0.3s;
+    &:hover {
+        &:not(.active) {
+            background-color: #fff;
+            border-color: mix(@inactiveBorderColor, black, 65%);
+        }
+    }
     &:not(.static) {
         cursor: move;
+    }
+    &.active {
+        border-color: @lightblue;
+        background-color: #e0f9ff;
         &:hover {
-            background-color: #fff;
+            background-color: mix(#e0f9ff, white, 60%);
+            border-color: mix(@lightblue, white, 80%);
         }
     }
     a {
         color: #333;
         transition: color 0.3s;
-        &:hover {
-            color: #2ea8e5;
+    }
+    a:hover, &.active a {
+        color: @lightblue;
+        text-decoration: underline;
+    }
+}
+
+.dd-item {
+    .title {
+        overflow: hidden;
+        width: calc(~"100% - 60px");
+        display: inline-block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    .actions {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        img {
+            width: 16px;
+            cursor: pointer;
+            opacity: 0.75;
+            transition: opacity 0.3s;
+            &:hover {
+                opacity: 1;
+            }
         }
     }
 }
@@ -99,7 +139,6 @@
     display: none;
 }
 
-.dd-collapsed .dd-list,
 .dd-collapsed .dd-collapse {
     display: none;
 }

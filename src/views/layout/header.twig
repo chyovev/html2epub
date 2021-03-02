@@ -4,6 +4,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>{% if metaTitle %}{{ metaTitle|e }} | {% endif %}HTML 2 ePub</title>
+    <script type="text/javascript" language="javascript">var _root = '{{ root }}';</script>
+    <script type="text/javascript" src="{{root}}js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="{{root}}js/script.js"></script>
     <link type="text/css" rel="stylesheet" href="{{root}}css/style.css" />
 </head>
@@ -13,6 +15,6 @@
             <div class="logo-wrapper d-table-cell align-middle">
                 <a href="{{ root }}"><img src="{{root}}img/html2epub.svg" class="logo w-100" alt="Logo" /></a>
             </div>
-            <div class="title{% if not wideHeader %} homepage{% else %} text-center{% endif %} font-weight-bold text-uppercase d-table-cell align-middle pl-4 h5">{% if metaTitle %}{{ metaTitle|e }}{% else %}Free online ePub generator{% endif %}</div>
+            <div class="title{% if not wideHeader %} homepage{% else %} text-center{% endif %} font-weight-bold text-uppercase d-table-cell align-middle pl-4 h5">{% if title %}{{ title|e }}{% else %}Free online ePub generator{% endif %}</div>
         </header>
         <section>

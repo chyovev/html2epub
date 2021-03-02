@@ -158,6 +158,13 @@
 
             var onStartEvent = function(e) {
                 var handle = $(e.target);
+
+                // child elements with other JS events should not trigger drag event;
+                // such elements should have .no-handle class
+                if (handle.hasClass('no-handle')) {
+                    return;
+                }
+                
                 if (!handle.hasClass(list.options.handleClass)) {
                     if (handle.closest('.' + list.options.noDragClass).length) {
                         return;
@@ -649,11 +656,13 @@
 
         expandItem: function(li) {
             li.removeClass(this.options.collapsedClass);
+            li.children(this.options.listNodeName).slideDown();
         },
 
         collapseItem: function(li) {
             var lists = li.children(this.options.listNodeName);
             if (lists.length) {
+                lists.slideUp();
                 li.addClass(this.options.collapsedClass);
             }
         },
