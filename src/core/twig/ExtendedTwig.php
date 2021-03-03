@@ -29,6 +29,16 @@ class ExtendedTwig extends Environment {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    public function renderJSONContent($array): void {
+        if (!is_array($array)) {
+            $array = [$array];
+        }
+
+        header('Content-Type: application/json');
+        die(json_encode($array));
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
     public function addGlobals(array $viewVars = []): void {
         foreach ($viewVars as $var => $value) {
             $this->addGlobal($var, $value);

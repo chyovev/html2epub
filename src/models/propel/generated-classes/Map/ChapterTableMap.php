@@ -96,6 +96,11 @@ class ChapterTableMap extends TableMap
     const COL_BODY = 'chapters.body';
 
     /**
+     * the column name for the updated_at field
+     */
+    const COL_UPDATED_AT = 'chapters.updated_at';
+
+    /**
      * the column name for the tree_left field
      */
     const COL_TREE_LEFT = 'chapters.tree_left';
@@ -116,11 +121,6 @@ class ChapterTableMap extends TableMap
     const COL_CREATED_AT = 'chapters.created_at';
 
     /**
-     * the column name for the updated_at field
-     */
-    const COL_UPDATED_AT = 'chapters.updated_at';
-
-    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -132,10 +132,10 @@ class ChapterTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'BookId', 'Title', 'Slug', 'Body', 'TreeLeft', 'TreeRight', 'TreeLevel', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'bookId', 'title', 'slug', 'body', 'treeLeft', 'treeRight', 'treeLevel', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(ChapterTableMap::COL_ID, ChapterTableMap::COL_BOOK_ID, ChapterTableMap::COL_TITLE, ChapterTableMap::COL_SLUG, ChapterTableMap::COL_BODY, ChapterTableMap::COL_TREE_LEFT, ChapterTableMap::COL_TREE_RIGHT, ChapterTableMap::COL_TREE_LEVEL, ChapterTableMap::COL_CREATED_AT, ChapterTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'book_id', 'title', 'slug', 'body', 'tree_left', 'tree_right', 'tree_level', 'created_at', 'updated_at', ),
+        self::TYPE_PHPNAME       => array('Id', 'BookId', 'Title', 'Slug', 'Body', 'UpdatedAt', 'TreeLeft', 'TreeRight', 'TreeLevel', 'CreatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'bookId', 'title', 'slug', 'body', 'updatedAt', 'treeLeft', 'treeRight', 'treeLevel', 'createdAt', ),
+        self::TYPE_COLNAME       => array(ChapterTableMap::COL_ID, ChapterTableMap::COL_BOOK_ID, ChapterTableMap::COL_TITLE, ChapterTableMap::COL_SLUG, ChapterTableMap::COL_BODY, ChapterTableMap::COL_UPDATED_AT, ChapterTableMap::COL_TREE_LEFT, ChapterTableMap::COL_TREE_RIGHT, ChapterTableMap::COL_TREE_LEVEL, ChapterTableMap::COL_CREATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'book_id', 'title', 'slug', 'body', 'updated_at', 'tree_left', 'tree_right', 'tree_level', 'created_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
@@ -146,10 +146,10 @@ class ChapterTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'BookId' => 1, 'Title' => 2, 'Slug' => 3, 'Body' => 4, 'TreeLeft' => 5, 'TreeRight' => 6, 'TreeLevel' => 7, 'CreatedAt' => 8, 'UpdatedAt' => 9, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'bookId' => 1, 'title' => 2, 'slug' => 3, 'body' => 4, 'treeLeft' => 5, 'treeRight' => 6, 'treeLevel' => 7, 'createdAt' => 8, 'updatedAt' => 9, ),
-        self::TYPE_COLNAME       => array(ChapterTableMap::COL_ID => 0, ChapterTableMap::COL_BOOK_ID => 1, ChapterTableMap::COL_TITLE => 2, ChapterTableMap::COL_SLUG => 3, ChapterTableMap::COL_BODY => 4, ChapterTableMap::COL_TREE_LEFT => 5, ChapterTableMap::COL_TREE_RIGHT => 6, ChapterTableMap::COL_TREE_LEVEL => 7, ChapterTableMap::COL_CREATED_AT => 8, ChapterTableMap::COL_UPDATED_AT => 9, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'book_id' => 1, 'title' => 2, 'slug' => 3, 'body' => 4, 'tree_left' => 5, 'tree_right' => 6, 'tree_level' => 7, 'created_at' => 8, 'updated_at' => 9, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'BookId' => 1, 'Title' => 2, 'Slug' => 3, 'Body' => 4, 'UpdatedAt' => 5, 'TreeLeft' => 6, 'TreeRight' => 7, 'TreeLevel' => 8, 'CreatedAt' => 9, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'bookId' => 1, 'title' => 2, 'slug' => 3, 'body' => 4, 'updatedAt' => 5, 'treeLeft' => 6, 'treeRight' => 7, 'treeLevel' => 8, 'createdAt' => 9, ),
+        self::TYPE_COLNAME       => array(ChapterTableMap::COL_ID => 0, ChapterTableMap::COL_BOOK_ID => 1, ChapterTableMap::COL_TITLE => 2, ChapterTableMap::COL_SLUG => 3, ChapterTableMap::COL_BODY => 4, ChapterTableMap::COL_UPDATED_AT => 5, ChapterTableMap::COL_TREE_LEFT => 6, ChapterTableMap::COL_TREE_RIGHT => 7, ChapterTableMap::COL_TREE_LEVEL => 8, ChapterTableMap::COL_CREATED_AT => 9, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'book_id' => 1, 'title' => 2, 'slug' => 3, 'body' => 4, 'updated_at' => 5, 'tree_left' => 6, 'tree_right' => 7, 'tree_level' => 8, 'created_at' => 9, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
@@ -175,11 +175,11 @@ class ChapterTableMap extends TableMap
         $this->addColumn('title', 'Title', 'VARCHAR', true, 255, null);
         $this->addColumn('slug', 'Slug', 'VARCHAR', true, 255, null);
         $this->addColumn('body', 'Body', 'LONGVARCHAR', false, null, null);
+        $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('tree_left', 'TreeLeft', 'INTEGER', false, null, null);
         $this->addColumn('tree_right', 'TreeRight', 'INTEGER', false, null, null);
         $this->addColumn('tree_level', 'TreeLevel', 'INTEGER', false, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
-        $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
 
     /**
@@ -206,7 +206,7 @@ class ChapterTableMap extends TableMap
     {
         return array(
             'nested_set' => array('left_column' => 'tree_left', 'right_column' => 'tree_right', 'level_column' => 'tree_level', 'use_scope' => 'true', 'scope_column' => 'book_id', 'method_proxies' => 'false', ),
-            'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
+            'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'true', ),
             'validate' => array('title_notnull' => array ('column' => 'title','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'title_maxlength' => array ('column' => 'title','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_notnull' => array ('column' => 'slug','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'slug_maxlength' => array ('column' => 'slug','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_unique' => array ('column' => 'slug','validator' => 'Unique','options' => array ('message' => 'A chapter with this slug already exists.',),), 'slug_regex' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^[a-z0-9\\-]+$/','message' => 'Please use only lowercase latin letters and dashes.',),), 'slug_reserved' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^(?!delete$)[a-z0-9\\-]+$/','message' => 'Reserved words are not allowed.',),), 'body_maxlength' => array ('column' => 'body','validator' => 'Length','options' => array ('max' => 65535,),), ),
         );
     } // getBehaviors()
@@ -357,22 +357,22 @@ class ChapterTableMap extends TableMap
             $criteria->addSelectColumn(ChapterTableMap::COL_TITLE);
             $criteria->addSelectColumn(ChapterTableMap::COL_SLUG);
             $criteria->addSelectColumn(ChapterTableMap::COL_BODY);
+            $criteria->addSelectColumn(ChapterTableMap::COL_UPDATED_AT);
             $criteria->addSelectColumn(ChapterTableMap::COL_TREE_LEFT);
             $criteria->addSelectColumn(ChapterTableMap::COL_TREE_RIGHT);
             $criteria->addSelectColumn(ChapterTableMap::COL_TREE_LEVEL);
             $criteria->addSelectColumn(ChapterTableMap::COL_CREATED_AT);
-            $criteria->addSelectColumn(ChapterTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.book_id');
             $criteria->addSelectColumn($alias . '.title');
             $criteria->addSelectColumn($alias . '.slug');
             $criteria->addSelectColumn($alias . '.body');
+            $criteria->addSelectColumn($alias . '.updated_at');
             $criteria->addSelectColumn($alias . '.tree_left');
             $criteria->addSelectColumn($alias . '.tree_right');
             $criteria->addSelectColumn($alias . '.tree_level');
             $criteria->addSelectColumn($alias . '.created_at');
-            $criteria->addSelectColumn($alias . '.updated_at');
         }
     }
 

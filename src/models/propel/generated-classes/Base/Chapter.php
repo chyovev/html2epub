@@ -116,6 +116,13 @@ abstract class Chapter implements ActiveRecordInterface
     protected $body;
 
     /**
+     * The value for the updated_at field.
+     *
+     * @var        DateTime
+     */
+    protected $updated_at;
+
+    /**
      * The value for the tree_left field.
      *
      * @var        int
@@ -142,13 +149,6 @@ abstract class Chapter implements ActiveRecordInterface
      * @var        DateTime
      */
     protected $created_at;
-
-    /**
-     * The value for the updated_at field.
-     *
-     * @var        DateTime
-     */
-    protected $updated_at;
 
     /**
      * @var        ChildBook
@@ -509,6 +509,26 @@ abstract class Chapter implements ActiveRecordInterface
     }
 
     /**
+     * Get the [optionally formatted] temporal [updated_at] column value.
+     *
+     *
+     * @param      string|null $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getUpdatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->updated_at;
+        } else {
+            return $this->updated_at instanceof \DateTimeInterface ? $this->updated_at->format($format) : null;
+        }
+    }
+
+    /**
      * Get the [tree_left] column value.
      *
      * @return int
@@ -555,26 +575,6 @@ abstract class Chapter implements ActiveRecordInterface
             return $this->created_at;
         } else {
             return $this->created_at instanceof \DateTimeInterface ? $this->created_at->format($format) : null;
-        }
-    }
-
-    /**
-     * Get the [optionally formatted] temporal [updated_at] column value.
-     *
-     *
-     * @param      string|null $format The date/time format string (either date()-style or strftime()-style).
-     *                            If format is NULL, then the raw DateTime object will be returned.
-     *
-     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
-     *
-     * @throws PropelException - if unable to parse/validate the date/time value.
-     */
-    public function getUpdatedAt($format = NULL)
-    {
-        if ($format === null) {
-            return $this->updated_at;
-        } else {
-            return $this->updated_at instanceof \DateTimeInterface ? $this->updated_at->format($format) : null;
         }
     }
 
@@ -683,6 +683,26 @@ abstract class Chapter implements ActiveRecordInterface
     } // setBody()
 
     /**
+     * Sets the value of [updated_at] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Chapter The current object (for fluent API support)
+     */
+    public function setUpdatedAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->updated_at !== null || $dt !== null) {
+            if ($this->updated_at === null || $dt === null || $dt->format("Y-m-d H:i:s.u") !== $this->updated_at->format("Y-m-d H:i:s.u")) {
+                $this->updated_at = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[ChapterTableMap::COL_UPDATED_AT] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setUpdatedAt()
+
+    /**
      * Set the value of [tree_left] column.
      *
      * @param int $v new value
@@ -763,26 +783,6 @@ abstract class Chapter implements ActiveRecordInterface
     } // setCreatedAt()
 
     /**
-     * Sets the value of [updated_at] column to a normalized version of the date/time value specified.
-     *
-     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
-     *               Empty strings are treated as NULL.
-     * @return $this|\Chapter The current object (for fluent API support)
-     */
-    public function setUpdatedAt($v)
-    {
-        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->updated_at !== null || $dt !== null) {
-            if ($this->updated_at === null || $dt === null || $dt->format("Y-m-d H:i:s.u") !== $this->updated_at->format("Y-m-d H:i:s.u")) {
-                $this->updated_at = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[ChapterTableMap::COL_UPDATED_AT] = true;
-            }
-        } // if either are not null
-
-        return $this;
-    } // setUpdatedAt()
-
-    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -837,26 +837,26 @@ abstract class Chapter implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ChapterTableMap::translateFieldName('Body', TableMap::TYPE_PHPNAME, $indexType)];
             $this->body = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ChapterTableMap::translateFieldName('TreeLeft', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->tree_left = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ChapterTableMap::translateFieldName('TreeRight', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->tree_right = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ChapterTableMap::translateFieldName('TreeLevel', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->tree_level = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : ChapterTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
-            if ($col === '0000-00-00 00:00:00') {
-                $col = null;
-            }
-            $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : ChapterTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ChapterTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->updated_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ChapterTableMap::translateFieldName('TreeLeft', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->tree_left = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ChapterTableMap::translateFieldName('TreeRight', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->tree_right = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : ChapterTableMap::translateFieldName('TreeLevel', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->tree_level = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : ChapterTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -1029,15 +1029,8 @@ abstract class Chapter implements ActiveRecordInterface
                 if (!$this->isColumnModified(ChapterTableMap::COL_CREATED_AT)) {
                     $this->setCreatedAt($highPrecision);
                 }
-                if (!$this->isColumnModified(ChapterTableMap::COL_UPDATED_AT)) {
-                    $this->setUpdatedAt($highPrecision);
-                }
             } else {
                 $ret = $ret && $this->preUpdate($con);
-                // timestampable behavior
-                if ($this->isModified() && !$this->isColumnModified(ChapterTableMap::COL_UPDATED_AT)) {
-                    $this->setUpdatedAt(\Propel\Runtime\Util\PropelDateTime::createHighPrecision());
-                }
             }
             if ($ret) {
                 $affectedRows = $this->doSave($con);
@@ -1137,6 +1130,9 @@ abstract class Chapter implements ActiveRecordInterface
         if ($this->isColumnModified(ChapterTableMap::COL_BODY)) {
             $modifiedColumns[':p' . $index++]  = 'body';
         }
+        if ($this->isColumnModified(ChapterTableMap::COL_UPDATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'updated_at';
+        }
         if ($this->isColumnModified(ChapterTableMap::COL_TREE_LEFT)) {
             $modifiedColumns[':p' . $index++]  = 'tree_left';
         }
@@ -1148,9 +1144,6 @@ abstract class Chapter implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ChapterTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
-        }
-        if ($this->isColumnModified(ChapterTableMap::COL_UPDATED_AT)) {
-            $modifiedColumns[':p' . $index++]  = 'updated_at';
         }
 
         $sql = sprintf(
@@ -1178,6 +1171,9 @@ abstract class Chapter implements ActiveRecordInterface
                     case 'body':
                         $stmt->bindValue($identifier, $this->body, PDO::PARAM_STR);
                         break;
+                    case 'updated_at':
+                        $stmt->bindValue($identifier, $this->updated_at ? $this->updated_at->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
+                        break;
                     case 'tree_left':
                         $stmt->bindValue($identifier, $this->tree_left, PDO::PARAM_INT);
                         break;
@@ -1189,9 +1185,6 @@ abstract class Chapter implements ActiveRecordInterface
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
-                        break;
-                    case 'updated_at':
-                        $stmt->bindValue($identifier, $this->updated_at ? $this->updated_at->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1271,19 +1264,19 @@ abstract class Chapter implements ActiveRecordInterface
                 return $this->getBody();
                 break;
             case 5:
-                return $this->getTreeLeft();
+                return $this->getUpdatedAt();
                 break;
             case 6:
-                return $this->getTreeRight();
+                return $this->getTreeLeft();
                 break;
             case 7:
-                return $this->getTreeLevel();
+                return $this->getTreeRight();
                 break;
             case 8:
-                return $this->getCreatedAt();
+                return $this->getTreeLevel();
                 break;
             case 9:
-                return $this->getUpdatedAt();
+                return $this->getCreatedAt();
                 break;
             default:
                 return null;
@@ -1320,14 +1313,14 @@ abstract class Chapter implements ActiveRecordInterface
             $keys[2] => $this->getTitle(),
             $keys[3] => $this->getSlug(),
             $keys[4] => $this->getBody(),
-            $keys[5] => $this->getTreeLeft(),
-            $keys[6] => $this->getTreeRight(),
-            $keys[7] => $this->getTreeLevel(),
-            $keys[8] => $this->getCreatedAt(),
-            $keys[9] => $this->getUpdatedAt(),
+            $keys[5] => $this->getUpdatedAt(),
+            $keys[6] => $this->getTreeLeft(),
+            $keys[7] => $this->getTreeRight(),
+            $keys[8] => $this->getTreeLevel(),
+            $keys[9] => $this->getCreatedAt(),
         );
-        if ($result[$keys[8]] instanceof \DateTimeInterface) {
-            $result[$keys[8]] = $result[$keys[8]]->format('c');
+        if ($result[$keys[5]] instanceof \DateTimeInterface) {
+            $result[$keys[5]] = $result[$keys[5]]->format('c');
         }
 
         if ($result[$keys[9]] instanceof \DateTimeInterface) {
@@ -1405,19 +1398,19 @@ abstract class Chapter implements ActiveRecordInterface
                 $this->setBody($value);
                 break;
             case 5:
-                $this->setTreeLeft($value);
+                $this->setUpdatedAt($value);
                 break;
             case 6:
-                $this->setTreeRight($value);
+                $this->setTreeLeft($value);
                 break;
             case 7:
-                $this->setTreeLevel($value);
+                $this->setTreeRight($value);
                 break;
             case 8:
-                $this->setCreatedAt($value);
+                $this->setTreeLevel($value);
                 break;
             case 9:
-                $this->setUpdatedAt($value);
+                $this->setCreatedAt($value);
                 break;
         } // switch()
 
@@ -1461,19 +1454,19 @@ abstract class Chapter implements ActiveRecordInterface
             $this->setBody($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setTreeLeft($arr[$keys[5]]);
+            $this->setUpdatedAt($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setTreeRight($arr[$keys[6]]);
+            $this->setTreeLeft($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setTreeLevel($arr[$keys[7]]);
+            $this->setTreeRight($arr[$keys[7]]);
         }
         if (array_key_exists($keys[8], $arr)) {
-            $this->setCreatedAt($arr[$keys[8]]);
+            $this->setTreeLevel($arr[$keys[8]]);
         }
         if (array_key_exists($keys[9], $arr)) {
-            $this->setUpdatedAt($arr[$keys[9]]);
+            $this->setCreatedAt($arr[$keys[9]]);
         }
     }
 
@@ -1531,6 +1524,9 @@ abstract class Chapter implements ActiveRecordInterface
         if ($this->isColumnModified(ChapterTableMap::COL_BODY)) {
             $criteria->add(ChapterTableMap::COL_BODY, $this->body);
         }
+        if ($this->isColumnModified(ChapterTableMap::COL_UPDATED_AT)) {
+            $criteria->add(ChapterTableMap::COL_UPDATED_AT, $this->updated_at);
+        }
         if ($this->isColumnModified(ChapterTableMap::COL_TREE_LEFT)) {
             $criteria->add(ChapterTableMap::COL_TREE_LEFT, $this->tree_left);
         }
@@ -1542,9 +1538,6 @@ abstract class Chapter implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ChapterTableMap::COL_CREATED_AT)) {
             $criteria->add(ChapterTableMap::COL_CREATED_AT, $this->created_at);
-        }
-        if ($this->isColumnModified(ChapterTableMap::COL_UPDATED_AT)) {
-            $criteria->add(ChapterTableMap::COL_UPDATED_AT, $this->updated_at);
         }
 
         return $criteria;
@@ -1636,11 +1629,11 @@ abstract class Chapter implements ActiveRecordInterface
         $copyObj->setTitle($this->getTitle());
         $copyObj->setSlug($this->getSlug());
         $copyObj->setBody($this->getBody());
+        $copyObj->setUpdatedAt($this->getUpdatedAt());
         $copyObj->setTreeLeft($this->getTreeLeft());
         $copyObj->setTreeRight($this->getTreeRight());
         $copyObj->setTreeLevel($this->getTreeLevel());
         $copyObj->setCreatedAt($this->getCreatedAt());
-        $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1735,11 +1728,11 @@ abstract class Chapter implements ActiveRecordInterface
         $this->title = null;
         $this->slug = null;
         $this->body = null;
+        $this->updated_at = null;
         $this->tree_left = null;
         $this->tree_right = null;
         $this->tree_level = null;
         $this->created_at = null;
-        $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->applyDefaultValues();
@@ -2675,20 +2668,6 @@ abstract class Chapter implements ActiveRecordInterface
     public function getIterator()
     {
         return new NestedSetRecursiveIterator($this);
-    }
-
-    // timestampable behavior
-
-    /**
-     * Mark the current object so that the update date doesn't get updated during next save
-     *
-     * @return     $this|ChildChapter The current object (for fluent API support)
-     */
-    public function keepUpdateDateUnchanged()
-    {
-        $this->modifiedColumns[ChapterTableMap::COL_UPDATED_AT] = true;
-
-        return $this;
     }
 
     // validate behavior

@@ -26,22 +26,22 @@ use Propel\Runtime\Map\TableMap;
  * @method     ChildChapterQuery orderByTitle($order = Criteria::ASC) Order by the title column
  * @method     ChildChapterQuery orderBySlug($order = Criteria::ASC) Order by the slug column
  * @method     ChildChapterQuery orderByBody($order = Criteria::ASC) Order by the body column
+ * @method     ChildChapterQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  * @method     ChildChapterQuery orderByTreeLeft($order = Criteria::ASC) Order by the tree_left column
  * @method     ChildChapterQuery orderByTreeRight($order = Criteria::ASC) Order by the tree_right column
  * @method     ChildChapterQuery orderByTreeLevel($order = Criteria::ASC) Order by the tree_level column
  * @method     ChildChapterQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
- * @method     ChildChapterQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildChapterQuery groupById() Group by the id column
  * @method     ChildChapterQuery groupByBookId() Group by the book_id column
  * @method     ChildChapterQuery groupByTitle() Group by the title column
  * @method     ChildChapterQuery groupBySlug() Group by the slug column
  * @method     ChildChapterQuery groupByBody() Group by the body column
+ * @method     ChildChapterQuery groupByUpdatedAt() Group by the updated_at column
  * @method     ChildChapterQuery groupByTreeLeft() Group by the tree_left column
  * @method     ChildChapterQuery groupByTreeRight() Group by the tree_right column
  * @method     ChildChapterQuery groupByTreeLevel() Group by the tree_level column
  * @method     ChildChapterQuery groupByCreatedAt() Group by the created_at column
- * @method     ChildChapterQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildChapterQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildChapterQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -71,11 +71,11 @@ use Propel\Runtime\Map\TableMap;
  * @method     ChildChapter findOneByTitle(string $title) Return the first ChildChapter filtered by the title column
  * @method     ChildChapter findOneBySlug(string $slug) Return the first ChildChapter filtered by the slug column
  * @method     ChildChapter findOneByBody(string $body) Return the first ChildChapter filtered by the body column
+ * @method     ChildChapter findOneByUpdatedAt(string $updated_at) Return the first ChildChapter filtered by the updated_at column
  * @method     ChildChapter findOneByTreeLeft(int $tree_left) Return the first ChildChapter filtered by the tree_left column
  * @method     ChildChapter findOneByTreeRight(int $tree_right) Return the first ChildChapter filtered by the tree_right column
  * @method     ChildChapter findOneByTreeLevel(int $tree_level) Return the first ChildChapter filtered by the tree_level column
- * @method     ChildChapter findOneByCreatedAt(string $created_at) Return the first ChildChapter filtered by the created_at column
- * @method     ChildChapter findOneByUpdatedAt(string $updated_at) Return the first ChildChapter filtered by the updated_at column *
+ * @method     ChildChapter findOneByCreatedAt(string $created_at) Return the first ChildChapter filtered by the created_at column *
 
  * @method     ChildChapter requirePk($key, ConnectionInterface $con = null) Return the ChildChapter by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildChapter requireOne(ConnectionInterface $con = null) Return the first ChildChapter matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -85,11 +85,11 @@ use Propel\Runtime\Map\TableMap;
  * @method     ChildChapter requireOneByTitle(string $title) Return the first ChildChapter filtered by the title column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildChapter requireOneBySlug(string $slug) Return the first ChildChapter filtered by the slug column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildChapter requireOneByBody(string $body) Return the first ChildChapter filtered by the body column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildChapter requireOneByUpdatedAt(string $updated_at) Return the first ChildChapter filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildChapter requireOneByTreeLeft(int $tree_left) Return the first ChildChapter filtered by the tree_left column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildChapter requireOneByTreeRight(int $tree_right) Return the first ChildChapter filtered by the tree_right column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildChapter requireOneByTreeLevel(int $tree_level) Return the first ChildChapter filtered by the tree_level column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildChapter requireOneByCreatedAt(string $created_at) Return the first ChildChapter filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildChapter requireOneByUpdatedAt(string $updated_at) Return the first ChildChapter filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildChapter[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildChapter objects based on current ModelCriteria
  * @method     ChildChapter[]|ObjectCollection findById(int $id) Return ChildChapter objects filtered by the id column
@@ -97,11 +97,11 @@ use Propel\Runtime\Map\TableMap;
  * @method     ChildChapter[]|ObjectCollection findByTitle(string $title) Return ChildChapter objects filtered by the title column
  * @method     ChildChapter[]|ObjectCollection findBySlug(string $slug) Return ChildChapter objects filtered by the slug column
  * @method     ChildChapter[]|ObjectCollection findByBody(string $body) Return ChildChapter objects filtered by the body column
+ * @method     ChildChapter[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildChapter objects filtered by the updated_at column
  * @method     ChildChapter[]|ObjectCollection findByTreeLeft(int $tree_left) Return ChildChapter objects filtered by the tree_left column
  * @method     ChildChapter[]|ObjectCollection findByTreeRight(int $tree_right) Return ChildChapter objects filtered by the tree_right column
  * @method     ChildChapter[]|ObjectCollection findByTreeLevel(int $tree_level) Return ChildChapter objects filtered by the tree_level column
  * @method     ChildChapter[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildChapter objects filtered by the created_at column
- * @method     ChildChapter[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildChapter objects filtered by the updated_at column
  * @method     ChildChapter[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -200,7 +200,7 @@ abstract class ChapterQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, book_id, title, slug, body, tree_left, tree_right, tree_level, created_at, updated_at FROM chapters WHERE id = :p0';
+        $sql = 'SELECT id, book_id, title, slug, body, updated_at, tree_left, tree_right, tree_level, created_at FROM chapters WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -450,6 +450,49 @@ abstract class ChapterQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the updated_at column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUpdatedAt('2011-03-14'); // WHERE updated_at = '2011-03-14'
+     * $query->filterByUpdatedAt('now'); // WHERE updated_at = '2011-03-14'
+     * $query->filterByUpdatedAt(array('max' => 'yesterday')); // WHERE updated_at > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $updatedAt The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildChapterQuery The current query, for fluid interface
+     */
+    public function filterByUpdatedAt($updatedAt = null, $comparison = null)
+    {
+        if (is_array($updatedAt)) {
+            $useMinMax = false;
+            if (isset($updatedAt['min'])) {
+                $this->addUsingAlias(ChapterTableMap::COL_UPDATED_AT, $updatedAt['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($updatedAt['max'])) {
+                $this->addUsingAlias(ChapterTableMap::COL_UPDATED_AT, $updatedAt['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ChapterTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
      * Filter the query on the tree_left column
      *
      * Example usage:
@@ -613,49 +656,6 @@ abstract class ChapterQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ChapterTableMap::COL_CREATED_AT, $createdAt, $comparison);
-    }
-
-    /**
-     * Filter the query on the updated_at column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByUpdatedAt('2011-03-14'); // WHERE updated_at = '2011-03-14'
-     * $query->filterByUpdatedAt('now'); // WHERE updated_at = '2011-03-14'
-     * $query->filterByUpdatedAt(array('max' => 'yesterday')); // WHERE updated_at > '2011-03-13'
-     * </code>
-     *
-     * @param     mixed $updatedAt The value to use as filter.
-     *              Values can be integers (unix timestamps), DateTime objects, or strings.
-     *              Empty strings are treated as NULL.
-     *              Use scalar values for equality.
-     *              Use array values for in_array() equivalent.
-     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildChapterQuery The current query, for fluid interface
-     */
-    public function filterByUpdatedAt($updatedAt = null, $comparison = null)
-    {
-        if (is_array($updatedAt)) {
-            $useMinMax = false;
-            if (isset($updatedAt['min'])) {
-                $this->addUsingAlias(ChapterTableMap::COL_UPDATED_AT, $updatedAt['min'], Criteria::GREATER_EQUAL);
-                $useMinMax = true;
-            }
-            if (isset($updatedAt['max'])) {
-                $this->addUsingAlias(ChapterTableMap::COL_UPDATED_AT, $updatedAt['max'], Criteria::LESS_EQUAL);
-                $useMinMax = true;
-            }
-            if ($useMinMax) {
-                return $this;
-            }
-            if (null === $comparison) {
-                $comparison = Criteria::IN;
-            }
-        }
-
-        return $this->addUsingAlias(ChapterTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
     }
 
     /**
@@ -1200,9 +1200,9 @@ abstract class ChapterQuery extends ModelCriteria
                     /** @var $object ChildChapter */
                     if (null !== ($object = ChapterTableMap::getInstanceFromPool($key))) {
                         $object->setScopeValue($row[1]);
-                        $object->setLeftValue($row[5]);
-                        $object->setRightValue($row[6]);
-                        $object->setLevel($row[7]);
+                        $object->setLeftValue($row[6]);
+                        $object->setRightValue($row[7]);
+                        $object->setLevel($row[8]);
                         $object->clearNestedSetChildren();
                     }
                 }
@@ -1299,38 +1299,6 @@ abstract class ChapterQuery extends ModelCriteria
     }
 
     // timestampable behavior
-
-    /**
-     * Filter by the latest updated
-     *
-     * @param      int $nbDays Maximum age of the latest update in days
-     *
-     * @return     $this|ChildChapterQuery The current query, for fluid interface
-     */
-    public function recentlyUpdated($nbDays = 7)
-    {
-        return $this->addUsingAlias(ChapterTableMap::COL_UPDATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
-    }
-
-    /**
-     * Order by update date desc
-     *
-     * @return     $this|ChildChapterQuery The current query, for fluid interface
-     */
-    public function lastUpdatedFirst()
-    {
-        return $this->addDescendingOrderByColumn(ChapterTableMap::COL_UPDATED_AT);
-    }
-
-    /**
-     * Order by update date asc
-     *
-     * @return     $this|ChildChapterQuery The current query, for fluid interface
-     */
-    public function firstUpdatedFirst()
-    {
-        return $this->addAscendingOrderByColumn(ChapterTableMap::COL_UPDATED_AT);
-    }
 
     /**
      * Order by create date desc

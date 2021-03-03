@@ -1,10 +1,6 @@
 <ol class="dd-list"{% if level == 0 %} id="chapters"{% endif %} data-level="{{ level }}">
     {% for item in chapters %}
     <li class="dd-item" data-id="{{ item['id'] }}">
-        <input type="hidden" name="chapters[{{ item['id'] }}][id]" value="{{ item['id'] }}" />
-        <input type="hidden" name="chapters[{{ item['id'] }}][tree_left]" value="{{ item['tree_left'] }}" />
-        <input type="hidden" name="chapters[{{ item['id'] }}][tree_right]" value="{{ item['tree_right'] }}" />
-        <input type="hidden" name="chapters[{{ item['id'] }}][tree_level]" value="{{ item['tree_level'] }}" />
         
         <div class="dd-handle{% if item.id == chapter.id %} active{% endif %}">
             <span class="title"><a href="{{ custom_url('generateChapterUrl', book['slug'], item['slug']) }}" class="no-handle">{{ item['title']|e }}</a></span>

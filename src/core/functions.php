@@ -11,6 +11,12 @@ function getGetRequestVar(string $var) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+function getPostRequestVar(string $var) {
+    $vars = getRequestVariables('POST', [$var], true);
+    return $vars[$var];
+}
+
+///////////////////////////////////////////////////////////////////////////////
 function getRequestVariables(string $type, array $vars, $defaultNull = false) {
     $requestTypes = [
         'POST' => $_POST,

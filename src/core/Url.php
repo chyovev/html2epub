@@ -25,6 +25,11 @@ abstract class Url {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    public static function generateTocUrl(string $bookSlug): string {
+        return self::generateBookUrl($bookSlug) . '/toc';
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     public static function generateChapterUrl(string $bookSlug, string $slug): string {
         return self::generateBookUrl($bookSlug) . '/' . $slug;
     }

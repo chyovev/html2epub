@@ -68,7 +68,12 @@
             <parameter name="scope_column" value="book_id" />
         </behavior>
 
-        <behavior name="timestampable" />
+        <!-- updated_at column gets declared separately -->
+        <!-- to avoid TOC reordering from triggering it -->
+        <behavior name="timestampable">
+            <parameter name="disable_updated_at" value="true" />
+        </behavior>
+        <column name="updated_at" type="timestamp" />
 
         <!-- Validation rules  -->
         <behavior name="validate">

@@ -30,9 +30,10 @@ class BooksController extends AppController {
     public function edit() {
         $slug     = getGetRequestVar('slug');
         $book     = BookQuery::create()->findOneBySlug($slug);
-        $toc      = BookQuery::getChaptersAsNestedSet($book);
 
         $this->_throw404OnEmpty($book);
+
+        $this->_setTOC($book);
 
         $this->_setLanguages();
 
@@ -42,7 +43,6 @@ class BooksController extends AppController {
             'book'       => $book->toArray(TableMap::TYPE_FIELDNAME),
             'metaTitle'  => $book->getTitle(),
             'title'      => $book->getTitle(),
-            'toc'        => $toc,
             'wideHeader' => true,
             'breadcrumbs' => [['Books', Url::generateBooksIndexUrl()], [$book->getTitle(), NULL], 'Edit'],
         ];
@@ -56,11 +56,11 @@ class BooksController extends AppController {
         $bookSlug    = getGetRequestVar('book_slug');
         $chapterSlug = getGetRequestVar('slug');
         $book        = BookQuery::create()->findOneBySlug($bookSlug);
-        $toc         = BookQuery::getChaptersAsNestedSet($book);
-
         $chapter     = ChapterQuery::create()->findOneBySlug($chapterSlug);
 
         $this->_throw404OnEmpty($book && $chapter);
+
+        $this->_setTOC($book);
 
         $this->_saveChapter($book, $chapter);
 
@@ -68,7 +68,6 @@ class BooksController extends AppController {
             'book'        => $book->toArray(TableMap::TYPE_FIELDNAME),
             'metaTitle'   => $chapter->getTitle() . ' | ' . $book->getTitle(),
             'title'       => $book->getTitle(),
-            'toc'         => $toc,
             'chapter'     => $chapter->toArray(TableMap::TYPE_FIELDNAME),
             'wideHeader'  => true,
             'breadcrumbs' => [['Books', Url::generateBooksIndexUrl()], [$book->getTitle(), Url::generateBookUrl($book->getSlug())], [$chapter->getTitle(), NULL], 'Edit']
@@ -98,11 +97,15 @@ class BooksController extends AppController {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    protected function _setTOC(Book $book) {
+        $toc = BookQuery::getChaptersAsNestedSet($book);
+        $this->twig->addGlobal('toc', $toc);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
     protected function _saveBook(Book &$book): void {
         if (isRequest('POST')) {
             $book->fromArray($_POST, TableMap::TYPE_FIELDNAME);
-
-            $this->_saveToc($book);
 
             if ( ! $book->saveWithValidation()) {
                 $this->twig->addGlobalValidationFailures($book->getValidationFailures());
@@ -117,9 +120,10 @@ class BooksController extends AppController {
     ///////////////////////////////////////////////////////////////////////////
     protected function _saveChapter(Book $book, Chapter &$chapter): void {
         if (isRequest('POST')) {
-            $this->_saveToc($book, true);
-
             $chapter->fromArray($_POST, TableMap::TYPE_FIELDNAME);
+            if ($chapter->isModified()) {
+                $chapter->setUpdatedAt(new \DateTime());
+            }
 
             if ( ! $chapter->saveWithValidation()) {
                 $this->twig->addGlobalValidationFailures($chapter->getValidationFailures());
@@ -130,33 +134,6 @@ class BooksController extends AppController {
             }
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    protected function _saveToc(Book &$book, bool $directSave = false): void {
-        $chapterData = $_POST['chapters'] ?? NULL;
-        $chapters    = $book->getChapters();
-
-        // iterate through all chapters
-        // and set new values for the tree properties using the POST request
-        foreach ($chapters as $chapter) {
-            $id = $chapter->getId();
-
-            if (isset($chapterData[$id])) {
-                $chapter->setTreeLeft($chapterData[$id]['tree_left']);
-                $chapter->setTreeRight($chapterData[$id]['tree_right']);
-                $chapter->setTreeLevel($chapterData[$id]['tree_level']);
-            }
-        }
-
-        $book->setChapters($chapters);
-
-        // TOC rearrangements are saved when a book gets saved
-        // which doesn't happen on chapter edit unless $directSave is set to true
-        if ($directSave) {
-            $book->save();
-        }
-    }
-
 
     ///////////////////////////////////////////////////////////////////////////
     protected function _setLanguages() {

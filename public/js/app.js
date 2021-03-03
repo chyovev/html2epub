@@ -51,18 +51,39 @@ var App = {
     initNestable: function() {
         $('.dd').nestable({
             callback: function(l, e) {
-                var chapters = l.nestable('asNestedSet');
-                chapters.forEach(function(element) {
-                    var id = element.id;
-
-                    $('input[name="chapters[' + id + '][tree_left]"]').val(element.lft);
-                    $('input[name="chapters[' + id + '][tree_right]"]').val(element.rgt);
-                    $('input[name="chapters[' + id + '][tree_level]"]').val(element.depth);
-                });
+                App.updateTocStructure();
             }
         });
     },
     
+    ///////////////////////////////////////////////////////////////////////////
+    updateTocStructure: function() {
+        var chapters = $('.dd').nestable('asNestedSet'),
+            url      = $('.dd').data('url'),
+            data     = {};
+
+        // iterate through all chapters and add their properties to data object
+        chapters.forEach(function(element) {
+            var id = element.id;
+
+            data[id] = {
+                'id':         id,
+                'tree_left':  element.lft,
+                'tree_right': element.rgt,
+                'tree_level': element.depth,
+            };
+
+        });
+
+        // send ajax request to save structure
+        return $.ajax({
+            url:      url,
+            type:     'POST',
+            data:     {'chapters': data},
+            dataType: 'JSON'
+        });
+    },
+
     ///////////////////////////////////////////////////////////////////////////
     initTinyMce: function() {
         tinymce.init({
