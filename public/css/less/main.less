@@ -131,10 +131,21 @@ header {
         border-radius: 10px;
     }
 }
+.small-caps {
+    font-variant-caps: all-small-caps;
+}
 
  /* fix android highlight color */
 .android-highlight-fix {
     -webkit-tap-highlight-color: transparent !important;
     -webkit-focus-ring-color: rgba(255, 255, 255, 0) !important; 
     outline: none !important;
+}
+
+/* remove dotted outline around buttons */
+button {
+    &:focus, &::-moz-focus-inner {
+        outline: none;
+        border: none;
+    }
 }

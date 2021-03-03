@@ -1,6 +1,8 @@
-{{ include('elements/breadcrumb.twig') }}
+<div class="breadcrumbs-wrapper">
+    {{ include('elements/breadcrumb.twig') }}
+</div>
 
-<form method="post">
+<form method="post" class="ajax-form">
 
     {% include 'elements/flash.message.twig' %}
 
@@ -16,9 +18,9 @@
                 <div class="form-group">
                     <ol class="dd-list">
                         <li class="dd-item">
-                            <div class="dd-handle static {% if book.id and not chapter %} active{% endif %}">
+                            <div class="dd-handle static {% if book.id and toc and not chapter %} active{% endif %}">
                                 <span class="title">
-                                    {% if book.id %}
+                                    {% if book.id and toc %}
                                         <a href="{{ custom_url('generateBookUrl', book.slug)}}">Book details</a>
                                     {% else %}
                                         Book details
@@ -27,6 +29,10 @@
                             </div>
                         </li>
                     </ol>
+
+                    {% if _action == 'add' %}
+                        <p class="p-4 mt-4 form-control-plaintext text-center">To add new chapters, you have to save the first book.</p>
+                    {% endif %}
 
                     {% if toc %}
 
@@ -40,7 +46,7 @@
             <div id="toc-toggler" class="d-block d-lg-none">Table of Contents</div>
         </div>
 
-        <div class="col col-lg-6 ml-lg-4 pb-lg-5 pr-lg-5">
+        <div class="col col-lg-6 ml-lg-4 pb-lg-5 pr-lg-5" id="content">
             {% if not chapter %}
                 {{ include('books/book-details.twig') }}
             {% else %}

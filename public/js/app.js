@@ -1,5 +1,6 @@
 var App = {
     hasInited: false,
+    isAjaxInProgress: false,
     
     ///////////////////////////////////////////////////////////////////////////
     init: function() {
@@ -16,6 +17,10 @@ var App = {
         $(document).keyup(App.onKeyUp);
         $('a.delete').on('click', App.confirmDeletion);
         $('#toc-toggler').on('click', App.toggleTocPanel);
+        $(document).on('click', '.toc-wrapper a, .breadcrumb a', App.loadChapterOnClick);
+        $(window).on('popstate', App.loadChapterOnPopstate);
+        $(document).on('submit', '.ajax-form', App.submitFormAjax);
+        $(document).on('click', 'button.close', App.dismissFlashMessage);
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -125,7 +130,211 @@ var App = {
             ],
             paste_as_text: true,
             height: 800,
+            setup: function(editor) {
+                editor.on('init', function(e) {
+                    App.fadeInContent();
+                });
+            }
         });
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    loadChapterOnClick: function(e) {
+        var url = $(this).attr('href');
+
+        if (App.isBreadCrumbClick(url)) {
+            return true;
+        }
+
+        e.preventDefault();
+
+        // don't refetch current chapter
+        if ($(this).parents('.dd-handle').hasClass('active')) {
+            return false;
+        }
+
+
+        // TODO try to save current page
+        // if successful, then load new chapter
+
+        App.markTOCItemAsActive(url);
+        App.fadeOutContentAndCallFunction(App.initAjaxGetRequest, url);
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    // if there's *no* link with the same URL in the .toc-wrapper,
+    // consider the click a breadcrumb click
+    isBreadCrumbClick: function(url) {
+        return ($('.toc-wrapper').find('a[href="' + url + '"]').length == 0);
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    // remove current active class, find link with same href attribute as URL
+    // and mark its parent handle as active
+    markTOCItemAsActive: function(url) {
+        $('.dd-handle.active').removeClass('active');
+        $('.dd-handle').find('a[href="' + url + '"]').parents('.dd-handle').addClass('active')
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    // onclick calls pushState which simulates a page reload,
+    // but that doesn't apply to navigation buttons;
+    // a separate popstate eventlistener is needed
+    loadChapterOnPopstate: function(e) {
+        // strip host part from current URL
+        var href = (window.location.href).replace(window.location.origin, '');
+
+        App.markTOCItemAsActive(href);
+
+        // the ajax response was previously passed to pushState as a «state» property
+        // however, if there's no state property, initiate AJAX request
+        e.originalEvent.state
+            ? App.fadeOutContentAndCallFunction(App.updatePageContent, e.originalEvent.state)
+            : App.fadeOutContentAndCallFunction(App.initAjaxGetRequest, href);
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    initAjaxGetRequest: function(url) {
+        return $.ajax({
+            url:      url,
+            type:     'GET',
+            dataType: 'JSON',
+
+            // save the url as a part of the response
+            // to use it later in the popstate event
+            success: function(response) {
+                response.url = url;
+
+                App.updatePageContent(response);
+
+                history.pushState(response, document.title, url);
+            },
+
+            // if the request fails, simply redirect the user to the page
+            error: function () {
+                window.location = url;
+            }
+        })
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    // fade out breadcrumb and content separately (to avoid double callback call)
+    // and call the callback function once the animation is over
+    fadeOutContentAndCallFunction: function(callbackFunction, callbackFunctionParams) {
+        $('.breadcrumbs-wrapper').animate({opacity:0}, 150);
+
+        $('#content').animate({opacity:0}, 150, function() {
+            callbackFunction(callbackFunctionParams);
+        });
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    updatePageContent: function(response) {
+        if (response == null) {
+            return;
+        }
+
+        // update breadcrumbs and right column
+        $('.breadcrumbs-wrapper').html(response.breadcrumbs);
+        $('#content').html(response.html);
+
+        // if there is no tinymce, fade in content,
+        // otherwise destroy old tinymce and initiate new one
+        // (content gets faded on tinymce onload event)
+        $('.tinymce').length
+            ? tinymce.remove() || App.initTinyMce()
+            : App.fadeInContent();
+
+        // update form action attribute
+        $('form').attr('action', response.url);
+
+        // replace the metatitle of the document
+        document.title = response.metaTitle;
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    fadeInContent: function() {
+        $('#content, .breadcrumbs-wrapper').animate({opacity: 1}, 150);
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    submitFormAjax: function(e) {
+        e.preventDefault();
+
+        // don't send new requests before finishing already started requests
+        if (App.isAjaxInProgress) {
+            return false;
+        }
+
+        var $form = $(this),
+            url   = $form.attr('action') || window.location.href,
+            type  = $form.attr('method'),
+            data  = $form.serialize();
+
+        // mark current request as «in progress»
+        App.isAjaxInProgress = true;
+
+        // reset all previous errors on submit
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').html('');
+
+        return $.ajax({
+            url:      url,
+            type:     type,
+            data:     data,
+            dataType: 'JSON',
+
+            success: function(response) {
+
+                if (response.status) {
+
+                    // if redirect is true, do a new request
+                    // otherwise, pushHistory with the new url (in case of a slug change)
+                    response.redirect
+                        ? window.location = response.url
+                        : (response.url && history.pushState(response, document.title, response.url));
+                }
+                // if the status is false, there were errors – show them
+                else {
+                    $.each(response.errors, function(field, errors) {
+                        $('#' + field).addClass('is-invalid')
+                                      .next('.invalid-feedback').html(errors[0]);
+                    });
+                }
+
+                // update breadcrumbs if any change
+                if (response.breadcrumbs) {
+                    $('.breadcrumbs-wrapper').html(response.breadcrumbs);
+                }
+
+                // in any case, hide previous flash message and show new one
+                App.dismissFlashMessage();
+                $form.prepend(response.flash);
+                $('.flash-message').fadeIn();
+            },
+
+            // on server error show a generic message (the error was logged)
+            error: function() {
+                alert('There was an error');
+            }
+        }).always(function() {
+            App.isAjaxInProgress = false;
+        });
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    dismissFlashMessage: function(e) {
+        // if the flash was dismissed on click, make a smooth transition
+        if (e) {
+            $('.flash-message').slideUp('normal', function() {
+                $(this).remove();
+            });
+        }
+
+        // otherwise remove it abruptly
+        else {
+            $('.flash-message').remove();
+        }
     },
 
 }

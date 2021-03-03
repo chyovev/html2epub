@@ -1,5 +1,4 @@
 <?php
-use Propel\Runtime\Map\TableMap;
 
 class BooksController extends AppController {
 
@@ -14,10 +13,12 @@ class BooksController extends AppController {
         $this->_setLanguages();
 
         $book = new Book();
-        $this->_saveBook($book);
+
+        // try to save the book if there was an ajax request
+        $this->_processAjaxPostRequest($book);
 
         $viewVars = [
-            'book'       => $book->toArray(TableMap::TYPE_FIELDNAME),
+            'book'       => $book->toArray(),
             'metaTitle'  => 'Add new book',
             'wideHeader' => true,
             'breadcrumbs' => [['Books', Url::generateBooksIndexUrl()], ['Add new book', NULL], $book->getTitle()],
@@ -33,44 +34,22 @@ class BooksController extends AppController {
 
         $this->_throw404OnEmpty($book);
 
-        $this->_setTOC($book);
+        $breadcrumbs = [['Books', Url::generateBooksIndexUrl()], [$book->getTitle(), NULL], 'Edit'];
+
+        // AJAX GET request  → load book as JSON
+        // AJAX POST request → try to save book
+        $this->_processAjaxGetRequest($book, $breadcrumbs);
+        $this->_processAjaxPostRequest($book);
 
         $this->_setLanguages();
 
-        $this->_saveBook($book);
-
         $viewVars = [
-            'book'       => $book->toArray(TableMap::TYPE_FIELDNAME),
+            'book'       => $book->toArray(),
             'metaTitle'  => $book->getTitle(),
             'title'      => $book->getTitle(),
+            'toc'        => BookQuery::getChaptersAsNestedSet($book),
             'wideHeader' => true,
-            'breadcrumbs' => [['Books', Url::generateBooksIndexUrl()], [$book->getTitle(), NULL], 'Edit'],
-        ];
-
-        $this->_setView('books/add', $viewVars);
-
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    public function chapter() {
-        $bookSlug    = getGetRequestVar('book_slug');
-        $chapterSlug = getGetRequestVar('slug');
-        $book        = BookQuery::create()->findOneBySlug($bookSlug);
-        $chapter     = ChapterQuery::create()->findOneBySlug($chapterSlug);
-
-        $this->_throw404OnEmpty($book && $chapter);
-
-        $this->_setTOC($book);
-
-        $this->_saveChapter($book, $chapter);
-
-        $viewVars = [
-            'book'        => $book->toArray(TableMap::TYPE_FIELDNAME),
-            'metaTitle'   => $chapter->getTitle() . ' | ' . $book->getTitle(),
-            'title'       => $book->getTitle(),
-            'chapter'     => $chapter->toArray(TableMap::TYPE_FIELDNAME),
-            'wideHeader'  => true,
-            'breadcrumbs' => [['Books', Url::generateBooksIndexUrl()], [$book->getTitle(), Url::generateBookUrl($book->getSlug())], [$chapter->getTitle(), NULL], 'Edit']
+            'breadcrumbs' => $breadcrumbs,
         ];
 
         $this->_setView('books/add', $viewVars);
@@ -97,48 +76,58 @@ class BooksController extends AppController {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    protected function _setTOC(Book $book) {
-        $toc = BookQuery::getChaptersAsNestedSet($book);
-        $this->twig->addGlobal('toc', $toc);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    protected function _saveBook(Book &$book): void {
-        if (isRequest('POST')) {
-            $book->fromArray($_POST, TableMap::TYPE_FIELDNAME);
-
-            if ( ! $book->saveWithValidation()) {
-                $this->twig->addGlobalValidationFailures($book->getValidationFailures());
-            }
-            else {
-                header("Location: " . Url::generateBookUrl($book->getSlug()));
-                exit;
-            }
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    protected function _saveChapter(Book $book, Chapter &$chapter): void {
-        if (isRequest('POST')) {
-            $chapter->fromArray($_POST, TableMap::TYPE_FIELDNAME);
-            if ($chapter->isModified()) {
-                $chapter->setUpdatedAt(new \DateTime());
-            }
-
-            if ( ! $chapter->saveWithValidation()) {
-                $this->twig->addGlobalValidationFailures($chapter->getValidationFailures());
-            }
-            else {
-                header("Location: " . Url::generateChapterUrl($book->getSlug(), $chapter->getSlug()));
-                exit;
-            }
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
     protected function _setLanguages() {
         $languages = LanguageQuery::create()->orderByLanguage();
         $this->_setViewVars(['languages' => $languages]);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    protected function _processAjaxGetRequest(Book $book, array $breadcrumbs): void {
+        if ( ! (isRequestAjax() && isRequest('GET'))) {
+            return;
+        }
+
+        $this->_setLanguages();
+
+        $viewVars = [
+            'metaTitle'   => $book->getTitle(),
+            'html'        => $this->twig->render('books/book-details.twig',  ['book'        => $book->toArray()]),
+            'breadcrumbs' => $this->twig->render('elements/breadcrumb.twig', ['breadcrumbs' => $breadcrumbs]),
+        ];
+
+        $this->twig->renderJSONContent($viewVars);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    protected function _processAjaxPostRequest(Book $book): void {
+        if ( ! (isRequestAjax() && isRequest('POST'))) {
+            return;
+        }
+
+        // if book object is newly created, there will be no ID
+        // therefore it will be considered as new
+        $isNew = ( ! $book->getId());
+
+        $book->fromArray(getRequestVariables('POST'));
+
+        $status = (bool) $book->saveWithValidation();
+        $errors = $this->reorganizeValidationErrors($book->getValidationFailures());
+        
+        $response = [
+            'status'      => $status,
+            'errors'      => $errors,
+            'flash'       => $this->twig->render('elements/flash.message.twig', ['flash' => FlashMessage::getFlashMessage(), 'hidden' => true]),
+            'url'         => Url::generateBookUrl($book->getSlug()),
+            'redirect'    => $isNew,
+        ];
+
+        // when editing, the title may change which should be applied to the breadcrumb
+        if ( ! $isNew) {
+            $breadcrumbs             = [['Books', Url::generateBooksIndexUrl()], [$book->getTitle(), NULL], 'Edit'];
+            $response['breadcrumbs'] = $this->twig->render('elements/breadcrumb.twig', ['breadcrumbs' => $breadcrumbs]);
+        }
+
+        $this->twig->renderJSONContent($response);
     }
 
 }

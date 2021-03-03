@@ -1,5 +1,11 @@
 <?php
 ///////////////////////////////////////////////////////////////////////////////
+function isRequestAjax(): bool {
+    return (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+           && (strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 function isRequest(string $type): bool {
     return (strtolower($_SERVER['REQUEST_METHOD']) === strtolower($type));
 }
@@ -17,7 +23,7 @@ function getPostRequestVar(string $var) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-function getRequestVariables(string $type, array $vars, $defaultNull = false) {
+function getRequestVariables(string $type, array $vars = [], $defaultNull = false) {
     $requestTypes = [
         'POST' => $_POST,
         'GET'  => $_GET,
@@ -32,11 +38,31 @@ function getRequestVariables(string $type, array $vars, $defaultNull = false) {
 
     $result  = [];
 
-    foreach ($vars as $var) {
-        $result[$var] = isset($request[$var])
+    // if $vars is specified, add only respective fields
+    // otherwise add all fields in request
+    foreach ($request as $var => $value) {
+        if ($vars && ! in_array($var, $vars)) {
+            continue;
+        }
+
+        $result[$var] = $request[$var]
                       ? $request[$var]
                       : ($defaultNull ? NULL : '');
     }
 
     return $result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+function initiateTwig(): ExtendedTwig {
+    $loader = new Twig\Loader\FilesystemLoader(TEMPLATES_PATH);
+    $twig   = new ExtendedTwig($loader);
+
+    // registering the Url abstract class as custom_url function in twig
+    $urlFunction = new Twig\TwigFunction('custom_url', function($method, ...$args) {
+        return forward_static_call_array(['Url', $method], $args);    
+    });
+    $twig->addFunction($urlFunction);
+
+    return $twig;
 }

@@ -45,18 +45,4 @@ class ExtendedTwig extends Environment {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // when propel validation fails, all errors are returned as objects
-    // convert them to an array for easier access in the templates
-    function addGlobalValidationFailures($failures): void {
-        $errors = [];
-
-        foreach ($failures as $item) {
-            $field            = $item->getPropertyPath();
-            $message          = $item->getMessage();
-            $errors[$field][] = $message;
-        }
-
-        $this->addGlobal('errors', $errors);
-    }
 }

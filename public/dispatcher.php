@@ -2,6 +2,8 @@
 require_once('../src/autoload.php');
 require_once(CONTROLLER_PATH . '/AppController.php');
 
+$twig = initiateTwig();
+
 $directDispatcherRequest = preg_match('/\/'. preg_quote(basename(__FILE__)) . '/i', $_SERVER['REQUEST_URI']);
 
 $controller      = getGetRequestVar('controller');
@@ -13,7 +15,7 @@ $phpFile    = CONTROLLER_PATH . '/' . $controllerClass . '.php';
 
 if ( ! $directDispatcherRequest && file_exists($phpFile)) {
     require_once($phpFile);
-    $class = new $controllerClass();
+    $class = new $controllerClass($twig);
     
     if (method_exists($class, $action)) {
         try {
