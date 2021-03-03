@@ -76,7 +76,7 @@ class ChaptersController extends AppController {
         }
 
         $viewVars = [
-            'metaTitle'   => $chapter->getTitle() . ' | ' . $book->getTitle(),
+            'metaTitle'   => $chapter->getTitle() . ' | ' . $book->getTitle() . META_SUFFIX,
             'html'        => $this->twig->render('books/chapter-details.twig', ['chapter'     => $chapter->toArray()]),
             'breadcrumbs' => $this->twig->render('elements/breadcrumb.twig',   ['breadcrumbs' => $breadcrumbs]),
         ];

@@ -15,7 +15,7 @@ class BooksController extends AppController {
         $book = new Book();
 
         // try to save the book if there was an ajax request
-        $this->_processAjaxPostRequest($book);
+        $this->_processAjaxPostRequest($book, true);
 
         $viewVars = [
             'book'       => $book->toArray(),
@@ -90,7 +90,7 @@ class BooksController extends AppController {
         $this->_setLanguages();
 
         $viewVars = [
-            'metaTitle'   => $book->getTitle(),
+            'metaTitle'   => $book->getTitle() . META_SUFFIX,
             'html'        => $this->twig->render('books/book-details.twig',  ['book'        => $book->toArray()]),
             'breadcrumbs' => $this->twig->render('elements/breadcrumb.twig', ['breadcrumbs' => $breadcrumbs]),
         ];
@@ -99,14 +99,12 @@ class BooksController extends AppController {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    protected function _processAjaxPostRequest(Book $book): void {
+    protected function _processAjaxPostRequest(Book $book, bool $isNew = false): void {
         if ( ! (isRequestAjax() && isRequest('POST'))) {
             return;
         }
 
-        // if book object is newly created, there will be no ID
-        // therefore it will be considered as new
-        $isNew = ( ! $book->getId());
+        $oldSlug = $book->getSlug();
 
         $book->fromArray(getRequestVariables('POST'));
 
@@ -117,6 +115,7 @@ class BooksController extends AppController {
             'status'      => $status,
             'errors'      => $errors,
             'flash'       => $this->twig->render('elements/flash.message.twig', ['flash' => FlashMessage::getFlashMessage(), 'hidden' => true]),
+            'old_url'     => $oldSlug != $book->getSlug() ? Url::generateBookUrl($oldSlug) : false,
             'url'         => Url::generateBookUrl($book->getSlug()),
             'redirect'    => $isNew,
         ];

@@ -9,7 +9,11 @@ class ExtendedTwig extends Environment {
     public function __construct(LoaderInterface $loader, $options = []) {
         parent::__construct($loader, $options);
         
-        $this->addGlobal('root',  ROOT);
+        $this->addGlobals([
+            'root'        => ROOT,
+            'meta_title'  => META_TITLE,
+            'meta_suffix' => META_SUFFIX,
+        ]);
     }
 
     ///////////////////////////////////////////////////////////////////////////

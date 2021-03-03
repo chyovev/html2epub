@@ -36,7 +36,7 @@
 
                     {% if toc %}
 
-                        <div class="dd" data-url="{{ custom_url('generateTocUrl', book.slug)}}">
+                        <div class="dd" href="{{ custom_url('generateTocUrl', book.slug)}}">
                             {{ include('elements/chapters.twig', {chapters: toc, level: 0}) }}
                         </div>
 

@@ -1,6 +1,7 @@
 var App = {
     hasInited: false,
     isAjaxInProgress: false,
+    formSnapshot: false,
     
     ///////////////////////////////////////////////////////////////////////////
     init: function() {
@@ -10,6 +11,7 @@ var App = {
         App.bind();
         App.initNestable();
         App.initTinyMce();
+        App.setFormSnapshot();
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -19,8 +21,20 @@ var App = {
         $('#toc-toggler').on('click', App.toggleTocPanel);
         $(document).on('click', '.toc-wrapper a, .breadcrumb a', App.loadChapterOnClick);
         $(window).on('popstate', App.loadChapterOnPopstate);
-        $(document).on('submit', '.ajax-form', App.submitFormAjax);
+        $(document).on('submit', '.ajax-form', App.onFormSubmit);
         $(document).on('click', 'button.close', App.dismissFlashMessage);
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    // serialize all form input fields and store them in a var
+    // to check against before submitting new requests
+    setFormSnapshot: function() {
+        App.formSnapshot = $('.ajax-form').serialize();
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    getFormSnapshot: function() {
+        return App.formSnapshot;
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -64,7 +78,7 @@ var App = {
     ///////////////////////////////////////////////////////////////////////////
     updateTocStructure: function() {
         var chapters = $('.dd').nestable('asNestedSet'),
-            url      = $('.dd').data('url'),
+            url      = $('.dd').attr('href'),
             data     = {};
 
         // iterate through all chapters and add their properties to data object
@@ -153,12 +167,16 @@ var App = {
             return false;
         }
 
+        // if there were any changes in the form,
+        // try to save it before switching to another chapter
+        if (App.getFormSnapshot() !== $('.ajax-form').serialize()) {
+            App.submitFormAjax($('form'), true, url);
+        }
 
-        // TODO try to save current page
-        // if successful, then load new chapter
-
-        App.markTOCItemAsActive(url);
-        App.fadeOutContentAndCallFunction(App.initAjaxGetRequest, url);
+        // otherwise simply load new chapter via AJAX
+        else {
+            App.fadeOutContentAndCallFunction(App.initAjaxGetRequest, url);
+        }
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -195,6 +213,8 @@ var App = {
 
     ///////////////////////////////////////////////////////////////////////////
     initAjaxGetRequest: function(url) {
+        App.markTOCItemAsActive(url);
+
         return $.ajax({
             url:      url,
             type:     'GET',
@@ -221,6 +241,8 @@ var App = {
     // fade out breadcrumb and content separately (to avoid double callback call)
     // and call the callback function once the animation is over
     fadeOutContentAndCallFunction: function(callbackFunction, callbackFunctionParams) {
+        App.dismissFlashMessage();
+
         $('.breadcrumbs-wrapper').animate({opacity:0}, 150);
 
         $('#content').animate({opacity:0}, 150, function() {
@@ -250,6 +272,8 @@ var App = {
 
         // replace the metatitle of the document
         document.title = response.metaTitle;
+
+        App.setFormSnapshot();
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -258,16 +282,19 @@ var App = {
     },
 
     ///////////////////////////////////////////////////////////////////////////
-    submitFormAjax: function(e) {
+    onFormSubmit: function(e) {
         e.preventDefault();
+        App.submitFormAjax($(this));
+    },
 
+    ///////////////////////////////////////////////////////////////////////////
+    submitFormAjax: function($form, manuallyTriggered, newChapterUrl) {
         // don't send new requests before finishing already started requests
         if (App.isAjaxInProgress) {
             return false;
         }
 
-        var $form = $(this),
-            url   = $form.attr('action') || window.location.href,
+        var url   = $form.attr('action') || window.location.href,
             type  = $form.attr('method'),
             data  = $form.serialize();
 
@@ -287,6 +314,15 @@ var App = {
             success: function(response) {
 
                 if (response.status) {
+                    App.updateAllBookUrls(response.old_url, response.url);
+
+                    // when switching between chapters, current one needs to be saved first
+                    // therefore submit form *manually* and if saving was successful,
+                    // load the desired chapter
+                    if (manuallyTriggered) {
+                        App.fadeOutContentAndCallFunction(App.initAjaxGetRequest, newChapterUrl);
+                        return;
+                    }
 
                     // if redirect is true, do a new request
                     // otherwise, pushHistory with the new url (in case of a slug change)
@@ -320,6 +356,19 @@ var App = {
         }).always(function() {
             App.isAjaxInProgress = false;
         });
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    // in case of a book slug change, all URLs need to be updated
+    updateAllBookUrls: function(old_url, new_url) {
+        if (old_url) {
+            $('[href^="' + old_url + '"]').each(function() {
+                var oldHref = $(this).attr('href');
+                var newHref = oldHref.replace(old_url, new_url);
+
+                $(this).attr('href', newHref);
+            });
+        }
     },
 
     ///////////////////////////////////////////////////////////////////////////
