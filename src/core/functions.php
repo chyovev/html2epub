@@ -35,8 +35,9 @@ function getRequestVariables(string $type, array $vars = [], $defaultNull = fals
     }
 
     $request = $requestTypes[strtoupper($type)];
+    $default = $defaultNull ? NULL : '';
 
-    $result  = [];
+    $result  = array_fill_keys($vars, $default);
 
     // if $vars is specified, add only respective fields
     // otherwise add all fields in request
@@ -47,7 +48,7 @@ function getRequestVariables(string $type, array $vars = [], $defaultNull = fals
 
         $result[$var] = $request[$var]
                       ? $request[$var]
-                      : ($defaultNull ? NULL : '');
+                      : $default;
     }
 
     return $result;

@@ -43,6 +43,7 @@
         emptyClass: 'dd-empty',
         expandBtnHTML: '<button class="dd-expand" data-action="expand" type="button">Expand</button>',
         collapseBtnHTML: '<button class="dd-collapse" data-action="collapse" type="button">Collapse</button>',
+        includeActionsTab: false,
         group: 0,
         maxDepth: 5,
         threshold: 20,
@@ -78,9 +79,17 @@
             }).join(' ');
 
             var html = '<' + options.itemNodeName + item_attrs_string + '>';
-            html += '<' + options.handleNodeName + ' class="' + options.handleClass + '">';
+            html += '<' + options.handleNodeName + ' class="' + options.handleClass + ' none">'; // none class makes it hidden by default, use slideDown later to show it
             html += '<' + options.contentNodeName + ' class="' + options.contentClass + '">';
-            html += content;
+            html += '<a href="' + item.edit_url + '" class="edit-chapter no-handle">' + content + '</a>';
+
+            if (options.includeActionsTab) {
+                html += '<span class="actions no-handle">';
+                html += '    <a href="' + item.add_url    + '" class="add-chapter" title="Add sub-chapter"><img src="' + _root + 'img/add.png" class="no-handle mr-2" /></a>';
+                html += '    <a href="' + item.edit_url   + '" class="edit-chapter" title="Edit"><img src="' + _root + 'img/edit.png" class="no-handle mr-2" /></a>';
+                html += '</span>'
+            }
+
             html += '</' + options.contentNodeName + '>';
             html += '</' + options.handleNodeName + '>';
             html += children;
@@ -242,6 +251,10 @@
             var listClassSelector = '.' + this.options.listClass;
             var tree = $(this.el).children(listClassSelector);
 
+            // whether to prepend or append new items
+            var prepend = item.prepend;
+            delete item.prepend;
+
             if (item.parent_id !== undefined) {
                 tree = tree.find('[data-id="' + item.parent_id + '"]');
                 delete item.parent_id;
@@ -254,7 +267,14 @@
                 this.setParent(tree.parent());
             }
 
-            tree.append(this._buildItem(item, this.options));
+            prepend
+                ? tree.prepend(this._buildItem(item, this.options))
+                : tree.append(this._buildItem(item, this.options));
+
+            // elements are added hidden by default, slideDown reveals them
+            tree.find('.' + this.options.handleClass + '.none').slideDown('normal', function() {
+                $(this).removeClass('none');
+            });
         },
 
         replace: function (item)
@@ -430,6 +450,11 @@
                 $.each(attr, function(key, value) {
                     if (typeof value === 'object') {
                         value = JSON.stringify(value);
+                    }
+
+                    // don't add the following attributes as data attributes
+                    if (['add_url', 'edit_url'].indexOf(key) !== -1) {
+                        return;
                     }
 
                     data_attrs["data-" + key] = escapeHtml(value);

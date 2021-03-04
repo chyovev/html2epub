@@ -2,6 +2,7 @@ var App = {
     hasInited: false,
     isAjaxInProgress: false,
     formSnapshot: false,
+    tocSnapshot: false,
     
     ///////////////////////////////////////////////////////////////////////////
     init: function() {
@@ -9,7 +10,7 @@ var App = {
             return;
         }
         App.bind();
-        App.initNestable();
+        App.initNestable(4);
         App.initTinyMce();
         App.setFormSnapshot();
     },
@@ -19,10 +20,11 @@ var App = {
         $(document).keyup(App.onKeyUp);
         $('a.delete').on('click', App.confirmDeletion);
         $('#toc-toggler').on('click', App.toggleTocPanel);
-        $(document).on('click', '.toc-wrapper a, .breadcrumb a', App.loadChapterOnClick);
+        $(document).on('click', '.toc-wrapper a.edit-chapter, .breadcrumb a', App.loadChapterOnClick);
         $(window).on('popstate', App.loadChapterOnPopstate);
         $(document).on('submit', '.ajax-form', App.onFormSubmit);
         $(document).on('click', 'button.close', App.dismissFlashMessage);
+        $(document).on('click', '.add-chapter', App.addChapter);
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -67,19 +69,56 @@ var App = {
     },
     
     ///////////////////////////////////////////////////////////////////////////
-    initNestable: function() {
+    initNestable: function(maxDepth) {
         $('.dd').nestable({
+            maxDepth: maxDepth,
+            contentClass: 'title',
+            includeActionsTab: true,
             callback: function(l, e) {
                 App.updateTocStructure();
             }
         });
+
+        // add global CSS selector to hide Add chapter button
+        // from elements which have reached maximum depth
+        var selector = '.dd-item '.repeat(maxDepth) + ' .add-chapter'
+        var styleTag = $('<style> '+ selector +' { display: none; }</style>');
+        $('html > head').append(styleTag);
+
+        App.setTocSnapshot(JSON.stringify(App.getTocStructure()));
     },
     
     ///////////////////////////////////////////////////////////////////////////
     updateTocStructure: function() {
+        var data     = App.getTocStructure(),
+            dataJson = JSON.stringify(data)
+            url      = $('.dd').attr('href');
+
+        // if there are any changes in the structure,
+        // send ajax request to save structure
+        if (App.getTocSnapshot() !== dataJson) {
+
+            return $.ajax({
+                url:      url,
+                type:     'POST',
+                data:     {'chapters': data},
+                dataType: 'JSON',
+
+                success: function(response)  {
+                    App.setTocSnapshot(dataJson);
+                }
+            });
+        }
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    getTocStructure: function() {
         var chapters = $('.dd').nestable('asNestedSet'),
-            url      = $('.dd').attr('href'),
             data     = {};
+
+        if ( ! chapters.length) {
+            return;
+        }
 
         // iterate through all chapters and add their properties to data object
         chapters.forEach(function(element) {
@@ -94,13 +133,17 @@ var App = {
 
         });
 
-        // send ajax request to save structure
-        return $.ajax({
-            url:      url,
-            type:     'POST',
-            data:     {'chapters': data},
-            dataType: 'JSON'
-        });
+        return data;
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    setTocSnapshot: function(json) {
+        App.tocSnapshot = json;
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    getTocSnapshot: function() {
+        return App.tocSnapshot;
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -132,7 +175,6 @@ var App = {
                 ] },
 
                 { title: 'Paragraph style', items: [
-                    { title: 'Normal',    block: 'p', classes: 'pre-code', exact: true },
                     { title: 'No indent', block: 'p', classes: 'noindent', exact: true },
                 ] },
 
@@ -147,6 +189,11 @@ var App = {
             setup: function(editor) {
                 editor.on('init', function(e) {
                     App.fadeInContent();
+                });
+
+                // automatically update raw textarea value
+                editor.on('change', function () {
+                    editor.save();
                 });
             }
         });
@@ -274,6 +321,12 @@ var App = {
         document.title = response.metaTitle;
 
         App.setFormSnapshot();
+
+        // if the side panel is open on mobile,
+        // hide it so the user knows that something has changed
+        if ($('.toc-wrapper').hasClass('open')) {
+            App.toggleTocPanel();
+        }
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -315,6 +368,7 @@ var App = {
 
                 if (response.status) {
                     App.updateAllBookUrls(response.old_url, response.url);
+                    App.updateTocAndHeaderLabels();
 
                     // when switching between chapters, current one needs to be saved first
                     // therefore submit form *manually* and if saving was successful,
@@ -361,13 +415,40 @@ var App = {
     ///////////////////////////////////////////////////////////////////////////
     // in case of a book slug change, all URLs need to be updated
     updateAllBookUrls: function(old_url, new_url) {
-        if (old_url) {
-            $('[href^="' + old_url + '"]').each(function() {
-                var oldHref = $(this).attr('href');
-                var newHref = oldHref.replace(old_url, new_url);
+        if ( ! old_url) {
+            return;
+        }
 
-                $(this).attr('href', newHref);
-            });
+        $('[href^="' + old_url + '"]').each(function() {
+            var oldHref = $(this).attr('href');
+            var newHref = oldHref.replace(old_url, new_url);
+
+            $(this).attr('href', newHref);
+        });
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    updateTocAndHeaderLabels: function() {
+        var $section = $('#section-heading');
+
+        if ( ! $section.length) {
+            return;
+        }
+
+        var id       = $section.attr('data-id'),
+            type     = $section.attr('data-type'),
+            newTitle = $('input[name="title"]').val();
+
+        // when updating a chapter, update its right column heading
+        // and the corresponding TOC element
+        if (type == 'chapter') {
+            $section.text(newTitle);
+            $('.dd-item[data-id="' + id + '"').find('.title a:first').text(newTitle);
+        }
+
+        // when updating a book, change the header title
+        else if ($type == 'book') {
+            $('header .title').text(newTitle);
         }
     },
 
@@ -384,6 +465,57 @@ var App = {
         else {
             $('.flash-message').remove();
         }
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    addChapter: function(e) {
+        e.preventDefault();
+
+        if (App.isAjaxInProgress) {
+            return false;
+        }
+
+        // mark current request as «in progress»
+        App.isAjaxInProgress = true;
+
+        var add_url   = $(this).attr('href'),
+            parent_id = $(this).closest('.dd-item[data-id]').attr('data-id')
+            prepend   = $('#prepend').is(':checked'); // whether to prepend or append new items
+
+        return $.ajax({
+            url:      add_url,
+            type:     'POST',
+            dataType: 'JSON',
+
+            success: function(response) {
+                if (response.status) {
+
+                    // add new element, either as a parent or as a root
+                    $('.dd').nestable('add', {
+                        'id':         response.id,
+                        'parent_id':  parent_id,
+                        'content':    response.title,
+                        'add_url':    add_url,
+                        'edit_url':   response.edit_url,
+                        'prepend':    prepend,
+                    });
+
+                    // if there were no chapters, the cucrent page is the book page
+                    // mark it as active in the TOC
+                    if ( ! $('.dd-handle.active').length) {
+                        $('.dd-handle:first').addClass('active');
+                    }
+
+                    App.updateTocStructure();
+                }
+            },
+            // on server error show a generic message (the error was logged)
+            error: function() {
+                alert('There was an error');
+            }
+        }).always(function() {
+            App.isAjaxInProgress = false;
+        });
     },
 
 }

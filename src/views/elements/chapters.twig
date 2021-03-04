@@ -1,11 +1,12 @@
 <ol class="dd-list"{% if level == 0 %} id="chapters"{% endif %} data-level="{{ level }}">
     {% for item in chapters %}
-    <li class="dd-item" data-id="{{ item['id'] }}">
+    <li class="dd-item" data-id="{{ item['slug'] }}">
         
         <div class="dd-handle{% if item.id == chapter.id %} active{% endif %}">
-            <span class="title"><a href="{{ custom_url('generateChapterUrl', book['slug'], item['slug']) }}" class="no-handle">{{ item['title']|e }}</a></span>
+            <span class="title"><a href="{{ custom_url('generateChapterUrl', book['slug'], item['slug']) }}" class="edit-chapter no-handle">{{ item['title']|e }}</a></span>
             <span class="actions no-handle">
-                <a href="{{ custom_url('generateChapterUrl', book['slug'], item['slug']) }}" title="Edit"><img src="{{ root }}img/edit.png" class="edit-chapter no-handle mr-2" /></a>
+                <a href="{{ custom_url('generateNewChapterUrl', book['slug']) }}" class="add-chapter" title="Add sub-chapter"><img src="{{ root }}img/add.png" class="no-handle mr-2" /></a>
+                <a href="{{ custom_url('generateChapterUrl', book['slug'], item['slug']) }}" class="edit-chapter" title="Edit"><img src="{{ root }}img/edit.png" class="no-handle mr-2" /></a>
             </span>
         </div>
         {% if item['children'] %}

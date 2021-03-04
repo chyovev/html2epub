@@ -30,7 +30,6 @@ use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Context\ExecutionContextFactory;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Mapping\Factory\LazyLoadingMetadataFactory;
@@ -2682,11 +2681,7 @@ abstract class Chapter implements ActiveRecordInterface
     {
         $metadata->addPropertyConstraint('title', new NotBlank(array ('allowNull' => false,)));
         $metadata->addPropertyConstraint('title', new Length(array ('max' => 255,'allowEmptyString' => false,)));
-        $metadata->addPropertyConstraint('slug', new NotBlank(array ('allowNull' => false,)));
-        $metadata->addPropertyConstraint('slug', new Length(array ('max' => 255,'allowEmptyString' => false,)));
         $metadata->addPropertyConstraint('slug', new Unique(array ('message' => 'A chapter with this slug already exists.',)));
-        $metadata->addPropertyConstraint('slug', new Regex(array ('pattern' => '/^[a-z0-9\\-]+$/','message' => 'Please use only lowercase latin letters and dashes.',)));
-        $metadata->addPropertyConstraint('slug', new Regex(array ('pattern' => '/^(?!delete$)[a-z0-9\\-]+$/','message' => 'Reserved words are not allowed.',)));
         $metadata->addPropertyConstraint('body', new Length(array ('max' => 65535,)));
     }
 

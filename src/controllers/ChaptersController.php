@@ -34,8 +34,8 @@ class ChaptersController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     public function updateToc() {
-        $slug     = getGetRequestVar('slug');
-        $book     = BookQuery::create()->findOneBySlug($slug);
+        $bookSlug = getGetRequestVar('book_slug');
+        $book     = BookQuery::create()->findOneBySlug($bookSlug);
 
         // if the request is not POST or there's no such book, abort
         $this->_throw404OnEmpty(isRequest('POST') && $book);
@@ -43,16 +43,16 @@ class ChaptersController extends AppController {
         $chapters = $book->getChapters();
         $postData = getPostRequestVar('chapters');
 
-
         // iterate through all chapters
         // and set new values for the tree properties using the POST request
         foreach ($chapters as $chapter) {
-            $id = $chapter->getId();
+            // for security reasons, slugs are used instead of IDs in the TOC
+            $slug = $chapter->getSlugAsString();
 
-            if (isset($postData[$id])) {
-                $chapter->setTreeLeft($postData[$id]['tree_left']);
-                $chapter->setTreeRight($postData[$id]['tree_right']);
-                $chapter->setTreeLevel($postData[$id]['tree_level']);
+            if (isset($postData[$slug])) {
+                $chapter->setTreeLeft($postData[$slug]['tree_left']);
+                $chapter->setTreeRight($postData[$slug]['tree_right']);
+                $chapter->setTreeLevel($postData[$slug]['tree_level']);
             }
         }
 
@@ -67,6 +67,38 @@ class ChaptersController extends AppController {
         }
 
         $this->twig->renderJSONContent(['status' => $status]);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function addChapter() {
+        $bookSlug = getGetRequestVar('book_slug');
+        $book     = BookQuery::create()->findOneBySlug($bookSlug);
+
+        // if the request is not AJAX POST or there's no such book, abort
+        $this->_throw404OnEmpty(isRequestAjax() && isRequest('POST') && $book);
+
+        $chapter = new Chapter();
+        $chapter->setTitle('New chapter')
+                ->setTreeLeft(1);
+
+        $book->addChapter($chapter);
+        try {
+            $response = [
+                'status'     => (bool) $book->save(),
+                'id'         => $chapter->getSlugAsString(),
+                'title'      => $chapter->getTitle(),
+                'edit_url'   => Url::generateChapterUrl($book->getSlug(), $chapter->getSlugAsString()),
+            ];
+        }
+        catch (Exception $e) {
+            // TODO: log error
+            $response = [
+                'status' => false,
+                'errors' => 'An error occurred. Please try again later.',
+            ];
+        }
+
+        $this->twig->renderJSONContent($response);
     }
 
     ///////////////////////////////////////////////////////////////////////////

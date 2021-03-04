@@ -9,18 +9,34 @@
     <div class="row">
         <div class="col-lg-5 ml-lg-5 toc-wrapper">
             <div id="toc" class="p-lg-4">
-                <div class="mb-4 h4 font-weight-bold">
-                    <!-- <button class="btn btn-sm btn-light align-middle add" id="add_chapter" title="Add new element">&nbsp;</button> -->
-                    <span class="align-middle toc-title d-inline-block d-lg-none">Add chapter</span>
-                    <span class="align-middle toc-title d-none d-lg-inline-block">Table of Contents</span>
+                <div class="row">
+                    <div class="h4 font-weight-bold col">
+                        {% if _action == 'add' %}
+                        <button type="button" class="btn btn-sm btn-secondary disabled align-top add" title="To add new chapters, you have to save the first book.">&nbsp;</button>
+                        {% else %}
+                        <button type="button" class="btn btn-sm btn-outline-info align-top add add-chapter" href="{{ custom_url('generateNewChapterUrl', book.slug)}}" title="Add new element">&nbsp;</button>
+                        {% endif %}
+                        <span class="align-top toc-title d-inline-block d-lg-none">Add chapter</span>
+                        <span class="align-top toc-title d-none d-lg-inline-block">Table of Contents</span>
+                    </div>
+
+                    {% if book.id %}
+                    <div class="col-auto mt-1" title="When switched on, new chapters will be added to top of TOC">
+                        <label for="prepend" class="pointer small-caps">New to top</label>
+                        <label class="switch">
+                            <input type="checkbox" id="prepend" />
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    {% endif %}
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-4">
                     <ol class="dd-list">
                         <li class="dd-item">
                             <div class="dd-handle static {% if book.id and toc and not chapter %} active{% endif %}">
                                 <span class="title">
-                                    {% if book.id and toc %}
+                                    {% if book.id %}
                                         <a href="{{ custom_url('generateBookUrl', book.slug)}}">Book details</a>
                                     {% else %}
                                         Book details
@@ -34,13 +50,9 @@
                         <p class="p-4 mt-4 form-control-plaintext text-center">To add new chapters, you have to save the first book.</p>
                     {% endif %}
 
-                    {% if toc %}
-
-                        <div class="dd" href="{{ custom_url('generateTocUrl', book.slug)}}">
-                            {{ include('elements/chapters.twig', {chapters: toc, level: 0}) }}
-                        </div>
-
-                    {% endif %}
+                    <div class="dd"{% if book.slug %} href="{{ custom_url('generateTocUrl', book.slug)}}"{% endif %}>
+                        {{ include('elements/chapters.twig', {chapters: toc, level: 0}) }}
+                    </div>
                 </div>
             </div>
             <div id="toc-toggler" class="d-block d-lg-none">Table of Contents</div>

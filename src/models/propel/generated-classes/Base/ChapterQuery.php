@@ -402,24 +402,13 @@ abstract class ChapterQuery extends ModelCriteria
     /**
      * Filter the query on the slug column
      *
-     * Example usage:
-     * <code>
-     * $query->filterBySlug('fooValue');   // WHERE slug = 'fooValue'
-     * $query->filterBySlug('%fooValue%', Criteria::LIKE); // WHERE slug LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $slug The value to use as filter.
+     * @param     mixed $slug The value to use as filter
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildChapterQuery The current query, for fluid interface
      */
     public function filterBySlug($slug = null, $comparison = null)
     {
-        if (null === $comparison) {
-            if (is_array($slug)) {
-                $comparison = Criteria::IN;
-            }
-        }
 
         return $this->addUsingAlias(ChapterTableMap::COL_SLUG, $slug, $comparison);
     }
