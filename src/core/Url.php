@@ -39,4 +39,9 @@ abstract class Url {
         return self::generateBookUrl($bookSlug) . '/add';
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    public static function generateDeleteChapterUrl(string $bookSlug, string $slug): string {
+        return self::generateChapterUrl($bookSlug, $slug) . '/delete';
+    }
+
 }

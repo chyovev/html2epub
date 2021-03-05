@@ -33,7 +33,12 @@ class Chapter extends BaseChapter
     ///////////////////////////////////////////////////////////////////////////
     public function generateSlugUuid() {
         if ( ! $this->getSlug()) {
-            $uuid = Uuid::uuid4();
+            // avoid possible collision by checking whether value exists
+            do {
+                $uuid = Uuid::uuid4();
+            }
+            while (ChapterQuery::slugExists($uuid));
+
             $this->setSlug($uuid->getBytes());
         }
     }
@@ -60,5 +65,14 @@ class Chapter extends BaseChapter
         $uuid = Uuid::fromBytes($slug);
 
         return $uuid->toString();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // NB! there's no one single tree root; all zero-depth items are practically roots,
+    // deleting the first zero-depth chapter should delete only its children,
+    // but it throws an exception as it is considered "root"
+    // this little hack takes care of that, even if it's cringeworthy
+    public function isRoot() {
+        return false;
     }
 }

@@ -193,7 +193,7 @@ class ChapterTableMap extends TableMap
     0 => ':book_id',
     1 => ':id',
   ),
-), null, null, null, false);
+), 'CASCADE', null, null, false);
     } // buildRelations()
 
     /**

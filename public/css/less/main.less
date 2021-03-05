@@ -151,8 +151,9 @@ header {
 .pointer {
     cursor: pointer;
 }
-
-
+.breadcrumb {
+    z-index: 1;
+}
 .switch {
     position: relative;
     display: inline-block;
@@ -173,6 +174,7 @@ header {
     right: 0;
     bottom: 0;
     background-color: #ccc;
+    box-shadow: 0px 0px 5px fade(black, 25%) inset;
     -webkit-transition: .4s;
     transition: .4s;
     border-radius: 34px;
@@ -187,6 +189,7 @@ header {
         -webkit-transition: .4s;
         transition: .4s;
         border-radius: 50%;
+        box-shadow: 1px 1px 3px fade(black, 25%);
     }
 }
 
@@ -196,6 +199,7 @@ input:checked + .slider {
         -webkit-transform: translateX(20px);
         -ms-transform: translateX(20px);
         transform: translateX(20px);
+        box-shadow: -1px 1px 3px fade(black, 25%);
     }
 }
 

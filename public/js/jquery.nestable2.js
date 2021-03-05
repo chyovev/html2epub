@@ -79,7 +79,7 @@
             }).join(' ');
 
             var html = '<' + options.itemNodeName + item_attrs_string + '>';
-            html += '<' + options.handleNodeName + ' class="' + options.handleClass + ' none">'; // none class makes it hidden by default, use slideDown later to show it
+            html += '<' + options.handleNodeName + ' class="' + options.handleClass + '">';
             html += '<' + options.contentNodeName + ' class="' + options.contentClass + '">';
             html += '<a href="' + item.edit_url + '" class="edit-chapter no-handle">' + content + '</a>';
 
@@ -87,6 +87,7 @@
                 html += '<span class="actions no-handle">';
                 html += '    <a href="' + item.add_url    + '" class="add-chapter" title="Add sub-chapter"><img src="' + _root + 'img/add.png" class="no-handle mr-2" /></a>';
                 html += '    <a href="' + item.edit_url   + '" class="edit-chapter" title="Edit"><img src="' + _root + 'img/edit.png" class="no-handle mr-2" /></a>';
+                html += '    <a href="' + item.delete_url + '" class="delete-chapter" title="Delete"><img src="' + _root + 'img/delete.png" class="no-handle mr-2" /></a>';
                 html += '</span>'
             }
 
@@ -272,7 +273,7 @@
                 : tree.append(this._buildItem(item, this.options));
 
             // elements are added hidden by default, slideDown reveals them
-            tree.find('.' + this.options.handleClass + '.none').slideDown('normal', function() {
+            tree.find('.' + this.options.itemClass + '.none').slideDown('normal', function() {
                 $(this).removeClass('none');
             });
         },
@@ -368,6 +369,13 @@
             }
         },
 
+        getAllChildren: function(itemId) {
+            var opts = this.options;
+            var item = this._getItemById(itemId);
+
+            return item.find('.' + opts.itemClass);
+        },
+
         _getItemById: function(itemId) {
             return $(this.el).children('.' + this.options.listClass)
                 .find('[data-id="' + itemId + '"]');
@@ -430,7 +438,7 @@
                 }
 
                 var item_classes = filterClasses(classes);
-                item_classes[options.itemClass] = options.itemClass;
+                item_classes[options.itemClass] = options.itemClass + ' none'; // none class makes it hidden by default, use slideDown later to show it
 
                 // create class string
                 return $.map(item_classes, function(val) {
@@ -453,7 +461,7 @@
                     }
 
                     // don't add the following attributes as data attributes
-                    if (['add_url', 'edit_url'].indexOf(key) !== -1) {
+                    if (['add_url', 'edit_url', 'delete_url'].indexOf(key) !== -1) {
                         return;
                     }
 

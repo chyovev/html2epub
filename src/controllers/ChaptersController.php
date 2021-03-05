@@ -70,7 +70,7 @@ class ChaptersController extends AppController {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    public function addChapter() {
+    public function add() {
         $bookSlug = getGetRequestVar('book_slug');
         $book     = BookQuery::create()->findOneBySlug($bookSlug);
 
@@ -88,6 +88,7 @@ class ChaptersController extends AppController {
                 'id'         => $chapter->getSlugAsString(),
                 'title'      => $chapter->getTitle(),
                 'edit_url'   => Url::generateChapterUrl($book->getSlug(), $chapter->getSlugAsString()),
+                'delete_url' => Url::generateDeleteChapterUrl($book->getSlug(), $chapter->getSlugAsString()),
             ];
         }
         catch (Exception $e) {
@@ -99,6 +100,31 @@ class ChaptersController extends AppController {
         }
 
         $this->twig->renderJSONContent($response);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function delete() {
+        if ( ! (isRequestAjax() && isRequest('GET'))) {
+            return;
+        }
+
+        $bookSlug    = getGetRequestVar('book_slug');
+        $chapterSlug = getGetRequestVar('slug');
+        $book        = BookQuery::create()->findOneBySlug($bookSlug);
+        $chapter     = ChapterQuery::create()->findOneBySlug($chapterSlug);
+
+        $this->_throw404OnEmpty($book && $chapter);
+
+        try {
+            $chapter->delete();
+            $status = true;
+        }
+        catch (Exception $e) {
+            // TODO log erorr
+            $status = false;
+        }
+
+        $this->twig->renderJSONContent(['status' => $status]);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -122,6 +148,9 @@ class ChaptersController extends AppController {
         }
 
         $chapter->fromArray(getRequestVariables('POST'));
+        // updated_at field is excluded from timestampable behavior
+        // as TOC updates should not have exert on it
+        // (this is also why it's not set in the preUpdate model listener)
         if ($chapter->isModified()) {
             $chapter->setUpdatedAt(new \DateTime());
         }

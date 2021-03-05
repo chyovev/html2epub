@@ -46,33 +46,37 @@
     box-sizing: border-box;
     transition: background-color 0.3s, border-color 0.3s;
     &:hover {
-        &:not(.active) {
-            background-color: #fff;
-            border-color: mix(@inactiveBorderColor, black, 65%);
-        }
+        background-color: #fff;
+        border-color: mix(@inactiveBorderColor, black, 65%);
     }
     &:not(.static) {
         cursor: move;
     }
-    &.active {
-        border-color: @lightblue;
-        background-color: #e0f9ff;
-        &:hover {
-            background-color: mix(#e0f9ff, white, 60%);
-            border-color: mix(@lightblue, white, 80%);
-        }
-    }
     a {
         color: #333;
         transition: color 0.3s;
-    }
-    a:hover, &.active a {
-        color: @lightblue;
-        text-decoration: underline;
+        &:hover {
+            color: @lightblue;
+            text-decoration: underline;
+        }
     }
 }
 
 .dd-item {
+    &.active {
+        > .dd-handle {
+            border-color: @lightblue;
+            background-color: #e0f9ff;
+            &:hover {
+                background-color: mix(#e0f9ff, white, 60%);
+                border-color: mix(@lightblue, white, 80%);
+            }
+            a {
+                color: @lightblue;
+                text-decoration: underline;
+            }
+        }
+    }
     .title {
         overflow: hidden;
         width: calc(~"100% - 60px");
@@ -95,42 +99,41 @@
             }
         }
     }
-}
-
-.dd-item > button {
-    z-index: 1;
-    position: relative;
-    cursor: pointer;
-    float: left;
-    width: 25px;
-    height: 30px;
-    margin: 5px 0;
-    padding: 0;
-    text-indent: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    border: 0;
-    background: transparent;
-    font-size: 12px;
-    line-height: 1;
-    text-align: center;
-    font-weight: bold;
-    &:before {
-        display: block;
-        position: absolute;
-        width: 100%;
+    > button {
+        z-index: 1;
+        position: relative;
+        cursor: pointer;
+        float: left;
+        width: 25px;
+        height: 30px;
+        margin: 5px 0;
+        padding: 0;
+        text-indent: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        border: 0;
+        background: transparent;
+        font-size: 12px;
+        line-height: 1;
         text-align: center;
-        text-indent: 0;
-    }
-    &.dd-expand:before {
-        content: '+';
-    }
-    &.dd-collapse:before {
-        content: '-';
-    }
-    &:focus, &::-moz-focus-inner {
-        outline: none;
-        border: none;
+        font-weight: bold;
+        &:before {
+            display: block;
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            text-indent: 0;
+        }
+        &.dd-expand:before {
+            content: '+';
+        }
+        &.dd-collapse:before {
+            content: '-';
+        }
+        &:focus, &::-moz-focus-inner {
+            outline: none;
+            border: none;
+        }
     }
 }
 

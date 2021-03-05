@@ -25,6 +25,8 @@ var App = {
         $(document).on('submit', '.ajax-form', App.onFormSubmit);
         $(document).on('click', 'button.close', App.dismissFlashMessage);
         $(document).on('click', '.add-chapter', App.addChapter);
+        $(document).on('click', '.delete-book', App.deleteBook);
+        $(document).on('click', '.delete-chapter', App.checkChapterDeleteConditions);
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -40,25 +42,48 @@ var App = {
     },
 
     ///////////////////////////////////////////////////////////////////////////
+    // show confirmation modal and if the user clicks the YES button,
+    // hide the modal and call the function passed as parameter
+    showConfirmationModal: function (message, yesCallback) {
+        var $modal      = $('#confirmationModal'),
+            $modalBody  = $('.modal-body'),
+            $modalYes   = $('.modal-yes');
+
+        $modalBody.html(message);
+
+        $modal.modal('show');
+
+        $modalYes.click(function() {
+            $modal.modal('hide');
+            yesCallback();
+        });
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
     confirmDeletion: function(e) {
         e.preventDefault();
 
-        var $modal      = $('#deleteModal'),
-            $confirmBtn = $modal.find('.btn-danger'),
-            href        = $(this).attr('href');
+        var url = $(this).attr('href');
 
-        $confirmBtn.attr('href', href);
-        $modal.modal('show');
-
-        return false;
+        App.showConfirmationModal(
+            'Are you sure you want to delete this item?<br />This action cannot be reversed.',
+            function() {
+                window.location = url;
+            }
+        );
     },
 
     ///////////////////////////////////////////////////////////////////////////
     onKeyUp: function(e) {
         if (e.key === 'Escape') {
-            if ($('#deleteModal').is(':visible')) {
-                $('#deleteModal').modal('hide');
-            }
+            App.hideModal();
+        }
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    hideModal: function() {
+        if ($('.modal').is(':visible')) {
+            $('.modal').modal('hide');
         }
     },
 
@@ -160,6 +185,10 @@ var App = {
             ],
             toolbar: "undo redo | searchreplace | styleselect | bold italic underline | removeformat | bullist numlist | outdent indent | alignleft aligncenter alignright alignjustify | anchor link | subscript superscript | hr | code",
             formats: {
+                alignleft:     {selector : '*', classes : 'left'},
+                aligncenter:   {selector : '*', classes : 'center'},
+                alignright:    {selector : '*', classes : 'right'},
+                alignjustify:  {selector : '*', classes : 'full'},
                 underline:     {inline : 'u',   exact : true },
                 strikethrough: {inline : 'del', exact : true },
             },
@@ -184,8 +213,14 @@ var App = {
                     { title: 'Heading 3', block: 'h3' },
                 ] },
             ],
+            custom_undo_redo_levels: 10,
             paste_as_text: true,
-            height: 800,
+            indentation: '2em',
+            min_height: 400,
+            height: 600,
+            max_height: 900,
+            keep_styles: false,
+            elementpath: false,
             setup: function(editor) {
                 editor.on('init', function(e) {
                     App.fadeInContent();
@@ -215,7 +250,7 @@ var App = {
         }
 
         // if there were any changes in the form,
-        // try to save it before switching to another chapter
+        // try to save them before switching to another chapter
         if (App.getFormSnapshot() !== $('.ajax-form').serialize()) {
             App.submitFormAjax($('form'), true, url);
         }
@@ -231,14 +266,6 @@ var App = {
     // consider the click a breadcrumb click
     isBreadCrumbClick: function(url) {
         return ($('.toc-wrapper').find('a[href="' + url + '"]').length == 0);
-    },
-
-    ///////////////////////////////////////////////////////////////////////////
-    // remove current active class, find link with same href attribute as URL
-    // and mark its parent handle as active
-    markTOCItemAsActive: function(url) {
-        $('.dd-handle.active').removeClass('active');
-        $('.dd-handle').find('a[href="' + url + '"]').parents('.dd-handle').addClass('active')
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -282,6 +309,14 @@ var App = {
                 window.location = url;
             }
         })
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    // remove current active class, find link with same href attribute as URL
+    // and mark its parent handle as active
+    markTOCItemAsActive: function(url) {
+        $('.dd-item.active').removeClass('active');
+        $('.dd-handle a[href="' + url + '"]').closest('.dd-item').addClass('active')
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -442,12 +477,14 @@ var App = {
         // when updating a chapter, update its right column heading
         // and the corresponding TOC element
         if (type == 'chapter') {
+            var $tocItem = $('.dd-item[data-id="' + id + '"');
+            $tocItem.addClass('modified').find('.title a:first').text(newTitle);
+
             $section.text(newTitle);
-            $('.dd-item[data-id="' + id + '"').find('.title a:first').text(newTitle);
         }
 
         // when updating a book, change the header title
-        else if ($type == 'book') {
+        else if (type == 'book') {
             $('header .title').text(newTitle);
         }
     },
@@ -471,6 +508,7 @@ var App = {
     addChapter: function(e) {
         e.preventDefault();
 
+        // don't send new requests before finishing already started requests
         if (App.isAjaxInProgress) {
             return false;
         }
@@ -497,13 +535,14 @@ var App = {
                         'content':    response.title,
                         'add_url':    add_url,
                         'edit_url':   response.edit_url,
+                        'delete_url': response.delete_url,
                         'prepend':    prepend,
                     });
 
                     // if there were no chapters, the cucrent page is the book page
                     // mark it as active in the TOC
-                    if ( ! $('.dd-handle.active').length) {
-                        $('.dd-handle:first').addClass('active');
+                    if ( ! $('.dd-item.active').length) {
+                        $('.dd-item:first').addClass('active');
                     }
 
                     App.updateTocStructure();
@@ -516,6 +555,152 @@ var App = {
         }).always(function() {
             App.isAjaxInProgress = false;
         });
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    deleteBook: function(e) {
+        e.preventDefault();
+
+        var $this = $(this),
+            url   = $this.attr('href');
+
+        // delete book only on confirmation
+        App.showConfirmationModal(
+            'Are you sure you want to delete the whole book?<br />There’s no turning back from it.',
+            function() {
+                // don't send new requests before finishing already started requests
+                if (App.isAjaxInProgress) {
+                    return false;
+                }
+
+                // mark current request as «in progress»
+                App.isAjaxInProgress = true;
+
+                return $.ajax({
+                    url:      url,
+                    type:     'GET',
+                    dataType: 'JSON',
+
+                    success: function(response) {
+                        if ( ! response.status) {
+                            alert('There was an error');
+                        }
+                        else {
+                            // first fade out all elements, then redirect to books index
+                            $('.toc-wrapper, #content').animate({opacity: 0}, 600, function() {
+                                $('.body-wrap, footer').fadeOut('slow', function() {
+                                    window.location = response.url;
+                                })
+                            });
+                        }
+                    },
+                    // on server error show a generic message (the error was logged)
+                    error: function() {
+                        alert('There was an error');
+                    }
+                }).always(function() {
+                    App.isAjaxInProgress = false;
+                });      
+            }
+        );
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    checkChapterDeleteConditions: function(e) {
+        e.preventDefault();
+
+        var $this       = $(this),
+            url         = $this.attr('href');
+            $item       = $this.closest('.dd-item'),
+            itemId      = $item.attr('data-id'),
+            $item       = $('.dd-item[data-id="' + itemId +'"]'),
+            children    = App.getAllChildren(itemId);
+
+            
+        // if the item or any of its children were modified or is about to be deleted,
+        // ask for confirmation
+        var itemOrChildrenModified = $item.hasClass('modified') || children.hasClass('modified'),
+            isCurrentPageUnderFire = $item.hasClass('active')   || children.hasClass('active'),
+            confirmMsg             = 'Are you sure you want to delete this item?'
+                                   + (children.length ? '<br />This will also delete all sub-items.' : ''); 
+
+        if (itemOrChildrenModified || isCurrentPageUnderFire) {
+            App.showConfirmationModal(
+                confirmMsg,
+                function() {
+                    App.deleteChapter(url, $item);
+                }
+            );
+        }
+
+        // if item and children are brand new, there's probably no valuable
+        // information in them – delete them immediately
+        else {
+            App.deleteChapter(url, $item);
+        }
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    deleteChapter: function(url, $item) {
+        // don't send new requests before finishing already started requests
+        if (App.isAjaxInProgress) {
+            return false;
+        }
+
+        // mark current request as «in progress»
+        App.isAjaxInProgress = true;
+
+        var itemId   = $item.attr('data-id'),
+            $parent  = $item.closest('.dd-list'),
+            children = App.getAllChildren(itemId),
+
+            // if there are no siblings left, remove the whole parent
+            $target  = $item.siblings().length ? $item : $parent;
+
+
+        // if the page-to-be-deleted is the current one or any of its ancestors,
+        // the current page will no longer exist; user should not remain on it
+        var chapterNoLongerExists = $item.hasClass('active') || children.hasClass('active'),
+            bookDetailUrl         = $('.dd-item:first').find('a.edit-chapter:first').attr('href');
+
+        return $.ajax({
+            url:      url,
+            type:     'GET',
+            dataType: 'JSON',
+
+            success: function(response) {
+                if ( ! response.status) {
+                    alert('There was an error');
+                }
+                else {
+                    // first fade out element, then slide it up and finally remove it from DOM
+                    $target.animate({opacity: 0}, 600, function() {
+                        $(this).slideUp('normal', function() {
+                            $('.dd').nestable('remove', itemId);
+                        });
+                    });
+
+                    App.updateTocStructure();
+
+                    // if current chapter no longer exists, load book information
+                    if (chapterNoLongerExists) {
+                        App.isAjaxInProgress = false;
+                        App.initAjaxGetRequest(bookDetailUrl);
+                    }
+                }
+            },
+            // on server error show a generic message (the error was logged)
+            error: function() {
+                alert('There was an error');
+            }
+        }).always(function() {
+            App.isAjaxInProgress = false;
+        });
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    getAllChildren: function(id) {
+        return $('.dd').nestable('getAllChildren', id);
     },
 
 }

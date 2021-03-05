@@ -64,15 +64,31 @@ class BooksController extends AppController {
 
         try {
             $book->delete();
+            $status = true;
             FlashMessage::setFlashMessage(true, 'Item successfully deleted!');
         }
         catch (Exception $e) {
             FlashMessage::setFlashMessage(false, 'Item could not be deleted!');
+            $status = false;
             // TODO: log error
         }
 
-        header("Location: " . Url::generateBooksIndexUrl());
-        exit;
+        $booksIndexUrl = Url::generateBooksIndexUrl();
+
+        // ajax requests to delete a book should receive a JSON response
+        if (isRequestAjax()) {
+            $response = [
+                'status' => $status,
+                'url'    => $booksIndexUrl,
+            ];
+            $this->twig->renderJSONContent($response);
+        }
+
+        // regular requests should be redirected to books index page
+        else {
+            header("Location: " . $booksIndexUrl);
+            exit;
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -115,7 +131,7 @@ class BooksController extends AppController {
             'status'      => $status,
             'errors'      => $errors,
             'flash'       => $this->twig->render('elements/flash.message.twig', ['flash' => FlashMessage::getFlashMessage(), 'hidden' => true]),
-            'old_url'     => $oldSlug != $book->getSlug() ? Url::generateBookUrl($oldSlug) : false,
+            'old_url'     => $oldSlug && $oldSlug != $book->getSlug() ? Url::generateBookUrl($oldSlug) : false,
             'url'         => Url::generateBookUrl($book->getSlug()),
             'redirect'    => $isNew,
         ];

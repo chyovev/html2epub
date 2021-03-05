@@ -10,7 +10,7 @@
         <div class="col-lg-5 ml-lg-5 toc-wrapper">
             <div id="toc" class="p-lg-4">
                 <div class="row">
-                    <div class="h4 font-weight-bold col">
+                    <div class="h4 font-weight-bold col-auto">
                         {% if _action == 'add' %}
                         <button type="button" class="btn btn-sm btn-secondary disabled align-top add" title="To add new chapters, you have to save the first book.">&nbsp;</button>
                         {% else %}
@@ -21,7 +21,7 @@
                     </div>
 
                     {% if book.id %}
-                    <div class="col-auto mt-1" title="When switched on, new chapters will be added to top of TOC">
+                    <div class="col-sm text-right mt-1" title="When switched on, new chapters will be added to top of TOC">
                         <label for="prepend" class="pointer small-caps">New to top</label>
                         <label class="switch">
                             <input type="checkbox" id="prepend" />
@@ -33,15 +33,22 @@
 
                 <div class="form-group mt-4">
                     <ol class="dd-list">
-                        <li class="dd-item">
-                            <div class="dd-handle static {% if book.id and toc and not chapter %} active{% endif %}">
-                                <span class="title">
-                                    {% if book.id %}
-                                        <a href="{{ custom_url('generateBookUrl', book.slug)}}">Book details</a>
-                                    {% else %}
+                        <li class="dd-item{% if book.id and toc and not chapter %} active{% endif %}">
+                            <div class="dd-handle static">
+                                {% if book.id %}
+                                    <span class="title">
+                                        <a href="{{ custom_url('generateBookUrl', book.slug)}}" class="edit-chapter">Book details</a>
+                                    </span>
+                                    <span class="actions no-handle">
+                                        <a href="{{ custom_url('generateNewChapterUrl', book['slug']) }}" class="add-chapter" title="Add chapter"><img src="{{ root }}img/add.png" class="no-handle mr-2" /></a>
+                                        <a href="{{ custom_url('generateBookUrl', book['slug']) }}" class="edit-chapter" title="Edit"><img src="{{ root }}img/edit.png" class="no-handle mr-2" /></a>
+                                        <a href="{{ custom_url('generateBooksDeleteUrl', book['slug']) }}" class="delete-book" title="Delete"><img src="{{ root }}img/delete.png" class="no-handle mr-2" /></a>
+                                    </span>
+                                {% else %}
+                                    <span class="title">
                                         Book details
-                                    {% endif %}
-                                </span>
+                                    </span>
+                                {% endif %}
                             </div>
                         </li>
                     </ol>

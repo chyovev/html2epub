@@ -1,6 +1,6 @@
 {% if flash.message %}
 <div class="form-group row flash-message"{% if hidden %} style="display: none"{% endif %}>
-    <div class="col-lg-10 offset-lg-1 text-left">
+    <div class="col-lg-11 ml-lg-5 text-left">
         <div class="alert alert-{% if flash.status %}success{% else %}danger{% endif %} alert-dismissible fade show p-4">
             <strong>{% if flash.status %}Success!{% else %}Error!{% endif %}</strong> {{ flash.message }}
             <button type="button" class="close">&times;</button>

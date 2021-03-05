@@ -31,4 +31,10 @@ class ChapterQuery extends BaseChapterQuery
             return NULL;
         }
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function slugExists(Uuid $uuid): bool {
+        $value = $uuid->getBytes();
+        return self::create()->filterBySlug($value)->count();
+    }
 }

@@ -218,7 +218,7 @@ class BookTableMap extends TableMap
     0 => ':book_id',
     1 => ':id',
   ),
-), null, null, 'Chapters', false);
+), 'CASCADE', null, 'Chapters', false);
     } // buildRelations()
 
     /**
@@ -234,6 +234,15 @@ class BookTableMap extends TableMap
             'validate' => array('title_notnull' => array ('column' => 'title','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'title_maxlength' => array ('column' => 'title','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_notnull' => array ('column' => 'slug','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'slug_maxlength' => array ('column' => 'slug','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_unique' => array ('column' => 'slug','validator' => 'Unique','options' => array ('message' => 'A book with this slug already exists.',),), 'slug_regex' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^[a-z0-9\\-]+$/','message' => 'Please use only lowercase latin letters and dashes.',),), 'slug_reserved' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^(?!add$)[a-z0-9\\-]+$/','message' => 'Reserved words are not allowed.',),), 'language_notnull' => array ('column' => 'language_id','validator' => 'NotBlank','options' => array ('allowNull' => false,'message' => 'Please select a language from the dropdown menu.',),), 'language_int' => array ('column' => 'language_id','validator' => 'GreaterThan','options' => array ('value' => 0,'message' => 'Please select a language from the dropdown menu.',),), 'author_maxlength' => array ('column' => 'author','validator' => 'Length','options' => array ('max' => 255,),), 'dedication_maxlength' => array ('column' => 'dedication','validator' => 'Length','options' => array ('max' => 255,),), 'publisher_maxlength' => array ('column' => 'publisher','validator' => 'Length','options' => array ('max' => 255,),), 'isbn_maxlength' => array ('column' => 'isbn','validator' => 'Length','options' => array ('max' => 255,),), 'extra_info_maxlength' => array ('column' => 'extra_info','validator' => 'Length','options' => array ('max' => 65535,),), ),
         );
     } // getBehaviors()
+    /**
+     * Method to invalidate the instance pool of all tables related to books     * by a foreign key with ON DELETE CASCADE
+     */
+    public static function clearRelatedInstancePool()
+    {
+        // Invalidate objects in related instance pools,
+        // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+        ChapterTableMap::clearInstancePool();
+    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.

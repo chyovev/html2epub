@@ -59,7 +59,7 @@
         <column name="slug"  type="binary" size="16" sqlType="binary(16)" required="true" />
         <column name="body" type="longvarchar" />
 
-        <foreign-key foreignTable="books" phpName="Book">
+        <foreign-key foreignTable="books" phpName="Book" onDelete="CASCADE">
             <reference local="book_id" foreign="id"/>
         </foreign-key>
 

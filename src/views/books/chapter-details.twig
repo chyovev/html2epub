@@ -13,7 +13,7 @@
 <div class="form-group row">
     <div class="col-lg-12">
         <label class="form-control-label" for="body">Body</label>
-        <textarea name="body" id="body" class="tinymce form-control">{{ chapter['body'] }}</textarea>
+        <textarea name="body" id="body" class="tinymce form-control">{{ chapter['body']|default('<p class="noindent"></p>') }}</textarea>
         <span class="invalid-feedback"></span>
     </div>
 </div>

@@ -55,7 +55,8 @@ class BookQuery extends BaseBookQuery
             // if current node’s left is equal to previous node’s right + 1
             // and there is no previous node’s right OR it is greater than current node’s right
             // add node to tree and check for children 
-            if ($nodeLeft == $left + 1 && (is_null($right) || $nodeRight < $right)) {
+            if ( ($nodeLeft == $left + 1 && (is_null($right) || $nodeRight < $right))
+                 || ($left == 0 && is_null($right)) ) { // if root doesn't start from 1, but it's a root call
 
                 $tree[$key] = $node->toArray(TableMap::TYPE_FIELDNAME);
 

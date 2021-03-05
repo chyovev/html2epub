@@ -56,6 +56,7 @@ CREATE TABLE `chapters`
     CONSTRAINT `chapters_fk_19cfd3`
         FOREIGN KEY (`book_id`)
         REFERENCES `books` (`id`)
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
