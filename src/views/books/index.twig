@@ -27,7 +27,7 @@
         {% for book in books %}
         <tr>
             <td scope="row">{{ loop.index }}.</td>
-            <td>{{ book.title|e }}</td>
+            <td><a href="{{ custom_url('generateBookUrl', book.slug) }}">{{ book.title|e }}</a></td>
             <td>{{ book.author|e|default('--') }}</td>
             <td>{{ book.created_at|date('d.m.Y @ H:i') }}</td>
             <td>{{ book.updated_at|date('d.m.Y @ H:i') }}</td>

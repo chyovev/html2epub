@@ -1,14 +1,17 @@
 <?php
 
 use Symfony\Component\Validator\ConstraintViolationList;
+use Monolog\Logger;
 
 abstract class AppController {
 
     public $twig;
+    public $logger;
 
     ///////////////////////////////////////////////////////////////////////////
-    public function __construct(ExtendedTwig $twig) {
+    public function __construct(ExtendedTwig $twig, Logger $logger) {
         $this->twig = $twig;
+        $this->logger = $logger;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -25,7 +28,7 @@ abstract class AppController {
     protected function _throw404OnEmpty($item): void {
         if ( ! $item) {
             $backtrace = debug_backtrace();
-            throw new Exception('Backtrace: calling function "' . $backtrace[0]['function'] . '" in file ' . $backtrace[0]['file']);
+            throw new Exception('Page not found');
         }
     }
 
@@ -40,6 +43,36 @@ abstract class AppController {
         }
 
         return $errors;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function addError(string $message): void {
+        $this->logger->addError($message);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function addCriticalError(string $message): void {
+        $this->logger->addCritical($message);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function saveWithValidation($object) {
+        if ( ! $object->validate()) {
+            FlashMessage::setFlashMessage(false, 'Item could not be saved.');
+        }
+        else {
+            try {
+                $object->save();
+                FlashMessage::setFlashMessage(true, 'Item successfully saved!');
+                return true;
+            }
+            catch (Exception $e) {
+                $this->addCriticalError(get_class($object) . ' not saved: ' . $e->getMessage());
+                FlashMessage::setFlashMessage(false, 'An error occurred. Please try again later.');
+            }
+        }
+
+        return false;
     }
 
 }

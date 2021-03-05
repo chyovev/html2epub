@@ -16,8 +16,6 @@ use Ramsey\Uuid\Uuid;
  */
 class Chapter extends BaseChapter
 {
-    use SaveTrait;
-
     // overwrite toArray function from trait
     use FormatDataTrait {
         toArray as public toArrayTrait;

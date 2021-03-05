@@ -67,3 +67,15 @@ function initiateTwig(): ExtendedTwig {
 
     return $twig;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+function initiateMonologLogger(): Monolog\Logger {
+    $logger = new Monolog\Logger('HTML2ePub');
+    $logger->pushHandler(new Monolog\Handler\StreamHandler(LOG_FILE, Monolog\Logger::DEBUG));
+
+    // add additional information to errors
+    $logger->pushProcessor(new Monolog\Processor\WebProcessor());
+    $logger->pushProcessor(new Monolog\Processor\IntrospectionProcessor());
+
+    return $logger;
+}

@@ -62,7 +62,7 @@ class ChaptersController extends AppController {
             $status = (bool) $book->save();
         }
         catch (Exception $e) {
-            // TODO: Log error
+            $this->addError('TOC arrangement not saved: ' . $e->getMessage());
             $status = false;
         }
 
@@ -92,7 +92,7 @@ class ChaptersController extends AppController {
             ];
         }
         catch (Exception $e) {
-            // TODO: log error
+            $this->addCriticalError('Chapter not added: ' . $e->getMessage());
             $response = [
                 'status' => false,
                 'errors' => 'An error occurred. Please try again later.',
@@ -120,7 +120,7 @@ class ChaptersController extends AppController {
             $status = true;
         }
         catch (Exception $e) {
-            // TODO log erorr
+            $this->addCriticalError('Chapter not deleted: ' . $e->getMessage());
             $status = false;
         }
 
@@ -152,11 +152,10 @@ class ChaptersController extends AppController {
         // as TOC updates should not have exert on it
         // (this is also why it's not set in the preUpdate model listener)
         if ($chapter->isModified()) {
-            $chapter->setUpdatedAt(new \DateTime());
+            $chapter->setUpdatedAt(new \DateTimeImmutable());
         }
 
-
-        $status      = (bool) $chapter->saveWithValidation();
+        $status      = (bool) $this->saveWithValidation($chapter);
         $errors      = $this->reorganizeValidationErrors($chapter->getValidationFailures());
         $breadcrumbs = [['Books', Url::generateBooksIndexUrl()], [$book->getTitle(), Url::generateBookUrl($book->getSlug())], [$chapter->getTitle(), NULL], 'Edit'];
         

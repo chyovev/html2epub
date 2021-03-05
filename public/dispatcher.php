@@ -3,6 +3,7 @@ require_once('../src/autoload.php');
 require_once(CONTROLLER_PATH . '/AppController.php');
 
 $twig = initiateTwig();
+$logger = initiateMonologLogger();
 
 $directDispatcherRequest = preg_match('/\/'. preg_quote(basename(__FILE__)) . '/i', $_SERVER['REQUEST_URI']);
 
@@ -15,7 +16,7 @@ $phpFile    = CONTROLLER_PATH . '/' . $controllerClass . '.php';
 
 if ( ! $directDispatcherRequest && file_exists($phpFile)) {
     require_once($phpFile);
-    $class = new $controllerClass($twig);
+    $class = new $controllerClass($twig, $logger);
     
     if (method_exists($class, $action)) {
         try {
@@ -24,7 +25,7 @@ if ( ! $directDispatcherRequest && file_exists($phpFile)) {
             $class->{$action}();
         }
         catch (Exception $e) {
-            // TODO: log error
+            $logger->addError($e->getMessage());
         }
     }
 }

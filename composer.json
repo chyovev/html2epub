@@ -12,6 +12,7 @@
         "propel/propel": "~2.0@dev",
         "twig/twig": "^2.13",
         "ramsey/uuid": "^3.9",
+        "monolog/monolog": "^1.26",
         "twbs/bootstrap": "4.4.1"
     },
     "autoload": {

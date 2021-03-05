@@ -12,7 +12,7 @@
                 <div class="row">
                     <div class="h4 font-weight-bold col-auto">
                         {% if _action == 'add' %}
-                        <button type="button" class="btn btn-sm btn-secondary disabled align-top add" title="To add new chapters, you have to save the first book.">&nbsp;</button>
+                        <button type="button" class="btn btn-sm btn-secondary disabled align-top add" title="To add new chapters, you have to save the book first.">&nbsp;</button>
                         {% else %}
                         <button type="button" class="btn btn-sm btn-outline-info align-top add add-chapter" href="{{ custom_url('generateNewChapterUrl', book.slug)}}" title="Add new element">&nbsp;</button>
                         {% endif %}
@@ -36,7 +36,7 @@
                         <li class="dd-item{% if book.id and toc and not chapter %} active{% endif %}">
                             <div class="dd-handle static">
                                 {% if book.id %}
-                                    <span class="title">
+                                    <span class="title small-caps">
                                         <a href="{{ custom_url('generateBookUrl', book.slug)}}" class="edit-chapter">Book details</a>
                                     </span>
                                     <span class="actions no-handle">
@@ -45,7 +45,7 @@
                                         <a href="{{ custom_url('generateBooksDeleteUrl', book['slug']) }}" class="delete-book" title="Delete"><img src="{{ root }}img/delete.png" class="no-handle mr-2" /></a>
                                     </span>
                                 {% else %}
-                                    <span class="title">
+                                    <span class="title small-caps">
                                         Book details
                                     </span>
                                 {% endif %}

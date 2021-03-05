@@ -68,9 +68,9 @@ class BooksController extends AppController {
             FlashMessage::setFlashMessage(true, 'Item successfully deleted!');
         }
         catch (Exception $e) {
+            $this->addCriticalError('Book not deleted: ' . $e->getMessage());
             FlashMessage::setFlashMessage(false, 'Item could not be deleted!');
             $status = false;
-            // TODO: log error
         }
 
         $booksIndexUrl = Url::generateBooksIndexUrl();
@@ -124,7 +124,7 @@ class BooksController extends AppController {
 
         $book->fromArray(getRequestVariables('POST'));
 
-        $status = (bool) $book->saveWithValidation();
+        $status = (bool) $this->saveWithValidation($book);
         $errors = $this->reorganizeValidationErrors($book->getValidationFailures());
         
         $response = [

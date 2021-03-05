@@ -27,6 +27,18 @@ var App = {
         $(document).on('click', '.add-chapter', App.addChapter);
         $(document).on('click', '.delete-book', App.deleteBook);
         $(document).on('click', '.delete-chapter', App.checkChapterDeleteConditions);
+        $(document).ajaxSend(App.setAjaxInProgress);
+        $(document).ajaxComplete(App.unsetAjaxInProgress);
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    setAjaxInProgress: function() {
+        App.isAjaxInProgress = true;
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    unsetAjaxInProgress: function() {
+        App.isAjaxInProgress = false;
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -42,12 +54,18 @@ var App = {
     },
 
     ///////////////////////////////////////////////////////////////////////////
+    showError: function() {
+        var $modal = $('#informationModal');
+        $modal.modal('show');
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
     // show confirmation modal and if the user clicks the YES button,
     // hide the modal and call the function passed as parameter
     showConfirmationModal: function (message, yesCallback) {
         var $modal      = $('#confirmationModal'),
-            $modalBody  = $('.modal-body'),
-            $modalYes   = $('.modal-yes');
+            $modalBody  = $modal.find('.modal-body'),
+            $modalYes   = $modal.find('.modal-yes');
 
         $modalBody.html(message);
 
@@ -386,9 +404,6 @@ var App = {
             type  = $form.attr('method'),
             data  = $form.serialize();
 
-        // mark current request as «in progress»
-        App.isAjaxInProgress = true;
-
         // reset all previous errors on submit
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').html('');
@@ -436,14 +451,15 @@ var App = {
                 App.dismissFlashMessage();
                 $form.prepend(response.flash);
                 $('.flash-message').fadeIn();
+
+                // scroll to flash message
+                $('body, html').animate({scrollTop: $('.alert').offset().top - 20 });
             },
 
             // on server error show a generic message (the error was logged)
             error: function() {
-                alert('There was an error');
+                App.showError();
             }
-        }).always(function() {
-            App.isAjaxInProgress = false;
         });
     },
 
@@ -513,9 +529,6 @@ var App = {
             return false;
         }
 
-        // mark current request as «in progress»
-        App.isAjaxInProgress = true;
-
         var add_url   = $(this).attr('href'),
             parent_id = $(this).closest('.dd-item[data-id]').attr('data-id')
             prepend   = $('#prepend').is(':checked'); // whether to prepend or append new items
@@ -550,10 +563,8 @@ var App = {
             },
             // on server error show a generic message (the error was logged)
             error: function() {
-                alert('There was an error');
+                App.showError();
             }
-        }).always(function() {
-            App.isAjaxInProgress = false;
         });
     },
 
@@ -573,9 +584,6 @@ var App = {
                     return false;
                 }
 
-                // mark current request as «in progress»
-                App.isAjaxInProgress = true;
-
                 return $.ajax({
                     url:      url,
                     type:     'GET',
@@ -583,7 +591,7 @@ var App = {
 
                     success: function(response) {
                         if ( ! response.status) {
-                            alert('There was an error');
+                            App.showError();
                         }
                         else {
                             // first fade out all elements, then redirect to books index
@@ -596,10 +604,8 @@ var App = {
                     },
                     // on server error show a generic message (the error was logged)
                     error: function() {
-                        alert('There was an error');
+                        App.showError();
                     }
-                }).always(function() {
-                    App.isAjaxInProgress = false;
                 });      
             }
         );
@@ -647,9 +653,6 @@ var App = {
             return false;
         }
 
-        // mark current request as «in progress»
-        App.isAjaxInProgress = true;
-
         var itemId   = $item.attr('data-id'),
             $parent  = $item.closest('.dd-list'),
             children = App.getAllChildren(itemId),
@@ -670,7 +673,7 @@ var App = {
 
             success: function(response) {
                 if ( ! response.status) {
-                    alert('There was an error');
+                    App.showError();
                 }
                 else {
                     // first fade out element, then slide it up and finally remove it from DOM
@@ -684,17 +687,15 @@ var App = {
 
                     // if current chapter no longer exists, load book information
                     if (chapterNoLongerExists) {
-                        App.isAjaxInProgress = false;
+                        App.unsetAjaxInProgress();
                         App.initAjaxGetRequest(bookDetailUrl);
                     }
                 }
             },
             // on server error show a generic message (the error was logged)
             error: function() {
-                alert('There was an error');
+                App.showError();
             }
-        }).always(function() {
-            App.isAjaxInProgress = false;
         });
     },
 
