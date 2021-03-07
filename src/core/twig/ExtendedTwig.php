@@ -20,12 +20,10 @@ class ExtendedTwig extends Environment {
     // generating a full page with header, footer and content template
     public function view(string $template, array $viewVars = []): void {
         // set the flash message if any
-        $this->addGlobal('flash', FlashMessage::getFlashMessage());
-
         $this->addGlobals($viewVars);
         
         $html  = parent::render('/layout/header.twig');
-        $html .= parent::render($template . '.twig');
+        $html .= parent::render($template . '.twig', ['flash' => FlashMessage::getFlashMessage()]);
         $html .= parent::render('/layout/footer.twig');
 
         print($html);

@@ -7,14 +7,15 @@ $logger = initiateMonologLogger();
 
 $directDispatcherRequest = preg_match('/\/'. preg_quote(basename(__FILE__)) . '/i', $_SERVER['REQUEST_URI']);
 
-$controller      = getGetRequestVar('controller');
-$controllerClass =  $controller . 'Controller';
-$action          = getGetRequestVar('action');
+if ($params = Router::getCurrentRequestParams()) {
+    $controller      = $params['controller'];
+    $action          = $params['action'];
 
+    $controllerClass = ucfirst($controller) . 'Controller';
+    $phpFile         = CONTROLLER_PATH . '/' . $controllerClass . '.php';
+}
 
-$phpFile    = CONTROLLER_PATH . '/' . $controllerClass . '.php';
-
-if ( ! $directDispatcherRequest && file_exists($phpFile)) {
+if ( ! $directDispatcherRequest && isset($phpFile) && file_exists($phpFile)) {
     require_once($phpFile);
     $class = new $controllerClass($twig, $logger);
     
@@ -26,11 +27,15 @@ if ( ! $directDispatcherRequest && file_exists($phpFile)) {
         }
         catch (Exception $e) {
             $logger->addError($e->getMessage());
+            $loggedError = true;
         }
     }
 }
 
 // if the request fails (no such controller, no such action)
 // show 404 page
+if ( ! isset($loggedError)) {
+    $logger->addError('No such page');
+}
 header('HTTP/1.1 404 Not Found'); 
 $twig->view('layout/error404');

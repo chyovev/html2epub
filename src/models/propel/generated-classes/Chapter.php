@@ -73,4 +73,22 @@ class Chapter extends BaseChapter
     public function isRoot() {
         return false;
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // used only for the breadcrumb
+    public function getAncestorsLinks(string $bookSlug, string $action): array {
+        $links     = [];
+        $ancestors = $this->getAncestors();
+
+        foreach ($ancestors as $item) {
+            $links[] = [$item->getTitle(), Router::url(['controller' => 'chapters', 'action' => 'edit', 'book' => $bookSlug, 'chapter' => $item->getSlugAsString()])];
+        }
+
+        // add self at the end
+        $links[] = [$this->getTitle(), NULL];
+
+        $links[] = [$action, NULL];
+
+        return $links;
+    }
 }

@@ -9,19 +9,6 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} (.+)/$
 RewriteRule ^ %1 [R=301,L]
 
-
-RewriteRule ^books/?$                   public/dispatcher.php?controller=Books&action=index          [QSA,L]
-RewriteRule ^books/add/?$               public/dispatcher.php?controller=Books&action=add            [QSA,L]
-RewriteRule ^books/([a-z0-9\-]+)/?$     public/dispatcher.php?controller=Books&action=edit&slug=$1   [QSA,L]
-RewriteRule ^books/([a-z0-9\-]+)/toc/?$  public/dispatcher.php?controller=Chapters&action=updateToc&book_slug=$1    [QSA,L]
-RewriteRule ^books/([a-z0-9\-]+)/add/?$  public/dispatcher.php?controller=Chapters&action=add&book_slug=$1   [QSA,L]
-RewriteRule ^books/([a-z0-9\-]+)/delete/?$ public/dispatcher.php?controller=Books&action=delete&slug=$1   [QSA,L]
-
-RewriteRule ^books/([a-z0-9\-]+)/([a-z0-9\-]+)/?$ public/dispatcher.php?controller=Chapters&action=edit&book_slug=$1&slug=$2   [QSA,L]
-RewriteRule ^books/([a-z0-9\-]+)/([a-z0-9\-]+)/delete/?$ public/dispatcher.php?controller=Chapters&action=delete&book_slug=$1&slug=$2   [QSA,L]
-
-RewriteRule ^/?$                        public/dispatcher.php?controller=Home&action=index           [QSA,L]
-RewriteRule ^(.+)$    public/$1     [L]
-
-# an empty dispatcher loads up 404
-ErrorDocument 404 /html2epub/public/dispatcher.php
+# send all requests to public where it will be re-routed
+RewriteRule ^$   public/dispatcher.php  [L]
+RewriteRule (.*) public/$1              [L]

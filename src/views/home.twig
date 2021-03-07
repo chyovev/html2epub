@@ -1,4 +1,4 @@
 {{ include('elements/breadcrumb.twig') }}
 <div class="text-center text-uppercase">
-    <a href="{{ custom_url('generateBooksIndexUrl') }}" class="btn btn-lg btn-primary">Books</a>
+    <a href="{{ custom_url([{'controller': 'books', 'action': 'index'}]) }}" class="btn btn-lg btn-primary">Books</a>
 </div>

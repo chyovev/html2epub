@@ -27,8 +27,7 @@ abstract class AppController {
     ///////////////////////////////////////////////////////////////////////////
     protected function _throw404OnEmpty($item): void {
         if ( ! $item) {
-            $backtrace = debug_backtrace();
-            throw new Exception('Page not found');
+            throw new Exception('Trying to fetch non-existing database record or using wrong request method.');
         }
     }
 

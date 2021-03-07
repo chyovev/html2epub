@@ -7,7 +7,7 @@ session_start();
 require_once('core/config.php');
 
 require_once(CORE_PATH   . '/functions.php');
-require_once(CORE_PATH   . '/Url.php');
+require_once(CORE_PATH   . '/Router.php');
 require_once(CORE_PATH   . '/FlashMessage.php');
 require_once(VENDOR_PATH . '/autoload.php');
 require_once(PROPEL_PATH . '/generated-conf/config.php');

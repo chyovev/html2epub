@@ -5,14 +5,16 @@ class ChaptersController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     public function edit() {
-        $bookSlug    = getGetRequestVar('book_slug');
-        $chapterSlug = getGetRequestVar('slug');
+        $bookSlug    = Router::getRequestParam('book');
+        $chapterSlug = Router::getRequestParam('chapter');
         $book        = BookQuery::create()->findOneBySlug($bookSlug);
         $chapter     = ChapterQuery::create()->findOneBySlug($chapterSlug);
 
         $this->_throw404OnEmpty($book && $chapter);
 
-        $breadcrumbs = [['Books', Url::generateBooksIndexUrl()], [$book->getTitle(), Url::generateBookUrl($book->getSlug())], [$chapter->getTitle(), NULL], 'Edit'];
+        $ancestors   = $chapter->getAncestorsLinks($bookSlug, 'Edit');
+        $breadcrumbs = [['Books', Router::url(['controller' => 'books', 'action' => 'index'])], [$book->getTitle(), Router::url(['controller' => 'books', 'action' => 'edit', 'book' => $book->getSlug()])]];
+        $breadcrumbs = array_merge($breadcrumbs, $ancestors);
 
         // AJAX GET request  → load book as JSON
         // AJAX POST request → try to save book
@@ -34,7 +36,7 @@ class ChaptersController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     public function updateToc() {
-        $bookSlug = getGetRequestVar('book_slug');
+        $bookSlug = Router::getRequestParam('book');
         $book     = BookQuery::create()->findOneBySlug($bookSlug);
 
         // if the request is not POST or there's no such book, abort
@@ -71,11 +73,11 @@ class ChaptersController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     public function add() {
-        $bookSlug = getGetRequestVar('book_slug');
+        $bookSlug = Router::getRequestParam('book');
         $book     = BookQuery::create()->findOneBySlug($bookSlug);
 
-        // if the request is not AJAX POST or there's no such book, abort
-        $this->_throw404OnEmpty(isRequestAjax() && isRequest('POST') && $book);
+        // if the request is not AJAX or there's no such book, abort
+        $this->_throw404OnEmpty(isRequestAjax() && $book);
 
         $chapter = new Chapter();
         $chapter->setTitle('New chapter')
@@ -87,8 +89,8 @@ class ChaptersController extends AppController {
                 'status'     => (bool) $book->save(),
                 'id'         => $chapter->getSlugAsString(),
                 'title'      => $chapter->getTitle(),
-                'edit_url'   => Url::generateChapterUrl($book->getSlug(), $chapter->getSlugAsString()),
-                'delete_url' => Url::generateDeleteChapterUrl($book->getSlug(), $chapter->getSlugAsString()),
+                'edit_url'   => Router::url(['controller' => 'chapters', 'action' => 'edit', 'book' => $book->getSlug(), 'chapter' => $chapter->getSlugAsString()]),
+                'delete_url' => Router::url(['controller' => 'chapters', 'action' => 'delete', 'book' => $book->getSlug(), 'chapter' => $chapter->getSlugAsString()]),
             ];
         }
         catch (Exception $e) {
@@ -108,8 +110,8 @@ class ChaptersController extends AppController {
             return;
         }
 
-        $bookSlug    = getGetRequestVar('book_slug');
-        $chapterSlug = getGetRequestVar('slug');
+        $bookSlug    = Router::getRequestParam('book');
+        $chapterSlug = Router::getRequestParam('chapter');
         $book        = BookQuery::create()->findOneBySlug($bookSlug);
         $chapter     = ChapterQuery::create()->findOneBySlug($chapterSlug);
 
@@ -157,7 +159,7 @@ class ChaptersController extends AppController {
 
         $status      = (bool) $this->saveWithValidation($chapter);
         $errors      = $this->reorganizeValidationErrors($chapter->getValidationFailures());
-        $breadcrumbs = [['Books', Url::generateBooksIndexUrl()], [$book->getTitle(), Url::generateBookUrl($book->getSlug())], [$chapter->getTitle(), NULL], 'Edit'];
+        $breadcrumbs = [['Books', Router::url(['controller' => 'books', 'action' => 'index'])], [$book->getTitle(), Router::url(['controller' => 'books', 'action' => 'edit', 'book' => $book->getSlug()])], [$chapter->getTitle(), NULL], 'Edit'];
         
         $response = [
             'status'      => $status,

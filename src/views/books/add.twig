@@ -14,7 +14,7 @@
                         {% if _action == 'add' %}
                         <button type="button" class="btn btn-sm btn-secondary disabled align-top add" title="To add new chapters, you have to save the book first.">&nbsp;</button>
                         {% else %}
-                        <button type="button" class="btn btn-sm btn-outline-info align-top add add-chapter" href="{{ custom_url('generateNewChapterUrl', book.slug)}}" title="Add new element">&nbsp;</button>
+                        <button type="button" class="btn btn-sm btn-outline-info align-top add add-chapter" href="{{ custom_url([{'controller': 'chapters', 'action': 'add', 'book': book.slug}]) }}" title="Add new element">&nbsp;</button>
                         {% endif %}
                         <span class="align-top toc-title d-inline-block d-lg-none">Add chapter</span>
                         <span class="align-top toc-title d-none d-lg-inline-block">Table of Contents</span>
@@ -37,12 +37,12 @@
                             <div class="dd-handle static">
                                 {% if book.id %}
                                     <span class="title small-caps">
-                                        <a href="{{ custom_url('generateBookUrl', book.slug)}}" class="edit-chapter">Book details</a>
+                                        <a href="{{ custom_url([{'controller': 'books', 'action': 'edit', 'book': book.slug}]) }}" class="edit-chapter">Book details</a>
                                     </span>
                                     <span class="actions no-handle">
-                                        <a href="{{ custom_url('generateNewChapterUrl', book['slug']) }}" class="add-chapter" title="Add chapter"><img src="{{ root }}img/add.png" class="no-handle mr-2" /></a>
-                                        <a href="{{ custom_url('generateBookUrl', book['slug']) }}" class="edit-chapter" title="Edit"><img src="{{ root }}img/edit.png" class="no-handle mr-2" /></a>
-                                        <a href="{{ custom_url('generateBooksDeleteUrl', book['slug']) }}" class="delete-book" title="Delete"><img src="{{ root }}img/delete.png" class="no-handle mr-2" /></a>
+                                        <a href="{{ custom_url([{'controller': 'chapters', 'action': 'add', 'book': book.slug}]) }}" class="add-chapter" title="Add chapter"><img src="{{ root }}img/add.png" class="no-handle mr-2" /></a>
+                                        <a href="{{ custom_url([{'controller': 'books', 'action': 'edit', 'book': book.slug}]) }}" class="edit-chapter" title="Edit"><img src="{{ root }}img/edit.png" class="no-handle mr-2" /></a>
+                                        <a href="{{ custom_url([{'controller': 'books', 'action': 'delete', 'book': book.slug}]) }}" class="delete-book" title="Delete"><img src="{{ root }}img/delete.png" class="no-handle mr-2" /></a>
                                     </span>
                                 {% else %}
                                     <span class="title small-caps">
@@ -57,7 +57,7 @@
                         <p class="p-4 mt-4 form-control-plaintext text-center">To add new chapters, you have to save the first book.</p>
                     {% endif %}
 
-                    <div class="dd"{% if book.slug %} href="{{ custom_url('generateTocUrl', book.slug)}}"{% endif %}>
+                    <div class="dd"{% if book.slug %} href="{{ custom_url([{'controller': 'chapters', 'action': 'updateToc', 'book': book.slug}]) }}"{% endif %}>
                         {{ include('elements/chapters.twig', {chapters: toc, level: 0}) }}
                     </div>
                 </div>

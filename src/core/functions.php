@@ -59,9 +59,16 @@ function initiateTwig(): ExtendedTwig {
     $loader = new Twig\Loader\FilesystemLoader(TEMPLATES_PATH);
     $twig   = new ExtendedTwig($loader);
 
-    // registering the Url abstract class as custom_url function in twig
-    $urlFunction = new Twig\TwigFunction('custom_url', function($method, ...$args) {
-        return forward_static_call_array(['Url', $method], $args);    
+    // registering the Router static url function as custom_url in twig
+    $urlFunction = new Twig\TwigFunction('custom_url', function($params) {
+        global $twig;
+        $globals = $twig->getGlobals();
+
+        // use current controller and action if none provided
+        $params[0]['controller'] = $params[0]['controller'] ?? $globals['_controller'] ?? NULL;
+        $params[0]['action']     = $params[0]['action']     ?? $globals['_action']     ?? NULL;
+
+        return forward_static_call_array(['Router', 'url'], $params);
     });
     $twig->addFunction($urlFunction);
 

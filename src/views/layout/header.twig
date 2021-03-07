@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>{% if metaTitle %}{{ metaTitle|e }}{{ meta_suffix }}{% endif %}{{ meta_title }}</title>
+    <title>{% if metaTitle %}{{ metaTitle|e }}{{ meta_suffix }}{% else %}{{ meta_title }}{% endif %}</title>
     <script type="text/javascript" language="javascript">var _root = '{{ root }}';</script>
     <script type="text/javascript" src="{{root}}js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="{{root}}js/script.js"></script>

@@ -2,7 +2,7 @@
 
 <div class="d-flex d-sm-block flex-column text-center mb-4">
     <span class="font-weight-bold align-middle h4">Books list</span>
-    <a href="{{ custom_url('generateBooksAddUrl') }}" class="btn btn-sm text-uppercase btn-outline-success add ml-md-3 order-first mb-4 mb-sm-0">Add new book</a>
+    <a href="{{ custom_url([{'action': 'add'}]) }}" class="btn btn-sm text-uppercase btn-outline-success add ml-md-3 order-first mb-4 mb-sm-0">Add new book</a>
 </div>
 
 {% include 'elements/flash.message.twig' %}
@@ -12,7 +12,7 @@
     {% if not books %}
         <div class="text-center h5 m-5 p-5">
             No books are currently added.<br />
-            To add a book, click <a href="{{ custom_url('generateBooksAddUrl') }}">here</a>.
+            To add a book, click <a href="{{ custom_url([{'action': 'add'}]) }}">here</a>.
         </div>
     {% else %}
     <table class="table table-striped table-hover table-bordered">
@@ -27,13 +27,13 @@
         {% for book in books %}
         <tr>
             <td scope="row">{{ loop.index }}.</td>
-            <td><a href="{{ custom_url('generateBookUrl', book.slug) }}">{{ book.title|e }}</a></td>
+            <td><a href="{{ custom_url([{'action': 'edit', 'book': book.slug}]) }}">{{ book.title|e }}</a></td>
             <td>{{ book.author|e|default('--') }}</td>
             <td>{{ book.created_at|date('d.m.Y @ H:i') }}</td>
             <td>{{ book.updated_at|date('d.m.Y @ H:i') }}</td>
             <td class="text-center">
-                <a href="{{ custom_url('generateBookUrl', book.slug) }}" class="btn btn-sm btn-primary">Edit</a>
-                <a href="{{ custom_url('generateBooksDeleteUrl', book.slug) }}" class="btn btn-sm btn-danger delete">Delete</a>
+                <a href="{{ custom_url([{'action': 'edit', 'book': book.slug}]) }}" class="btn btn-sm btn-primary">Edit</a>
+                <a href="{{ custom_url([{'action': 'delete', 'book': book.slug}]) }}" class="btn btn-sm btn-danger delete">Delete</a>
             </td>
         </tr>
         {% endfor %}
