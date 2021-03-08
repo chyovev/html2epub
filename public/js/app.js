@@ -199,9 +199,9 @@ var App = {
                 "advlist autolink lists link image charmap print preview hr anchor pagebreak",
                 "searchreplace wordcount visualblocks visualchars code fullscreen",
                 "insertdatetime media nonbreaking save directionality",
-                "template paste textcolor colorpicker textpattern",
+                "template paste textcolor colorpicker textpattern footnotes",
             ],
-            toolbar: "undo redo | searchreplace | styleselect | bold italic underline | removeformat | bullist numlist | outdent indent | alignleft aligncenter alignright alignjustify | anchor link | subscript superscript | hr | code",
+            toolbar: "undo redo | searchreplace | styleselect | bold italic underline | removeformat | bullist numlist | footnotes | outdent indent | alignleft aligncenter alignright alignjustify | anchor link | subscript superscript | hr | code",
             formats: {
                 alignleft:     {selector : '*', classes : 'left'},
                 aligncenter:   {selector : '*', classes : 'center'},
