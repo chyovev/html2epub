@@ -29,6 +29,9 @@ var App = {
         $(document).on('click', '.delete-chapter', App.checkChapterDeleteConditions);
         $(document).ajaxSend(App.setAjaxInProgress);
         $(document).ajaxComplete(App.unsetAjaxInProgress);
+        $(document).on('change', 'input[type="file"]', App.showUploadFilename);
+        $(document).on('click', '.reset-file', App.resetUploadFile);
+        $(document).on('click', '.delete-cover-image', App.deleteCoverImage);
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -402,7 +405,7 @@ var App = {
 
         var url   = $form.attr('action') || window.location.href,
             type  = $form.attr('method'),
-            data  = $form.serialize();
+            data  = new FormData($form[0]);
 
         // reset all previous errors on submit
         $('.is-invalid').removeClass('is-invalid');
@@ -413,12 +416,15 @@ var App = {
             type:     type,
             data:     data,
             dataType: 'JSON',
+            contentType: false,
+            processData: false,
 
             success: function(response) {
 
                 if (response.status) {
                     App.updateAllBookUrls(response.old_url, response.url);
                     App.updateTocAndHeaderLabels();
+                    App.updateBookCoverImage(response.image);
 
                     // when switching between chapters, current one needs to be saved first
                     // therefore submit form *manually* and if saving was successful,
@@ -438,7 +444,7 @@ var App = {
                 else {
                     $.each(response.errors, function(field, errors) {
                         $('#' + field).addClass('is-invalid')
-                                      .next('.invalid-feedback').html(errors[0]);
+                                      .closest('.form-group').find('.invalid-feedback').html(errors[0]);
                     });
                 }
 
@@ -448,9 +454,7 @@ var App = {
                 }
 
                 // in any case, hide previous flash message and show new one
-                App.dismissFlashMessage();
-                $form.prepend(response.flash);
-                $('.flash-message').fadeIn();
+                App.showAjaxFlashMessage(response.flash);
 
                 // scroll to flash message
                 $('body, html').animate({scrollTop: $('.alert').offset().top - 20 });
@@ -461,6 +465,13 @@ var App = {
                 App.showError();
             }
         });
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    showAjaxFlashMessage: function(html) {
+        App.dismissFlashMessage();
+        $('form').prepend(html);
+        $('.flash-message').fadeIn();
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -502,6 +513,14 @@ var App = {
         // when updating a book, change the header title
         else if (type == 'book') {
             $('header .title').text(newTitle);
+        }
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    updateBookCoverImage: function(html) {
+        if (html) {
+            $('.image').remove();
+            $('.cover-preview').prepend(html);
         }
     },
 
@@ -703,6 +722,75 @@ var App = {
     getAllChildren: function(id) {
         return $('.dd').nestable('getAllChildren', id);
     },
+
+    ///////////////////////////////////////////////////////////////////////////
+    showUploadFilename: function() {
+        var $input  = $(this),
+            $target = $($input.attr('data-target')),
+            files   = $(this)[0].files,
+            names   = [];
+
+        $.each(files, function(index, file) {
+            names.push(file.name);
+        });
+
+        $target.val(names.join(', '));
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    resetUploadFile: function(e) {
+        e.preventDefault();
+
+        var $field  = $(this).closest('.input-group').find('input[type="file"]'),
+            $target = $($field.attr('data-target'));
+
+        $field.val('');
+        $target.val('');
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    deleteCoverImage: function(e) {
+        e.preventDefault();
+
+        var url = $(this).attr('data-url');
+
+        // delete book cover only on confirmation
+        App.showConfirmationModal(
+            'Are you sure you want to delete the cover image?',
+            function() {
+                // don't send new requests before finishing already started requests
+                if (App.isAjaxInProgress) {
+                    return false;
+                }
+
+
+                return $.ajax({
+                    url:      url,
+                    type:     'GET',
+                    dataType: 'JSON',
+
+                    success: function(response) {
+                        if ( ! response.status) {
+                            App.showError();
+                        }
+                        else {
+                            // remove image preview
+                            $('.image').fadeOut('normal', function() {
+                                $(this).remove();
+                            })
+
+                            // hide previous flash message and show new one
+                            App.showAjaxFlashMessage(response.flash);
+                        }
+                    },
+                    // on server error show a generic message (the error was logged)
+                    error: function() {
+                        App.showError();
+                    }
+                });      
+            }
+        );
+    }
 
 }
 

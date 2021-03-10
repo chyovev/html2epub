@@ -31,6 +31,7 @@ use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Validator\Constraints\Isbn;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
@@ -159,6 +160,13 @@ abstract class Book implements ActiveRecordInterface
      * @var        string
      */
     protected $extra_info;
+
+    /**
+     * The value for the cover_image field.
+     *
+     * @var        string
+     */
+    protected $cover_image;
 
     /**
      * The value for the created_at field.
@@ -565,6 +573,16 @@ abstract class Book implements ActiveRecordInterface
     }
 
     /**
+     * Get the [cover_image] column value.
+     *
+     * @return string
+     */
+    public function getCoverImage()
+    {
+        return $this->cover_image;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -829,6 +847,26 @@ abstract class Book implements ActiveRecordInterface
     } // setExtraInfo()
 
     /**
+     * Set the value of [cover_image] column.
+     *
+     * @param string $v new value
+     * @return $this|\Book The current object (for fluent API support)
+     */
+    public function setCoverImage($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->cover_image !== $v) {
+            $this->cover_image = $v;
+            $this->modifiedColumns[BookTableMap::COL_COVER_IMAGE] = true;
+        }
+
+        return $this;
+    } // setCoverImage()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
@@ -941,13 +979,16 @@ abstract class Book implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : BookTableMap::translateFieldName('ExtraInfo', TableMap::TYPE_PHPNAME, $indexType)];
             $this->extra_info = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : BookTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : BookTableMap::translateFieldName('CoverImage', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->cover_image = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : BookTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : BookTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : BookTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -960,7 +1001,7 @@ abstract class Book implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 13; // 13 = BookTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 14; // 14 = BookTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Book'), 0, $e);
@@ -1056,6 +1097,8 @@ abstract class Book implements ActiveRecordInterface
             if ($ret) {
                 $deleteQuery->delete($con);
                 $this->postDelete($con);
+                // single_image_upload behavior
+                $this->deleteImage();
                 $this->setDeleted(true);
             }
         });
@@ -1091,6 +1134,8 @@ abstract class Book implements ActiveRecordInterface
         return $con->transaction(function () use ($con) {
             $ret = $this->preSave($con);
             $isInsert = $this->isNew();
+            // single_image_upload behavior
+            $this->uploadImage();
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
                 // timestampable behavior
@@ -1242,6 +1287,9 @@ abstract class Book implements ActiveRecordInterface
         if ($this->isColumnModified(BookTableMap::COL_EXTRA_INFO)) {
             $modifiedColumns[':p' . $index++]  = 'extra_info';
         }
+        if ($this->isColumnModified(BookTableMap::COL_COVER_IMAGE)) {
+            $modifiedColumns[':p' . $index++]  = 'cover_image';
+        }
         if ($this->isColumnModified(BookTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -1291,6 +1339,9 @@ abstract class Book implements ActiveRecordInterface
                         break;
                     case 'extra_info':
                         $stmt->bindValue($identifier, $this->extra_info, PDO::PARAM_STR);
+                        break;
+                    case 'cover_image':
+                        $stmt->bindValue($identifier, $this->cover_image, PDO::PARAM_STR);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
@@ -1394,9 +1445,12 @@ abstract class Book implements ActiveRecordInterface
                 return $this->getExtraInfo();
                 break;
             case 11:
-                return $this->getCreatedAt();
+                return $this->getCoverImage();
                 break;
             case 12:
+                return $this->getCreatedAt();
+                break;
+            case 13:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1440,15 +1494,16 @@ abstract class Book implements ActiveRecordInterface
             $keys[8] => $this->getYear(),
             $keys[9] => $this->getIsbn(),
             $keys[10] => $this->getExtraInfo(),
-            $keys[11] => $this->getCreatedAt(),
-            $keys[12] => $this->getUpdatedAt(),
+            $keys[11] => $this->getCoverImage(),
+            $keys[12] => $this->getCreatedAt(),
+            $keys[13] => $this->getUpdatedAt(),
         );
-        if ($result[$keys[11]] instanceof \DateTimeInterface) {
-            $result[$keys[11]] = $result[$keys[11]]->format('c');
-        }
-
         if ($result[$keys[12]] instanceof \DateTimeInterface) {
             $result[$keys[12]] = $result[$keys[12]]->format('c');
+        }
+
+        if ($result[$keys[13]] instanceof \DateTimeInterface) {
+            $result[$keys[13]] = $result[$keys[13]]->format('c');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1555,9 +1610,12 @@ abstract class Book implements ActiveRecordInterface
                 $this->setExtraInfo($value);
                 break;
             case 11:
-                $this->setCreatedAt($value);
+                $this->setCoverImage($value);
                 break;
             case 12:
+                $this->setCreatedAt($value);
+                break;
+            case 13:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1620,10 +1678,13 @@ abstract class Book implements ActiveRecordInterface
             $this->setExtraInfo($arr[$keys[10]]);
         }
         if (array_key_exists($keys[11], $arr)) {
-            $this->setCreatedAt($arr[$keys[11]]);
+            $this->setCoverImage($arr[$keys[11]]);
         }
         if (array_key_exists($keys[12], $arr)) {
-            $this->setUpdatedAt($arr[$keys[12]]);
+            $this->setCreatedAt($arr[$keys[12]]);
+        }
+        if (array_key_exists($keys[13], $arr)) {
+            $this->setUpdatedAt($arr[$keys[13]]);
         }
     }
 
@@ -1698,6 +1759,9 @@ abstract class Book implements ActiveRecordInterface
         }
         if ($this->isColumnModified(BookTableMap::COL_EXTRA_INFO)) {
             $criteria->add(BookTableMap::COL_EXTRA_INFO, $this->extra_info);
+        }
+        if ($this->isColumnModified(BookTableMap::COL_COVER_IMAGE)) {
+            $criteria->add(BookTableMap::COL_COVER_IMAGE, $this->cover_image);
         }
         if ($this->isColumnModified(BookTableMap::COL_CREATED_AT)) {
             $criteria->add(BookTableMap::COL_CREATED_AT, $this->created_at);
@@ -1801,6 +1865,7 @@ abstract class Book implements ActiveRecordInterface
         $copyObj->setYear($this->getYear());
         $copyObj->setIsbn($this->getIsbn());
         $copyObj->setExtraInfo($this->getExtraInfo());
+        $copyObj->setCoverImage($this->getCoverImage());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -2159,6 +2224,7 @@ abstract class Book implements ActiveRecordInterface
         $this->year = null;
         $this->isbn = null;
         $this->extra_info = null;
+        $this->cover_image = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -2201,6 +2267,105 @@ abstract class Book implements ActiveRecordInterface
         return (string) $this->exportTo(BookTableMap::DEFAULT_STRING_FORMAT);
     }
 
+    // single_image_upload behavior
+
+            ///////////////////////////////////////////////////////////////////////////
+            private function uploadImage() {
+                $uploadFile = $_FILES["image"] ?? NULL;
+
+                // if there’s no image to be uploaded, continue with the saving
+                if ( ! $uploadFile) {
+                    return;
+                }
+
+                $doesOldFileExist = (bool) $this->getCoverImageName();
+                $noImageToUpload  = (bool) ($uploadFile['error'] === UPLOAD_ERR_NO_FILE);
+                    // if image is not required, empty image set should just be ignored
+                    if ($noImageToUpload) {
+                        return;
+                    }
+                $minSize = 0;
+                $maxSize = 2;
+
+                // get the old image src to delete it in case the new upload is successful
+                $oldImageName = $this->getCoverImageName();
+
+                // try to save image; if successfully – delete old image
+                try {
+                    $uploadPath = rtrim($this->getUploadPath(true), "/");
+                    $image      = new \ImageUpload($uploadFile, $uploadPath, [$minSize, $maxSize]);
+
+                    if ($image->upload()) {
+                        $this->deleteImage($oldImageName);
+                        $this->setCoverImage($image->getJson());
+                    }
+                }
+
+                // if image upload fails, add error message as a validation failure
+                // and abort the save
+                catch (Exception $e) {
+                    $this->addValidationFailure("image", $e->getMessage());
+                    throw $e;
+                }
+            }
+
+            ///////////////////////////////////////////////////////////////////////////
+            // get the name of the image
+            public function getCoverImageName(): ?string {
+                $json = $this->getCoverImage();
+
+                if ( ! $json) {
+                    return NULL;
+                }
+
+                $data = json_decode($json);
+
+                return $data->name;
+            }
+
+            ///////////////////////////////////////////////////////////////////////////
+            // get the image path
+            public function getCoverImageSrc(): ?string {
+                $name = $this->getCoverImageName();
+
+                if ( ! $name) {
+                    return NULL;
+                }
+
+                return $this->getUploadPath() . $name;
+            }
+
+            ///////////////////////////////////////////////////////////////////////////
+            public function deleteImage(string $name = NULL): bool {
+                // if no name is passed, get current name
+                $filename = $name ?? $this->getCoverImageName();
+
+                if ( ! $filename) {
+                    return false;
+                }
+
+                $fullpath = $this->getUploadPath(true) . $filename;
+
+                @unlink($fullpath);
+
+                // if file still exists, return false
+                return ( ! is_file($fullpath));
+            }
+
+            ///////////////////////////////////////////////////////////////////////////
+            // internal URL is used for deleting old images,
+            // otherwise public URL is generated for displaying images
+            private function getUploadPath(bool $internal = false): string {
+                $prefix = $internal ? (ROOT_INTER . "public/") : ROOT;
+
+                return $prefix . "img/uploads/books/";
+            }
+
+            ///////////////////////////////////////////////////////////////////////////
+            private function addValidationFailure(string $field, string $message) {
+                $failure = new \Symfony\Component\Validator\ConstraintViolation($message, NULL, [], NULL, "$field", NULL);
+                $this->validationFailures[] = $failure;
+            }
     // timestampable behavior
 
     /**
@@ -2239,6 +2404,7 @@ abstract class Book implements ActiveRecordInterface
         $metadata->addPropertyConstraint('publisher', new Length(array ('max' => 255,)));
         $metadata->addPropertyConstraint('isbn', new Length(array ('max' => 255,)));
         $metadata->addPropertyConstraint('extra_info', new Length(array ('max' => 65535,)));
+        $metadata->addPropertyConstraint('isbn', new Isbn());
     }
 
     /**

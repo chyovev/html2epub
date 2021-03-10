@@ -11,6 +11,7 @@ abstract class Router {
         '/books/:book/toc'             => ['controller' => 'chapters', 'action' => 'updateToc'],
         '/books/:book/add'             => ['controller' => 'chapters', 'action' => 'add'],
         '/books/:book/delete'          => ['controller' => 'books',    'action' => 'delete'],
+        '/books/:book/delete-cover'    => ['controller' => 'books',    'action' => 'deleteImage'],
         '/books/:book/:chapter'        => ['controller' => 'chapters', 'action' => 'edit'],
         '/books/:book/:chapter/delete' => ['controller' => 'chapters', 'action' => 'delete'],
     ];

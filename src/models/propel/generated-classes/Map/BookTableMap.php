@@ -58,7 +58,7 @@ class BookTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 13;
+    const NUM_COLUMNS = 14;
 
     /**
      * The number of lazy-loaded columns
@@ -68,7 +68,7 @@ class BookTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 13;
+    const NUM_HYDRATE_COLUMNS = 14;
 
     /**
      * the column name for the id field
@@ -126,6 +126,11 @@ class BookTableMap extends TableMap
     const COL_EXTRA_INFO = 'books.extra_info';
 
     /**
+     * the column name for the cover_image field
+     */
+    const COL_COVER_IMAGE = 'books.cover_image';
+
+    /**
      * the column name for the created_at field
      */
     const COL_CREATED_AT = 'books.created_at';
@@ -147,11 +152,11 @@ class BookTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Title', 'Subtitle', 'Slug', 'Author', 'Dedication', 'LanguageId', 'Publisher', 'Year', 'Isbn', 'ExtraInfo', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'title', 'subtitle', 'slug', 'author', 'dedication', 'languageId', 'publisher', 'year', 'isbn', 'extraInfo', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(BookTableMap::COL_ID, BookTableMap::COL_TITLE, BookTableMap::COL_SUBTITLE, BookTableMap::COL_SLUG, BookTableMap::COL_AUTHOR, BookTableMap::COL_DEDICATION, BookTableMap::COL_LANGUAGE_ID, BookTableMap::COL_PUBLISHER, BookTableMap::COL_YEAR, BookTableMap::COL_ISBN, BookTableMap::COL_EXTRA_INFO, BookTableMap::COL_CREATED_AT, BookTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'title', 'subtitle', 'slug', 'author', 'dedication', 'language_id', 'publisher', 'year', 'isbn', 'extra_info', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, )
+        self::TYPE_PHPNAME       => array('Id', 'Title', 'Subtitle', 'Slug', 'Author', 'Dedication', 'LanguageId', 'Publisher', 'Year', 'Isbn', 'ExtraInfo', 'CoverImage', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'title', 'subtitle', 'slug', 'author', 'dedication', 'languageId', 'publisher', 'year', 'isbn', 'extraInfo', 'coverImage', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(BookTableMap::COL_ID, BookTableMap::COL_TITLE, BookTableMap::COL_SUBTITLE, BookTableMap::COL_SLUG, BookTableMap::COL_AUTHOR, BookTableMap::COL_DEDICATION, BookTableMap::COL_LANGUAGE_ID, BookTableMap::COL_PUBLISHER, BookTableMap::COL_YEAR, BookTableMap::COL_ISBN, BookTableMap::COL_EXTRA_INFO, BookTableMap::COL_COVER_IMAGE, BookTableMap::COL_CREATED_AT, BookTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'title', 'subtitle', 'slug', 'author', 'dedication', 'language_id', 'publisher', 'year', 'isbn', 'extra_info', 'cover_image', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, )
     );
 
     /**
@@ -161,11 +166,11 @@ class BookTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Title' => 1, 'Subtitle' => 2, 'Slug' => 3, 'Author' => 4, 'Dedication' => 5, 'LanguageId' => 6, 'Publisher' => 7, 'Year' => 8, 'Isbn' => 9, 'ExtraInfo' => 10, 'CreatedAt' => 11, 'UpdatedAt' => 12, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'title' => 1, 'subtitle' => 2, 'slug' => 3, 'author' => 4, 'dedication' => 5, 'languageId' => 6, 'publisher' => 7, 'year' => 8, 'isbn' => 9, 'extraInfo' => 10, 'createdAt' => 11, 'updatedAt' => 12, ),
-        self::TYPE_COLNAME       => array(BookTableMap::COL_ID => 0, BookTableMap::COL_TITLE => 1, BookTableMap::COL_SUBTITLE => 2, BookTableMap::COL_SLUG => 3, BookTableMap::COL_AUTHOR => 4, BookTableMap::COL_DEDICATION => 5, BookTableMap::COL_LANGUAGE_ID => 6, BookTableMap::COL_PUBLISHER => 7, BookTableMap::COL_YEAR => 8, BookTableMap::COL_ISBN => 9, BookTableMap::COL_EXTRA_INFO => 10, BookTableMap::COL_CREATED_AT => 11, BookTableMap::COL_UPDATED_AT => 12, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'title' => 1, 'subtitle' => 2, 'slug' => 3, 'author' => 4, 'dedication' => 5, 'language_id' => 6, 'publisher' => 7, 'year' => 8, 'isbn' => 9, 'extra_info' => 10, 'created_at' => 11, 'updated_at' => 12, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Title' => 1, 'Subtitle' => 2, 'Slug' => 3, 'Author' => 4, 'Dedication' => 5, 'LanguageId' => 6, 'Publisher' => 7, 'Year' => 8, 'Isbn' => 9, 'ExtraInfo' => 10, 'CoverImage' => 11, 'CreatedAt' => 12, 'UpdatedAt' => 13, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'title' => 1, 'subtitle' => 2, 'slug' => 3, 'author' => 4, 'dedication' => 5, 'languageId' => 6, 'publisher' => 7, 'year' => 8, 'isbn' => 9, 'extraInfo' => 10, 'coverImage' => 11, 'createdAt' => 12, 'updatedAt' => 13, ),
+        self::TYPE_COLNAME       => array(BookTableMap::COL_ID => 0, BookTableMap::COL_TITLE => 1, BookTableMap::COL_SUBTITLE => 2, BookTableMap::COL_SLUG => 3, BookTableMap::COL_AUTHOR => 4, BookTableMap::COL_DEDICATION => 5, BookTableMap::COL_LANGUAGE_ID => 6, BookTableMap::COL_PUBLISHER => 7, BookTableMap::COL_YEAR => 8, BookTableMap::COL_ISBN => 9, BookTableMap::COL_EXTRA_INFO => 10, BookTableMap::COL_COVER_IMAGE => 11, BookTableMap::COL_CREATED_AT => 12, BookTableMap::COL_UPDATED_AT => 13, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'title' => 1, 'subtitle' => 2, 'slug' => 3, 'author' => 4, 'dedication' => 5, 'language_id' => 6, 'publisher' => 7, 'year' => 8, 'isbn' => 9, 'extra_info' => 10, 'cover_image' => 11, 'created_at' => 12, 'updated_at' => 13, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, )
     );
 
     /**
@@ -196,6 +201,7 @@ class BookTableMap extends TableMap
         $this->addColumn('year', 'Year', 'INTEGER', false, null, null);
         $this->addColumn('isbn', 'Isbn', 'VARCHAR', false, 255, null);
         $this->addColumn('extra_info', 'ExtraInfo', 'LONGVARCHAR', false, null, null);
+        $this->addColumn('cover_image', 'CoverImage', 'VARCHAR', false, 255, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -230,8 +236,9 @@ class BookTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
+            'single_image_upload' => array('table_column' => 'cover_image', 'group' => 'image', 'path' => 'uploads/books', 'required' => '', 'max_size_mb' => '2', 'min_size_mb' => '0', ),
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
-            'validate' => array('title_notnull' => array ('column' => 'title','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'title_maxlength' => array ('column' => 'title','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_notnull' => array ('column' => 'slug','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'slug_maxlength' => array ('column' => 'slug','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_unique' => array ('column' => 'slug','validator' => 'Unique','options' => array ('message' => 'A book with this slug already exists.',),), 'slug_regex' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^[a-z0-9\\-]+$/','message' => 'Please use only lowercase latin letters and dashes.',),), 'slug_reserved' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^(?!add$)[a-z0-9\\-]+$/','message' => 'Reserved words are not allowed.',),), 'language_notnull' => array ('column' => 'language_id','validator' => 'NotBlank','options' => array ('allowNull' => false,'message' => 'Please select a language from the dropdown menu.',),), 'language_int' => array ('column' => 'language_id','validator' => 'GreaterThan','options' => array ('value' => 0,'message' => 'Please select a language from the dropdown menu.',),), 'author_maxlength' => array ('column' => 'author','validator' => 'Length','options' => array ('max' => 255,),), 'dedication_maxlength' => array ('column' => 'dedication','validator' => 'Length','options' => array ('max' => 255,),), 'publisher_maxlength' => array ('column' => 'publisher','validator' => 'Length','options' => array ('max' => 255,),), 'isbn_maxlength' => array ('column' => 'isbn','validator' => 'Length','options' => array ('max' => 255,),), 'extra_info_maxlength' => array ('column' => 'extra_info','validator' => 'Length','options' => array ('max' => 65535,),), ),
+            'validate' => array('title_notnull' => array ('column' => 'title','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'title_maxlength' => array ('column' => 'title','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_notnull' => array ('column' => 'slug','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'slug_maxlength' => array ('column' => 'slug','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_unique' => array ('column' => 'slug','validator' => 'Unique','options' => array ('message' => 'A book with this slug already exists.',),), 'slug_regex' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^[a-z0-9\\-]+$/','message' => 'Please use only lowercase latin letters and dashes.',),), 'slug_reserved' => array ('column' => 'slug','validator' => 'Regex','options' => array ('pattern' => '/^(?!add$)[a-z0-9\\-]+$/','message' => 'Reserved words are not allowed.',),), 'language_notnull' => array ('column' => 'language_id','validator' => 'NotBlank','options' => array ('allowNull' => false,'message' => 'Please select a language from the dropdown menu.',),), 'language_int' => array ('column' => 'language_id','validator' => 'GreaterThan','options' => array ('value' => 0,'message' => 'Please select a language from the dropdown menu.',),), 'author_maxlength' => array ('column' => 'author','validator' => 'Length','options' => array ('max' => 255,),), 'dedication_maxlength' => array ('column' => 'dedication','validator' => 'Length','options' => array ('max' => 255,),), 'publisher_maxlength' => array ('column' => 'publisher','validator' => 'Length','options' => array ('max' => 255,),), 'isbn_maxlength' => array ('column' => 'isbn','validator' => 'Length','options' => array ('max' => 255,),), 'extra_info_maxlength' => array ('column' => 'extra_info','validator' => 'Length','options' => array ('max' => 65535,),), 'isbn' => array ('column' => 'isbn','validator' => 'Isbn',), ),
         );
     } // getBehaviors()
     /**
@@ -396,6 +403,7 @@ class BookTableMap extends TableMap
             $criteria->addSelectColumn(BookTableMap::COL_YEAR);
             $criteria->addSelectColumn(BookTableMap::COL_ISBN);
             $criteria->addSelectColumn(BookTableMap::COL_EXTRA_INFO);
+            $criteria->addSelectColumn(BookTableMap::COL_COVER_IMAGE);
             $criteria->addSelectColumn(BookTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(BookTableMap::COL_UPDATED_AT);
         } else {
@@ -410,6 +418,7 @@ class BookTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.year');
             $criteria->addSelectColumn($alias . '.isbn');
             $criteria->addSelectColumn($alias . '.extra_info');
+            $criteria->addSelectColumn($alias . '.cover_image');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

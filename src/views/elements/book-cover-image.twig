@@ -1,0 +1,6 @@
+{% if book.getCoverImage() %}
+<span class="position-relative image">
+    <a href="{{ book.getCoverImageSrc() }}" target="_blank"><img src="{{ book.getCoverImageSrc() }}" class="rounded" /></a>
+    <img src="{{ root }}img/delete.png" class="delete-cover-image" data-url="{{ custom_url([{'controller': 'books', 'action': 'deleteImage', 'book': book.slug}]) }}" title="Delete cover image" />
+</span>
+{% endif %}

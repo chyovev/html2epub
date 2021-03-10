@@ -164,7 +164,7 @@ class ChaptersController extends AppController {
         $response = [
             'status'      => $status,
             'errors'      => $errors,
-            'flash'       => $this->twig->render('elements/flash.message.twig', ['flash' => FlashMessage::getFlashMessage(), 'hidden' => true]),
+            'flash'       => $this->generateFlashHtml(),
             'breadcrumbs' => $this->twig->render('elements/breadcrumb.twig', ['breadcrumbs' => $breadcrumbs]),
         ];
 

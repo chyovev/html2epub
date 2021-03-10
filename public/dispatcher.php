@@ -26,6 +26,7 @@ if ( ! $directDispatcherRequest && isset($phpFile) && file_exists($phpFile)) {
             $class->{$action}();
         }
         catch (Exception $e) {
+            throw ($e);
             $logger->addError($e->getMessage());
             $loggedError = true;
         }

@@ -1,11 +1,37 @@
 <div class="mb-4 h4 font-weight-bold">
+    <span class="cover-preview align-middle rounded">
+        {{ include('elements/book-cover-image.twig') }}
+        <label for="file-button" class="rounded add-image-btn" title="Upload cover image"></label>
+    </span>
     <span class="align-middle" id="section-heading" data-type="book">Book details</span>
 </div>
+
+
+
+<div class="form-group row">
+    <div class="col-lg-12">
+        <label class="form-control-label" for="file-button">Cover image</label>
+        <div class="input-group">
+            <div class="input-group-prepend under">
+                <label class="btn btn-success" for="file-button">Browse</label>
+            </div>
+
+            <input type="text" disabled="disabled" class="form-control bg-white{% if errors['cover'] %} is-invalid{% endif %}" placeholder="Extensions: .jpg, .png" id="image" />
+            <input type="file" id="file-button" name="image" data-target="#image" class="d-none images" />
+            <div class="input-group-append reset-file under" title="Reset">
+                <label class="form-control p-0 text-center rounded-0 pointer"><img src="{{ root }}img/delete.png" class="w-50 align-bottom" /></label>
+            </div>
+            
+            <span class="invalid-feedback"></span>
+        </div>
+    </div>
+</div>
+
 
 <div class="form-group row">
     <div class="col-lg-12">
         <label class="form-control-label" for="title"><abbr class="text-danger text-decoration-none" title="This field is required">*</abbr>Title</label>
-        <input type="text" name="title" id="title" value="{{ book['title']|e }}" class="form-control{% if errors['title'] %} is-invalid{% endif %}" />
+        <input type="text" name="title" id="title" value="{{ book.getTitle()|e }}" class="form-control{% if errors['title'] %} is-invalid{% endif %}" />
         <span class="invalid-feedback"></span>
     </div>
 </div>
@@ -13,7 +39,7 @@
 <div class="form-group row">
     <div class="col-lg-12">
         <label class="form-control-label" for="subtitle">Subtitle</label>
-        <input type="text" name="subtitle" id="subtitle" value="{{ book['subtitle']|e }}" class="form-control{% if errors['subtitle'] %} is-invalid{% endif %}" />
+        <input type="text" name="subtitle" id="subtitle" value="{{ book.getSubtitle()|e }}" class="form-control{% if errors['subtitle'] %} is-invalid{% endif %}" />
         <span class="invalid-feedback"></span>
     </div>
 </div>
@@ -21,7 +47,7 @@
 <div class="form-group row">
     <div class="col-lg-12">
         <label class="form-control-label" for="slug"><abbr class="text-danger text-decoration-none" title="This field is required">*</abbr>Slug</label>
-        <input type="text" name="slug" id="slug" value="{{ book['slug']|e }}" class="form-control{% if errors['slug'] %} is-invalid{% endif %}" />
+        <input type="text" name="slug" id="slug" value="{{ book.getSlug()|e }}" class="form-control{% if errors['slug'] %} is-invalid{% endif %}" />
         <span class="invalid-feedback"></span>
     </div>
 </div>
@@ -29,7 +55,7 @@
 <div class="form-group row">
     <div class="col-lg-12">
         <label class="form-control-label" for="author">Author(s)</label>
-        <input type="text" name="author" id="author" value="{{ book['author']|e }}" class="form-control{% if errors['author'] %} is-invalid{% endif %}" />
+        <input type="text" name="author" id="author" value="{{ book.getAuthor()|e }}" class="form-control{% if errors['author'] %} is-invalid{% endif %}" />
         <span class="invalid-feedback"></span>
     </div>
 </div>
@@ -37,7 +63,7 @@
 <div class="form-group row">
     <div class="col-lg-12">
         <label class="form-control-label" for="dedication">Dedication</label>
-        <input type="text" name="dedication" id="dedication" value="{{ book['dedication']|e }}" class="form-control{% if errors['dedication'] %} is-invalid{% endif %}" />
+        <input type="text" name="dedication" id="dedication" value="{{ book.getDedication()|e }}" class="form-control{% if errors['dedication'] %} is-invalid{% endif %}" />
         <span class="invalid-feedback"></span>
     </div>
 </div>
@@ -48,7 +74,7 @@
         <select name="language_id" id="language_id" class="form-control{% if errors['language_id'] %} is-invalid{% endif %}">
             <option value="">--</option>
             {% for lang in languages %}
-            <option value="{{ lang.getId() }}"{% if book['language_id'] == lang.getId() %} selected="selected"{% endif %}>{{ lang.getLanguage()|escape }}</option>
+            <option value="{{ lang.getId() }}"{% if book.getLanguageId() == lang.getId() %} selected="selected"{% endif %}>{{ lang.getLanguage()|escape }}</option>
             {% endfor %}
         </select>
         <span class="invalid-feedback"></span>
@@ -58,7 +84,7 @@
 <div class="form-group row">
     <div class="col-lg-12">
         <label class="form-control-label" for="publisher">Publisher</label>
-        <input type="text" name="publisher" id="publisher" value="{{ book['publisher']|e }}" class="form-control{% if errors['publisher'] %} is-invalid{% endif %}" />
+        <input type="text" name="publisher" id="publisher" value="{{ book.getPublisher()|e }}" class="form-control{% if errors['publisher'] %} is-invalid{% endif %}" />
         <span class="invalid-feedback"></span>
     </div>
 </div>
@@ -66,7 +92,7 @@
 <div class="form-group row">
     <div class="col-lg-12">
         <label class="form-control-label" for="year">Publishing year</label>
-        <input type="text" name="year" id="year" value="{% if book['year'] != 0 %}{{ book['year']|e }}{% endif %}" class="form-control{% if errors['year'] %} is-invalid{% endif %}" />
+        <input type="text" name="year" id="year" value="{% if book.getYear() != 0 %}{{ book.getYear()|e }}{% endif %}" class="form-control{% if errors['year'] %} is-invalid{% endif %}" />
         <span class="invalid-feedback"></span>
     </div>
 </div>
@@ -74,7 +100,7 @@
 <div class="form-group row">
     <div class="col-lg-12">
         <label class="form-control-label" for="isbn">ISBN</label>
-        <input type="text" name="isbn" id="isbn" value="{{ book['isbn']|e }}" class="form-control{% if errors['isbn'] %} is-invalid{% endif %}" />
+        <input type="text" name="isbn" id="isbn" value="{{ book.getIsbn()|e }}" class="form-control{% if errors['isbn'] %} is-invalid{% endif %}" />
         <span class="invalid-feedback"></span>
     </div>
 </div>
@@ -82,13 +108,13 @@
 <div class="form-group row">
     <div class="col-lg-12">
         <label class="form-control-label" for="extra_info">Extra information</label>
-        <textarea name="extra_info" id="extra_info" class="form-control{% if errors['extra_info'] %} is-invalid{% endif %}">{{ book['extra_info']|e }}</textarea>
+        <textarea name="extra_info" id="extra_info" class="form-control{% if errors['extra_info'] %} is-invalid{% endif %}">{{ book.getExtraInfo()|e }}</textarea>
         <span class="invalid-feedback"></span>
     </div>
 </div>
 
 <div class="form-group row text-center mt-5">
     <div class="col-lg-12">
-        <input type="submit" class="btn btn-outline-info rounded-pill pl-4 pr-4 small-caps" value="{% if book['id'] %}Save{% else %}Add{% endif %} book" />
+        <input type="submit" class="btn btn-outline-info rounded-pill pl-4 pr-4 small-caps" value="{% if book.getId() %}Save{% else %}Add{% endif %} book" />
     </div>
 </div>

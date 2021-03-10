@@ -16,6 +16,12 @@
         "twbs/bootstrap": "4.4.1"
     },
     "autoload": {
-        "classmap": ["src/models/propel/generated-classes/"]
+        "classmap": [
+            "src/models/propel/generated-classes/",
+            "src/core/"
+        ],
+        "files": [
+            "src/core/functions.php"
+        ]
     }
 }

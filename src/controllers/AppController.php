@@ -57,21 +57,45 @@ abstract class AppController {
     ///////////////////////////////////////////////////////////////////////////
     public function saveWithValidation($object) {
         if ( ! $object->validate()) {
-            FlashMessage::setFlashMessage(false, 'Item could not be saved.');
+            $this->setErrorFlash('Item could not be saved.');
         }
         else {
             try {
                 $object->save();
-                FlashMessage::setFlashMessage(true, 'Item successfully saved!');
+                $this->setSuccessFlash('Item successfully saved!');
                 return true;
             }
             catch (Exception $e) {
                 $this->addCriticalError(get_class($object) . ' not saved: ' . $e->getMessage());
-                FlashMessage::setFlashMessage(false, 'An error occurred. Please try again later.');
+                $this->setErrorFlash('An error occurred. Please try again later.');
             }
         }
 
         return false;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    protected function getFlash(): array {
+        return FlashMessage::getFlashMessage();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    protected function setErrorFlash(string $message): void {
+        FlashMessage::setFlashMessage(false, $message);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    protected function setSuccessFlash(string $message): void {
+        FlashMessage::setFlashMessage(true, $message);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    protected function generateFlashHtml(array $flash = []): string {
+        if ( ! $flash) {
+            $flash = $this->getFlash();
+        }
+        
+        return $this->twig->render('elements/flash.message.twig', ['flash' => $flash, 'hidden' => true]);
     }
 
 }

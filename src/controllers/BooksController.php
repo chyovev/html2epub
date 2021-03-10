@@ -4,7 +4,7 @@ class BooksController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     public function index() {
-        $books = BookQuery::create()->orderByIdAsArray();
+        $books = BookQuery::create()->orderById();
         $this->_setView('books/index', ['books' => $books]);
     }
 
@@ -18,7 +18,7 @@ class BooksController extends AppController {
         $this->_processAjaxPostRequest($book, true);
 
         $viewVars = [
-            'book'       => $book->toArray(),
+            'book'       => $book,
             'metaTitle'  => 'Add new book',
             'wideHeader' => true,
             'breadcrumbs' => [['Books', Router::url(['controller' => 'books', 'action' => 'index'])], ['Add new book', NULL], $book->getTitle()],
@@ -44,7 +44,7 @@ class BooksController extends AppController {
         $this->_setLanguages();
 
         $viewVars = [
-            'book'       => $book->toArray(),
+            'book'       => $book,
             'metaTitle'  => $book->getTitle(),
             'title'      => $book->getTitle(),
             'toc'        => BookQuery::getChaptersAsNestedSet($book),
@@ -65,12 +65,12 @@ class BooksController extends AppController {
         try {
             $book->delete();
             $status = true;
-            FlashMessage::setFlashMessage(true, 'Item successfully deleted!');
+            $this->setSuccessFlash('Item successfully deleted!');
         }
         catch (Exception $e) {
             $this->addCriticalError('Book not deleted: ' . $e->getMessage());
-            FlashMessage::setFlashMessage(false, 'Item could not be deleted!');
             $status = false;
+            $this->setErrorFlash('Item could not be deleted!');
         }
 
         $booksIndexUrl = Router::url(['controller' => 'books', 'action' => 'index']);
@@ -92,6 +92,37 @@ class BooksController extends AppController {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    public function deleteImage() {
+        if ( ! isRequestAjax()) {
+            return;
+        }
+
+        $slug = Router::getRequestParam('book');
+        $book = BookQuery::create()->findOneBySlug($slug);
+
+        $this->_throw404OnEmpty($book);
+
+        // if the file was deleted, delete the field value, too
+        if ($book->deleteImage()) {
+            $book->setCoverImage(NULL);
+            $book->save();
+            $status = true;
+            $this->setSuccessFlash('Item successfully deleted!');
+        }
+        else {
+            $status = false;
+            $this->setErrorFlash('Item could not be deleted!');
+        }
+
+        $response = [
+            'status' => $status,
+            'flash'  => $this->generateFlashHtml(),
+        ];
+        
+        $this->twig->renderJSONContent($response);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
     protected function _setLanguages() {
         $languages = LanguageQuery::create()->orderByLanguage();
         $this->_setViewVars(['languages' => $languages]);
@@ -107,7 +138,7 @@ class BooksController extends AppController {
 
         $viewVars = [
             'metaTitle'   => $book->getTitle() . META_SUFFIX,
-            'html'        => $this->twig->render('books/book-details.twig',  ['book'        => $book->toArray()]),
+            'html'        => $this->twig->render('books/book-details.twig',  ['book'        => $book]),
             'breadcrumbs' => $this->twig->render('elements/breadcrumb.twig', ['breadcrumbs' => $breadcrumbs]),
         ];
 
@@ -121,6 +152,7 @@ class BooksController extends AppController {
         }
 
         $oldSlug = $book->getSlug();
+        $oldImg  = $book->getCoverImageSrc();
 
         $book->fromArray(getRequestVariables('POST'));
 
@@ -131,11 +163,17 @@ class BooksController extends AppController {
             'status'      => $status,
             'errors'      => $errors,
             // if the status is true on new record, the page will be redirected: don't render flash, it will autorender on page load
-            'flash'       => ($isNew  && $status) ? false : $this->twig->render('elements/flash.message.twig', ['flash' => FlashMessage::getFlashMessage(), 'hidden' => true]),
+            'flash'       => ($isNew  && $status) ? false : $this->generateFlashHtml(),
             'old_url'     => $oldSlug && $oldSlug != $book->getSlug() ? Router::url(['controller' => 'books', 'action' => 'edit', 'book' => $oldSlug]) : false,
             'url'         => $book->getSlug() ? Router::url(['controller' => 'books', 'action' => 'edit', 'book' => $book->getSlug()]) : false,
             'redirect'    => $isNew,
         ];
+
+        // send cover image HTML in case it was altered
+        $newImg = $book->getCoverImageSrc();
+        if ($oldImg !== $newImg) {
+            $response['image'] = $this->twig->render('elements/book-cover-image.twig', ['book' => $book]);
+        }
 
         // when editing, the title may change which should be applied to the breadcrumb
         if ( ! $isNew) {

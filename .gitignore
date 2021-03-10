@@ -11,3 +11,4 @@ Thumbs.db
 *.vscode
 vendor/
 logs/
+public/img/uploads/

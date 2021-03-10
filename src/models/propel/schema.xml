@@ -22,6 +22,12 @@
             <reference local="language_id" foreign="id"/>
         </foreign-key>
 
+        <behavior name="single_image_upload">
+            <parameter name="table_column" value="cover_image" />
+            <parameter name="group" value="image" />
+            <parameter name="path" value="uploads/books" />
+        </behavior>
+
         <!-- Auto-update created_at and updated_at fields -->
         <behavior name="timestampable" />
 
@@ -44,6 +50,8 @@
             <parameter name="publisher_maxlength"  value="{column: publisher,  validator: Length, options: {max: 255}}" />
             <parameter name="isbn_maxlength"       value="{column: isbn,       validator: Length, options: {max: 255}}" />
             <parameter name="extra_info_maxlength" value="{column: extra_info, validator: Length, options: {max: 65535}}" />
+
+            <parameter name="isbn" value="{column: isbn, validator: Isbn}" />
         </behavior>
     </table>
 
