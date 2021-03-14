@@ -21,12 +21,11 @@ if ( ! $directDispatcherRequest && isset($phpFile) && file_exists($phpFile)) {
     
     if (method_exists($class, $action)) {
         try {
-            $class->twig->addGlobal('_controller', $controller);
-            $class->twig->addGlobal('_action', $action);
+            $twig->addGlobal('_controller', $controller);
+            $twig->addGlobal('_action', $action);
             $class->{$action}();
         }
         catch (Exception $e) {
-            throw ($e);
             $logger->addError($e->getMessage());
             $loggedError = true;
         }

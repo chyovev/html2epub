@@ -1,0 +1,36 @@
+    <div class="copyright left">
+        <div class="center mb-2"><img src="images/html2epub-logo.jpg" alt="HTML2ePub" /></div>
+        <p>This book is brought to you by the HTML2ePub project.</p>
+        <br />
+        <p><strong>Title:</strong> {{ book.title|e }} {% if book.subtitle %} {{ book.subtitle }}{% endif %}</p>
+        {% if book.author %}
+            <p><strong>Author(s):</strong> {{ book.author|e }}</p>
+        {% endif %}
+            <p><strong>Language:</strong> {{ book.getLanguage().getLanguage() }}</p>
+        {% if book.publisher %}
+            <p><strong>Publisher:</strong> {{ book.publisher|e }}</p>
+        {% endif %}
+        {% if book.year %}
+            <p><strong>Year of publication:</strong> {{ book.year|e }}</p>
+        {% endif %}
+        {% if book.isbn %}
+            <p><strong>ISBN:</strong> {{ book.isbn|e }}</p>
+        {% endif %}
+        {% if book.publisher %}
+            <p><strong>Publisher:</strong> {{ book.publisher|e }}</p>
+        {% endif %}
+        {% if book.year %}
+            <p><strong>Year of publication:</strong> {{ book.year|e }}</p>
+        {% endif %}
+        {% if book.isbn %}
+            <p><strong>ISBN:</strong> {{ book.isbn|e }}</p>
+        {% endif %}
+            <p><strong>Date added:</strong> {{ book.getCreatedAt('d F Y') }}</p>
+            <p><strong>Last updated:</strong> {{ book.getUpdatedAt('d F Y') }}</p>
+        {% if book.extra_info %}
+            <p>{{ book.extra_info|e|nl2br }}</p>
+        {% endif %}
+        <br />
+        <p>Copyright &copy; {% if book.year %}{{ book.year }}, {%endif %}{{ book.publisher|default(book.author)|e }}. All rights reserved.</p>
+        <br />
+    </div>

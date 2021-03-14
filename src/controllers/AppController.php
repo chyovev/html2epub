@@ -5,8 +5,8 @@ use Monolog\Logger;
 
 abstract class AppController {
 
-    public $twig;
-    public $logger;
+    private $twig;
+    private $logger;
 
     ///////////////////////////////////////////////////////////////////////////
     public function __construct(ExtendedTwig $twig, Logger $logger) {
@@ -15,13 +15,37 @@ abstract class AppController {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    protected function _setView(string $template, array $viewVars = []): void {
+    // the default templates folder is src/views,
+    // but this path can be changed (e.g. book publishing's templates have different location)
+    protected function setViewsPath(string $path): void {
+        $this->twig->getLoader()->setPaths($path);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // render full page as string and show it on screen
+    protected function displayFullPage(string $template, array $viewVars = []): void {
         $this->twig->view($template, $viewVars);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     protected function _setViewVars(array $viewVars) {
         $this->twig->addGlobals($viewVars);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // render full page as string
+    protected function renderFullPage(string $template, array $viewVars = []): string {
+        return $this->twig->renderFullPage($template, $viewVars);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    protected function renderTemplate(string $template, array $viewVars = []): string {
+        return $this->twig->render($template, $viewVars);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    protected function renderJSONContent($array): void {
+        $this->twig->renderJSONContent($array);
     }
 
     ///////////////////////////////////////////////////////////////////////////

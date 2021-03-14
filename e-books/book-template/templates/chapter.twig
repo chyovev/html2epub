@@ -1,0 +1,17 @@
+<header>
+    <h1 class="center {% if chapter.getBody() %}chapter-title{% else %}no-body{% endif %}">{{ chapter.getTitle()|e }}</h1>
+</header>
+{% if chapter.getBody() %}
+    <div{% if footnotes %} class="pb-1"{% endif %}>
+        {{ chapter.getBody()|raw }}
+    </div>
+    
+    {% if footnotes %}
+        <hr class="footnote-delimiter" />
+        <div class="mt-1">
+        {% for note in footnotes %}
+            {{ note|raw }}{% if not loop.last %}<br />{% endif %}
+        {% endfor %}
+        </div>
+    {% endif %}
+{% endif %}

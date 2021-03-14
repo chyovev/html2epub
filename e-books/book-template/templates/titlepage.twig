@@ -1,0 +1,9 @@
+<header>
+    <h1 class="mt-5 center">{{ book.title|e }}</h1>
+    {% if book.subtitle %}
+        <h2 class="center">{{ book.subtitle|e }}</h2>
+    {% endif %}
+    {% if book.author %}
+        <h3 class="center mt-1"><em>{{ book.author|e }}</em></h3>
+    {% endif %}
+</header>

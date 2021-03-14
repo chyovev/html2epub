@@ -1,0 +1,69 @@
+html, body {
+  min-height: 100vh;
+}
+body {
+  text-align: justify;
+  padding: 5pt;
+}
+
+/* cover page*/
+.cover {
+  margin: 0px auto;
+  height: 100vh;
+}
+.cover img {
+  height: 100%;
+}
+
+/* common pages */
+.footnote-delimiter {
+    width: 50%;
+    margin: 0px;
+}
+.chapter-title {
+  margin-top: 20%;
+}
+.no-body {
+  margin-top: 40%;
+}
+
+.center {
+  text-align: center;
+}
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.full {
+  text-align: justify;
+}
+p {
+  margin: 0px;
+}
+p:not(.noindent) {
+  text-indent: 2em;
+}
+.pb-1 { padding-bottom: 1em; }
+.pt-1 { padding-top: 1em; }
+.pb-2 { padding-bottom: 2em; }
+.pt-2 { padding-top: 2em; }
+.pb-5 { padding-bottom: 5em; }
+.pt-5 { padding-top: 5em; }
+.mb-1 { margin-bottom: 1em; }
+.mt-1 { margin-top: 1em; }
+.mb-2 { margin-bottom: 2em; }
+.mt-2 { margin-top: 2em; }
+.mb-5 { margin-bottom: 5em; }
+.mt-5 { margin-top: 5em; }
+
+.small-caps {
+  font-variant-caps: all-small-caps;
+  font-size: 1.1em;
+}
+
+/* copyright page */
+.copyright p {
+  text-indent: 0px;
+}

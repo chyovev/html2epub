@@ -1,6 +1,7 @@
 <?php
 
 use Base\Chapter as BaseChapter;
+use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Map\TableMap;
 use Ramsey\Uuid\Uuid;
@@ -21,11 +22,30 @@ class Chapter extends BaseChapter
         toArray as public toArrayTrait;
     }
 
+    // children are set in the creatTree() method of Book model
+    private $children;
+
+    // used on epub generation for toc.ncx and content.opf,
+    // set in setChapterProperties() method of Book model
+    private $partNumber;
+    private $playOrder;
+    
+
     ///////////////////////////////////////////////////////////////////////////
     // before creating a new record, a random UUID slug needs to be generated
     public function preInsert(ConnectionInterface $con = null) {
         $this->generateSlugUuid();
         return parent::preInsert($con);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // if the body is going to be empty, just set it to NULL
+    public function preSave(ConnectionInterface $con = null) {
+        if ( ! $this->getBody()) {
+            $this->setBody(NULL);
+        }
+
+        return true;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -55,6 +75,45 @@ class Chapter extends BaseChapter
         $result['slug'] = $uuid->toString();
 
         return $result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // NB! children are set in the createTree method of Book,
+    // so the default getChildren method of the NestedSetBehavior should be overwritten
+    // just the return the property, no DB data fetch
+    public function getChildren(Criteria $criteria = null, ConnectionInterface $con = null) {
+        return $this->children;
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////
+    public function setChildren($children): self {
+        $this->children = $children;
+
+        return $this;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function getPartNumber(): string {
+        return $this->partNumber;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function setPartNumber(string $number): self {
+        $this->partNumber = $number;
+
+        return $this;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function getPlayOrder(): string {
+        return $this->playOrder;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function setPlayOrder(string $number): self {
+        $this->playOrder = $number;
+
+        return $this;
     }
 
     ///////////////////////////////////////////////////////////////////////////

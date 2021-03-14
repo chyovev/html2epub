@@ -2310,6 +2310,19 @@ abstract class Book implements ActiveRecordInterface
             }
 
             ///////////////////////////////////////////////////////////////////////////
+            // get the image JSON decoded
+            public function getCoverImageData(): ?array {
+                $json = $this->getCoverImage();
+
+                if ( ! $json) {
+                    return NULL;
+                }
+
+                return \json_decode($json, true);
+
+            }
+
+            ///////////////////////////////////////////////////////////////////////////
             // get the name of the image
             public function getCoverImageName(): ?string {
                 $json = $this->getCoverImage();
@@ -2325,14 +2338,14 @@ abstract class Book implements ActiveRecordInterface
 
             ///////////////////////////////////////////////////////////////////////////
             // get the image path
-            public function getCoverImageSrc(): ?string {
+            public function getCoverImageSrc(bool $internal = false): ?string {
                 $name = $this->getCoverImageName();
 
                 if ( ! $name) {
                     return NULL;
                 }
 
-                return $this->getUploadPath() . $name;
+                return $this->getUploadPath($internal) . $name;
             }
 
             ///////////////////////////////////////////////////////////////////////////

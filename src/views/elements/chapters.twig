@@ -1,17 +1,17 @@
 <ol class="dd-list"{% if level == 0 %} id="chapters"{% endif %} data-level="{{ level }}">
     {% for item in chapters %}
-    <li class="dd-item{% if item['updated_at'] %} modified{% endif %}{% if item.id == chapter.id %} active{% endif %}" data-id="{{ item['slug'] }}">
+    <li class="dd-item{% if item.getUpdatedAt() %} modified{% endif %}{% if item.getSlugAsString() == chapter.id %} active{% endif %}" data-id="{{ item.getSlugAsString() }}">
         
         <div class="dd-handle">
-            <span class="title"><a href="{{ custom_url([{'controller': 'chapters', 'action': 'edit', 'book': book.slug, 'chapter': item['slug']}]) }}" class="edit-chapter no-handle">{{ item['title']|e }}</a></span>
+            <span class="title"><a href="{{ custom_url([{'controller': 'chapters', 'action': 'edit', 'book': book.slug, 'chapter': item.getSlugAsString()}]) }}" class="edit-chapter no-handle">{{ item.getTitle()|e }}</a></span>
             <span class="actions no-handle">
                 <a href="{{ custom_url([{'controller': 'chapters', 'action': 'add', 'book': book.slug}]) }}" class="add-chapter" title="Add sub-chapter"><img src="{{ root }}img/add.png" class="no-handle mr-2" /></a>
-                <a href="{{ custom_url([{'controller': 'chapters', 'action': 'edit', 'book': book.slug, 'chapter': item['slug']}]) }}" class="edit-chapter" title="Edit"><img src="{{ root }}img/edit.png" class="no-handle mr-2" /></a>
-                <a href="{{ custom_url([{'controller': 'chapters', 'action': 'delete', 'book': book.slug, 'chapter': item['slug']}]) }}" class="delete-chapter" title="Delete"><img src="{{ root }}img/delete.png" class="no-handle mr-2" /></a>
+                <a href="{{ custom_url([{'controller': 'chapters', 'action': 'edit', 'book': book.slug, 'chapter': item.getSlugAsString()}]) }}" class="edit-chapter" title="Edit"><img src="{{ root }}img/edit.png" class="no-handle mr-2" /></a>
+                <a href="{{ custom_url([{'controller': 'chapters', 'action': 'delete', 'book': book.slug, 'chapter': item.getSlugAsString()}]) }}" class="delete-chapter" title="Delete"><img src="{{ root }}img/delete.png" class="no-handle mr-2" /></a>
             </span>
         </div>
-        {% if item['children'] %}
-            {{ include('elements/chapters.twig', {chapters: item['children'], level: level+1}) }}
+        {% if item.getChildren() %}
+            {{ include('elements/chapters.twig', {chapters: item.getChildren(), level: level+1}) }}
         {% endif %}
     </li>
     {% endfor %}

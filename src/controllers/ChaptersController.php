@@ -26,12 +26,12 @@ class ChaptersController extends AppController {
             'metaTitle'   => $chapter->getTitle() . ' | ' . $book->getTitle(),
             'title'       => $book->getTitle(),
             'chapter'     => $chapter->toArray(),
-            'toc'         => BookQuery::getChaptersAsNestedSet($book),
+            'toc'         => $book->getChaptersAsNestedSet(),
             'wideHeader'  => true,
             'breadcrumbs' => $breadcrumbs,
         ];
 
-        $this->_setView('books/add', $viewVars);
+        $this->displayFullPage('books/add', $viewVars);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ class ChaptersController extends AppController {
             $status = false;
         }
 
-        $this->twig->renderJSONContent(['status' => $status]);
+        $this->renderJSONContent(['status' => $status]);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -101,7 +101,7 @@ class ChaptersController extends AppController {
             ];
         }
 
-        $this->twig->renderJSONContent($response);
+        $this->renderJSONContent($response);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -126,7 +126,7 @@ class ChaptersController extends AppController {
             $status = false;
         }
 
-        $this->twig->renderJSONContent(['status' => $status]);
+        $this->renderJSONContent(['status' => $status]);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -137,10 +137,10 @@ class ChaptersController extends AppController {
 
         $viewVars = [
             'metaTitle'   => $chapter->getTitle() . ' | ' . $book->getTitle() . META_SUFFIX,
-            'html'        => $this->twig->render('books/chapter-details.twig', ['chapter'     => $chapter->toArray()]),
-            'breadcrumbs' => $this->twig->render('elements/breadcrumb.twig',   ['breadcrumbs' => $breadcrumbs]),
+            'html'        => $this->renderTemplate('books/chapter-details.twig', ['chapter'     => $chapter->toArray()]),
+            'breadcrumbs' => $this->renderTemplate('elements/breadcrumb.twig',   ['breadcrumbs' => $breadcrumbs]),
         ];
-        $this->twig->renderJSONContent($viewVars);
+        $this->renderJSONContent($viewVars);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -165,10 +165,10 @@ class ChaptersController extends AppController {
             'status'      => $status,
             'errors'      => $errors,
             'flash'       => $this->generateFlashHtml(),
-            'breadcrumbs' => $this->twig->render('elements/breadcrumb.twig', ['breadcrumbs' => $breadcrumbs]),
+            'breadcrumbs' => $this->renderTemplate('elements/breadcrumb.twig', ['breadcrumbs' => $breadcrumbs]),
         ];
 
-        $this->twig->renderJSONContent($response);
+        $this->renderJSONContent($response);
     }
 
 }

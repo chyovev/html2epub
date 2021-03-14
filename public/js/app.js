@@ -199,7 +199,7 @@ var App = {
             content_css : [_root + 'public/css/tinymce.css'],
             menubar: false,
             plugins: [
-                "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+                "advlist lists link image charmap print preview hr anchor pagebreak",
                 "searchreplace wordcount visualblocks visualchars code fullscreen",
                 "insertdatetime media nonbreaking save directionality",
                 "template paste textcolor colorpicker textpattern footnotes",
@@ -237,11 +237,13 @@ var App = {
             custom_undo_redo_levels: 10,
             paste_as_text: true,
             indentation: '2em',
+            toolbar_mode: 'sliding',
             min_height: 400,
             height: 600,
             max_height: 900,
             keep_styles: false,
             elementpath: false,
+            contextmenu: false,
             setup: function(editor) {
                 editor.on('init', function(e) {
                     App.fadeInContent();

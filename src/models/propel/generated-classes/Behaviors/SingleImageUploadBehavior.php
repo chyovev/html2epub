@@ -127,6 +127,19 @@ class SingleImageUploadBehavior extends Behavior {
         }
 
         ///////////////////////////////////////////////////////////////////////////
+        // get the image JSON decoded
+        public function ' . $getFunction . 'Data(): ?array {
+            $json = $this->' . $getFunction . '();
+
+            if ( ! $json) {
+                return NULL;
+            }
+
+            return \json_decode($json, true);
+
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
         // get the name of the image
         public function ' . $getFunction . 'Name(): ?string {
             $json = $this->' . $getFunction . '();
@@ -142,14 +155,14 @@ class SingleImageUploadBehavior extends Behavior {
 
         ///////////////////////////////////////////////////////////////////////////
         // get the image path
-        public function ' . $getFunction . 'Src(): ?string {
+        public function ' . $getFunction . 'Src(bool $internal = false): ?string {
             $name = $this->' . $getFunction . 'Name();
 
             if ( ! $name) {
                 return NULL;
             }
 
-            return $this->getUploadPath() . $name;
+            return $this->getUploadPath($internal) . $name;
         }
 
         ///////////////////////////////////////////////////////////////////////////

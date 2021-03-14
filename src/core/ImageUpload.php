@@ -1,5 +1,7 @@
 <?php
 
+use FileSystem as FS;
+
 class ImageUpload  {
 
     const UPLOAD_ERRORS = [
@@ -194,21 +196,11 @@ class ImageUpload  {
     protected function validateLocation(string $path): void {
         $basename = basename($path);
 
-        // make sure the provided path is a folder in case it exists
-        if (file_exists($path) && ! is_dir($path)) {
-            throw new Exception(sprintf("'%s' already exists and it's not a folder", $basename));
-        }
-
         // if the folder does not exist, try to create it
-        if ( ! file_exists($path)) {
-            $create = @mkdir($path, 0777, true);
-            if ( ! $create) {
-                throw new Exception(sprintf("'%s' folder does not exist and could not be created.", $basename));
-            }
-        }
-
+        FS::createFolder($path);
+        
         // make sure its writeable
-        if ( ! is_writable($path)) {
+        if ( ! FS::isWriteable($path)) {
             throw new Exception(sprintf("'%s' folder has no write permissions.", $basename));
         }
     }
@@ -264,7 +256,7 @@ class ImageUpload  {
         do {
             $this->generateUniqueFileName();
         }
-        while (file_exists($this->getFullPath()));
+        while (FS::exists($this->getFullPath()));
 
         // validate against constraints:
         // check if extension (suffix of mime type) is allowed

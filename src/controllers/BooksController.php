@@ -5,7 +5,7 @@ class BooksController extends AppController {
     ///////////////////////////////////////////////////////////////////////////
     public function index() {
         $books = BookQuery::create()->orderById();
-        $this->_setView('books/index', ['books' => $books]);
+        $this->displayFullPage('books/index', ['books' => $books]);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ class BooksController extends AppController {
             'breadcrumbs' => [['Books', Router::url(['controller' => 'books', 'action' => 'index'])], ['Add new book', NULL], $book->getTitle()],
         ];
 
-        $this->_setView('books/add', $viewVars);
+        $this->displayFullPage('books/add', $viewVars);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -47,12 +47,12 @@ class BooksController extends AppController {
             'book'       => $book,
             'metaTitle'  => $book->getTitle(),
             'title'      => $book->getTitle(),
-            'toc'        => BookQuery::getChaptersAsNestedSet($book),
+            'toc'        => $book->getChaptersAsNestedSet(),
             'wideHeader' => true,
             'breadcrumbs' => $breadcrumbs,
         ];
 
-        $this->_setView('books/add', $viewVars);
+        $this->displayFullPage('books/add', $viewVars);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ class BooksController extends AppController {
                 'status' => $status,
                 'url'    => $booksIndexUrl,
             ];
-            $this->twig->renderJSONContent($response);
+            $this->renderJSONContent($response);
         }
 
         // regular requests should be redirected to books index page
@@ -119,7 +119,7 @@ class BooksController extends AppController {
             'flash'  => $this->generateFlashHtml(),
         ];
         
-        $this->twig->renderJSONContent($response);
+        $this->renderJSONContent($response);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -138,11 +138,11 @@ class BooksController extends AppController {
 
         $viewVars = [
             'metaTitle'   => $book->getTitle() . META_SUFFIX,
-            'html'        => $this->twig->render('books/book-details.twig',  ['book'        => $book]),
-            'breadcrumbs' => $this->twig->render('elements/breadcrumb.twig', ['breadcrumbs' => $breadcrumbs]),
+            'html'        => $this->renderTemplate('books/book-details.twig',  ['book'        => $book]),
+            'breadcrumbs' => $this->renderTemplate('elements/breadcrumb.twig', ['breadcrumbs' => $breadcrumbs]),
         ];
 
-        $this->twig->renderJSONContent($viewVars);
+        $this->renderJSONContent($viewVars);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -172,16 +172,16 @@ class BooksController extends AppController {
         // send cover image HTML in case it was altered
         $newImg = $book->getCoverImageSrc();
         if ($oldImg !== $newImg) {
-            $response['image'] = $this->twig->render('elements/book-cover-image.twig', ['book' => $book]);
+            $response['image'] = $this->renderTemplate('elements/book-cover-image.twig', ['book' => $book]);
         }
 
         // when editing, the title may change which should be applied to the breadcrumb
         if ( ! $isNew) {
             $breadcrumbs             = [['Books', Router::url(['controller' => 'books', 'action' => 'index'])], [$book->getTitle(), NULL], 'Edit'];
-            $response['breadcrumbs'] = $this->twig->render('elements/breadcrumb.twig', ['breadcrumbs' => $breadcrumbs]);
+            $response['breadcrumbs'] = $this->renderTemplate('elements/breadcrumb.twig', ['breadcrumbs' => $breadcrumbs]);
         }
 
-        $this->twig->renderJSONContent($response);
+        $this->renderJSONContent($response);
     }
 
 }

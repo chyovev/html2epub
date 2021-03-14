@@ -17,22 +17,36 @@ class ExtendedTwig extends Environment {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // generating a full page with header, footer and content template
+    // load full page using header, footer and content template
+    // and print it on screen
     public function view(string $template, array $viewVars = []): void {
-        // set the flash message if any
-        $this->addGlobals($viewVars);
-        
-        $html  = parent::render('/layout/header.twig');
-        $html .= parent::render($template . '.twig', ['flash' => FlashMessage::getFlashMessage()]);
-        $html .= parent::render('/layout/footer.twig');
-
+        $html = $this->renderFullPage($template, $viewVars);
         print($html);
         exit;
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    // load full page using header, footer and content template,
+    // but return it as a string instead of printing it
+    public function renderFullPage(string $template, array $viewVars = []): string {
+        // flash messages are global and as such
+        // are always passed to templates by default
+        $global = ['flash' => FlashMessage::getFlashMessage()];
+
+        // merge global with user-passed vars
+        // and pass the result to all templates
+        $vars   = array_merge($global, $viewVars);
+
+        $html  = parent::render('/layout/header.twig', $vars);
+        $html .= parent::render($template . '.twig', $vars);
+        $html .= parent::render('/layout/footer.twig', $vars);
+
+        return $html;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
     public function renderJSONContent($array): void {
-        if (!is_array($array)) {
+        if ( ! is_array($array)) {
             $array = [$array];
         }
 

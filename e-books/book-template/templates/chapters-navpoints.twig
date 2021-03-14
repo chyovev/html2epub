@@ -1,0 +1,9 @@
+{% for item in chapters %}
+<navPoint id="{{ item.getPartNumber() }}" playOrder="{{ playOrder + item.getPlayOrder() }}">
+    <navLabel>
+        <text>{{ item.getTitle()|e|trim }}</text>
+    </navLabel>
+    <content src="{{ item.getPartNumber() }}.xhtml"/>
+    {{ include('chapters-navpoints.twig', {chapters: item.getChildren()}) }}
+</navPoint>
+{% endfor %}

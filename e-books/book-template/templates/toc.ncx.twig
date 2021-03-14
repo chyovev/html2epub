@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="{{ book.getLanguage().getLocale()|slice(0, 2) }}">
+    <head>
+        {% if book.getIsbn() %}
+            <meta name="dtb:uid" content="urn:isbn:{{ book.getIsbn()|e|trim }}"/>
+        {% endif %}
+        <meta name="dtb:depth" content="{{ book.getDepth() }}" />
+        <meta name="dtb:totalPageCount" content="0" />
+        <meta name="dtb:maxPageNumber" content="0" />
+    </head>
+    <docTitle>
+        <text>{{ book.getTitle()|e|trim }}</text>
+    </docTitle>
+    {% if book.getAuthor() %}
+        <docAuthor>
+            <text>{{ book.getAuthor()|e|trim }}</text>
+        </docAuthor>
+    {% endif %}
+    <navMap>
+        {% if book.getCoverImage() %}
+            <navPoint id="coverpage" playOrder="{% set playOrder = 1 %}{{ playOrder }}">
+                <navLabel>
+                    <text>Book Cover</text>
+                </navLabel>
+                <content src="coverpage.xhtml"/>
+            </navPoint>
+        {% endif %}
+        <navPoint id="titlepage" playOrder="{% set playOrder = playOrder + 1 %}{{ playOrder }}">
+            <navLabel>
+                <text>Title Page</text>
+            </navLabel>
+            <content src="titlepage.xhtml"/>
+        </navPoint>
+        {{ include('chapters-navpoints.twig') }}
+        <navPoint id="copyright" playOrder="{{ playOrder + book.getChapterCount() + 1 }}">
+            <navLabel>
+                <text>Copyright</text>
+            </navLabel>
+            <content src="copyright.xhtml" />
+        </navPoint>
+    </navMap>
+</ncx>

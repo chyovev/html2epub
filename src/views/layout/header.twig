@@ -16,5 +16,10 @@
                 <a href="{{ root }}"><img src="{{root}}img/html2epub.svg" class="logo w-100" alt="Logo" /></a>
             </div>
             <div class="title{% if not wideHeader %} homepage{% else %} text-center{% endif %} font-weight-bold text-uppercase d-table-cell align-middle pl-4 h5">{% if title %}{{ title|e }}{% else %}Free online ePub generator{% endif %}</div>
+            {% if _controller in ['books', 'chapters'] and _action == 'edit' %}
+            <div class="publish- d-table-cell align-middle text-right convert">
+                <a href="{{ custom_url([{'controller': 'publish', 'action': 'index', 'book': book.slug}]) }}" title="Convert to ePub"><img src="{{root}}img/convert.png" class="w-100" alt="Convert" /></a>
+            </div>
+            {% endif %}
         </header>
         <section>

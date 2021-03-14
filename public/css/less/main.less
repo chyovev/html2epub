@@ -255,3 +255,15 @@ button {
     max-width: 25px;
     max-height: 25px;
 }
+.convert {
+    width: 180px;
+    opacity: .85;
+    transition: opacity 0.3s, transform 0.1s;
+    @media @mobile {
+        width: 80px;
+    }
+    &:hover {
+        opacity: 1;
+        transform: scale(103%);
+    }
+}
