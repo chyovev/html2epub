@@ -4,6 +4,7 @@ use Base\Book as BaseBook;
 use FileSystem as FS;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Skeleton subclass for representing a row from the 'books' table.
@@ -16,6 +17,9 @@ use Propel\Runtime\Connection\ConnectionInterface;
  */
 class Book extends BaseBook
 {
+    // used for generating UUIDv3 of Book
+    const HTML2EPUB_BOOK = '4bdbe8ec-5cb5-11ea-bc55-0242ac130003';
+
     use FormatDataTrait;
 
     private $depth        = 0; // how deep the chapters go, used in toc.ncx
@@ -26,6 +30,20 @@ class Book extends BaseBook
     public function postDelete(ConnectionInterface $con = null) {
         $path = BOOKS_PATH . '/generated/' . $book->getId();
         FS::deleteFolder($path);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function getIdAsUuid(): Uuid {
+        $id   = $this->getId();
+
+        return Uuid::uuid3(self::HTML2EPUB_BOOK, $id);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public function getIdAsUuidString(): string {
+        $uuid = $this->getIdAsUuid();
+
+        return $uuid->toString();
     }
 
     ///////////////////////////////////////////////////////////////////////////

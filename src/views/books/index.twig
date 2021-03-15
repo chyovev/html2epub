@@ -37,6 +37,7 @@
             <td>{{ book.created_at|date('d.m.Y @ H:i') }}</td>
             <td>{{ book.updated_at|date('d.m.Y @ H:i') }}</td>
             <td class="text-center">
+                <a href="{{ custom_url([{controller: 'publish', action: 'index', book: book.slug}]) }}" class="btn btn-sm btn-success">Download</a>
                 <a href="{{ custom_url([{'action': 'edit', 'book': book.slug}]) }}" class="btn btn-sm btn-primary">Edit</a>
                 <a href="{{ custom_url([{'action': 'delete', 'book': book.slug}]) }}" class="btn btn-sm btn-danger delete">Delete</a>
             </td>

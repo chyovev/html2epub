@@ -1,4 +1,4 @@
-<package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/"{% if book.isbn %} unique-identifier="isbn"{% endif %} version="3.0">
+<package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/" unique-identifier="{% if book.isbn %}isbn{% else %}uuid{% endif %}" version="3.0">
     <metadata>
         <dc:title id="title">{{ book.title|e|trim }}</dc:title>
         <meta refines="#title" property="title-type">main</meta>
@@ -15,6 +15,8 @@
         {% endif %}
         {% if book.isbn %}
             <dc:identifier id="isbn">urn:isbn:{{ book.isbn|e|replace({'-': ''})|trim }}</dc:identifier>
+        {% else %}
+            <dc:identifier id="uuid">urn:uuid:{{ book.getIdAsUuidString()|e|replace({'-': ''})|trim }}</dc:identifier>
         {% endif %}
         <dc:type>Text</dc:type>
         <dc:date>{{ book.getCreatedAt('Y-m-d\\TH:i:s\\Z') }}</dc:date>
