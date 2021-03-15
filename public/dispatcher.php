@@ -2,8 +2,8 @@
 require_once('../src/autoload.php');
 require_once(CONTROLLER_PATH . '/AppController.php');
 
-$twig = initiateTwig();
-$logger = initiateMonologLogger();
+$twig   = Initializer::twig();
+$logger = Initializer::monolog();
 
 $directDispatcherRequest = preg_match('/\/'. preg_quote(basename(__FILE__)) . '/i', $_SERVER['REQUEST_URI']);
 

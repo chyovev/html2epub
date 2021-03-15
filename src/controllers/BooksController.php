@@ -76,7 +76,7 @@ class BooksController extends AppController {
         $booksIndexUrl = Router::url(['controller' => 'books', 'action' => 'index']);
 
         // ajax requests to delete a book should receive a JSON response
-        if (isRequestAjax()) {
+        if (Request::isAjax()) {
             $response = [
                 'status' => $status,
                 'url'    => $booksIndexUrl,
@@ -93,7 +93,7 @@ class BooksController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     public function deleteImage() {
-        if ( ! isRequestAjax()) {
+        if ( ! Request::isAjax()) {
             return;
         }
 
@@ -130,7 +130,7 @@ class BooksController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     protected function _processAjaxGetRequest(Book $book, array $breadcrumbs): void {
-        if ( ! (isRequestAjax() && isRequest('GET'))) {
+        if ( ! (Request::isAjax() && Request::isGet())) {
             return;
         }
 
@@ -147,14 +147,14 @@ class BooksController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     protected function _processAjaxPostRequest(Book $book, bool $isNew = false): void {
-        if ( ! (isRequestAjax() && isRequest('POST'))) {
+        if ( ! (Request::isAjax() && Request::isPost())) {
             return;
         }
 
         $oldSlug = $book->getSlug();
         $oldImg  = $book->getCoverImageSrc();
 
-        $book->fromArray(getRequestVariables('POST'));
+        $book->fromArray(Request::getVars('POST'));
 
         $status = (bool) $this->saveWithValidation($book);
         $errors = $this->reorganizeValidationErrors($book->getValidationFailures());

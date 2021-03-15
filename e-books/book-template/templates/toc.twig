@@ -41,9 +41,6 @@
     <nav epub:type="landmarks" role="directory" class="mt-2">
         <h2 class="center mb-1">Book Navigation</h2>
         <ol>
-            <li>
-                <a epub:type="toc" href="toc.xhtml">Table of Contents</a>
-            </li>
             {% if book.getCoverImage() %}
             <li>
                 <a epub:type="cover" href="coverpage.xhtml">Book Cover</a>
@@ -62,6 +59,9 @@
                 <a epub:type="bodymatter" href="{{ chapters[0].getPartNumber() }}.xhtml">{{ chapters[0].getTitle() }}</a>
             </li>
             {% endif %}
+            <li>
+                <a epub:type="toc" href="toc.xhtml">Table of Contents</a>
+            </li>
             <li>
                 <a epub:type="copyright-page" href="copyright.xhtml">Copyright</a>
             </li>

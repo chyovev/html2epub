@@ -241,7 +241,7 @@ var App = {
             custom_undo_redo_levels: 10,
             paste_as_text: true,
             indentation: '2em',
-            toolbar_mode: 'sliding',
+            toolbar_mode: 'floating',
             min_height: 400,
             height: 600,
             max_height: 900,

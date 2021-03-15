@@ -8,6 +8,15 @@
     <script type="text/javascript" src="{{root}}js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="{{root}}js/script.js"></script>
     <link type="text/css" rel="stylesheet" href="{{root}}css/style.css" />
+    <link rel="apple-touch-icon" sizes="120x120" href="{{root}}img/favicon/apple-touch-icon.png" />
+    <link rel="apple-touch-icon-precomposed" type="image/png" href="{{root}}img/favicon/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{root}}img/favicon/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{root}}img/favicon/favicon-16x16.png" />
+    <link rel="shortcut icon" href="{{root}}img/favicon/favicon.ico" />
+    <link rel="manifest" href="{{root}}img/favicon/site.webmanifest" />
+    <link rel="mask-icon" href="{{root}}img/favicon/favicon.png" color="#F0F0F0" />
+    <meta name="msapplication-TileColor" content="#F0F0F0" />
+    <meta name="theme-color" content="#F0F0F0" />
 </head>
 <body class="pt-sm-5 pb-sm-1 pl-3 pr-3">
     <div class="body-wrap mx-auto p-4 rounded-lg">
@@ -18,7 +27,7 @@
             <div class="title{% if not wideHeader %} homepage{% else %} text-center{% endif %} font-weight-bold text-uppercase d-table-cell align-middle pl-4 h5">{% if title %}{{ title|e }}{% else %}Free online ePub generator{% endif %}</div>
             {% if _controller in ['books', 'chapters'] and _action == 'edit' %}
             <div class="publish- d-table-cell align-middle text-right convert">
-                <a href="{{ custom_url([{'controller': 'publish', 'action': 'index', 'book': book.slug}]) }}" title="Convert to ePub"><img src="{{root}}img/convert.png" class="w-100" alt="Convert" /></a>
+                <a href="{{ custom_url([{'controller': 'publish', 'action': 'index', 'book': book.slug}]) }}" title="Convert to ePub" data-placement="bottom" class="d-block"><img src="{{root}}img/convert.png" class="w-100" alt="Convert" /></a>
             </div>
             {% endif %}
         </header>

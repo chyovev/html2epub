@@ -40,10 +40,10 @@ class ChaptersController extends AppController {
         $book     = BookQuery::create()->findOneBySlug($bookSlug);
 
         // if the request is not POST or there's no such book, abort
-        $this->_throw404OnEmpty(isRequest('POST') && $book);
+        $this->_throw404OnEmpty(Request::isPost() && $book);
 
         $chapters = $book->getChapters();
-        $postData = getPostRequestVar('chapters');
+        $postData = Request::getPostVar('chapters');
 
         // iterate through all chapters
         // and set new values for the tree properties using the POST request
@@ -77,7 +77,7 @@ class ChaptersController extends AppController {
         $book     = BookQuery::create()->findOneBySlug($bookSlug);
 
         // if the request is not AJAX or there's no such book, abort
-        $this->_throw404OnEmpty(isRequestAjax() && $book);
+        $this->_throw404OnEmpty(Request::isAjax() && $book);
 
         $chapter = new Chapter();
         $chapter->setTitle('New chapter')
@@ -106,7 +106,7 @@ class ChaptersController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     public function delete() {
-        if ( ! (isRequestAjax() && isRequest('GET'))) {
+        if ( ! (Request::isAjax() && Request::isGet())) {
             return;
         }
 
@@ -131,7 +131,7 @@ class ChaptersController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     protected function _processAjaxGetRequest(Book $book, Chapter $chapter, array $breadcrumbs = []): void {
-        if ( ! (isRequestAjax() && isRequest('GET'))) {
+        if ( ! (Request::isAjax() && Request::isGet())) {
             return;
         }
 
@@ -145,11 +145,11 @@ class ChaptersController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     protected function _processAjaxPostRequest(Book $book, Chapter $chapter): void {
-        if ( ! (isRequestAjax() && isRequest('POST'))) {
+        if ( ! (Request::isAjax() && Request::isPost())) {
             return;
         }
 
-        $chapter->fromArray(getRequestVariables('POST'));
+        $chapter->fromArray(Request::getVars('POST'));
         // updated_at field is excluded from timestampable behavior
         // as TOC updates should not have exert on it
         // (this is also why it's not set in the preUpdate model listener)
