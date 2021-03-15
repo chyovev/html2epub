@@ -31,6 +31,6 @@
             <p>{{ book.extra_info|e|nl2br }}</p>
         {% endif %}
         <br />
-        <p>Copyright &copy; {% if book.year %}{{ book.year }}, {%endif %}{{ book.publisher|default(book.author)|e }}. All rights reserved.</p>
+        <p>Copyright © {% if book.year %}{{ book.year }}, {%endif %}{{ book.publisher|default(book.author)|e }}. All rights reserved.</p>
         <br />
     </div>

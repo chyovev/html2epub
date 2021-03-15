@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns:epub="http://www.idpf.org/2007/ops" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml" xml:lang="{{ book.getLanguage().getLocale()|slice(0, 2) }}" lang="{{ book.getLanguage().getLocale()|slice(0, 2) }}">
+<head>
+    <title>Table of Contents</title>
+    <link rel="stylesheet" type="text/css" href="css/html2epub.css" />
+    <meta charset="utf-8"/>
+</head>
+<body>
+    <nav id="toc" epub:type="toc" role="doc-toc">
+        <h2 class="center mb-1">Table of Contents</h2>
+        <ol>
+            {% if book.getCoverImage() %}
+            <li>
+                <a href="coverpage.xhtml">Book Cover</a>
+            </li>
+            {% endif %}
+            <li>
+                <a href="titlepage.xhtml">Title Page</a>
+            </li>
+            {% if book.getDedication() %}
+            <li>
+                <a href="intro.xhtml">Intro</a>
+            </li>
+            {% endif %}
+            {% for item in chapters %}
+            <li>
+                <a href="{{ item.getPartNumber() }}.xhtml">{{ item.getTitle()|e|trim }}</a>
+                {{ include('toc-sublevel.twig', {chapters: item.getChildren()}) }}
+            </li>
+            {% endfor %}
+            <li>
+                <a href="toc.xhtml">Table of Contents</a>
+            </li>
+            <li>
+                <a href="copyright.xhtml">Copyright</a>
+            </li>
+        </ol>
+    </nav>
+
+    <nav epub:type="landmarks" role="directory" class="mt-2">
+        <h2 class="center mb-1">Book Navigation</h2>
+        <ol>
+            <li>
+                <a epub:type="toc" href="toc.xhtml">Table of Contents</a>
+            </li>
+            {% if book.getCoverImage() %}
+            <li>
+                <a epub:type="cover" href="coverpage.xhtml">Book Cover</a>
+            </li>
+            {% else %}
+            <li>
+                <a epub:type="cover" href="titlepage.xhtml">Title Page</a>
+            </li>
+            {% endif %}
+            {% if book.getDedication() %}
+            <li>
+                <a epub:type="bodymatter" href="intro.xhtml">Intro</a>
+            </li>
+            {% else %}
+            <li>
+                <a epub:type="bodymatter" href="{{ chapters[0].getPartNumber() }}.xhtml">{{ chapters[0].getTitle() }}</a>
+            </li>
+            {% endif %}
+            <li>
+                <a epub:type="copyright-page" href="copyright.xhtml">Copyright</a>
+            </li>
+        </ol>
+    </nav>
+</body>
+</html>

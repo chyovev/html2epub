@@ -1,18 +1,10 @@
-html, body {
-  min-height: 100vh;
-}
 body {
   text-align: justify;
-  padding: 5pt;
+  padding: 10pt;
 }
-
-/* cover page*/
-.cover {
-  margin: 0px auto;
-  height: 100vh;
-}
-.cover img {
-  height: 100%;
+body.nopadding {
+    padding: 0px;
+    margin: 0px;
 }
 
 /* common pages */
@@ -41,9 +33,10 @@ body {
 }
 p {
   margin: 0px;
-}
-p:not(.noindent) {
   text-indent: 2em;
+}
+p.noindent {
+  text-indent: 0em;
 }
 .pb-1 { padding-bottom: 1em; }
 .pt-1 { padding-top: 1em; }
@@ -59,11 +52,16 @@ p:not(.noindent) {
 .mt-5 { margin-top: 5em; }
 
 .small-caps {
-  font-variant-caps: all-small-caps;
+  font-variant: small-caps;
   font-size: 1.1em;
 }
 
 /* copyright page */
 .copyright p {
   text-indent: 0px;
+}
+
+/* table of contents */
+nav ol {
+    list-style: disc;
 }

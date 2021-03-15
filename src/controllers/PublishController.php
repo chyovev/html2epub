@@ -78,7 +78,7 @@ class PublishController extends AppController {
     ///////////////////////////////////////////////////////////////////////////
     // generate cover page only if there's a cover image
     private function generateCoverPage(Book $book): void {
-        if ($book->getCoverImageName()) {
+        if ($imageData = $book->getCoverImageData()) {
             $sourcePath = $book->getCoverImageSrc(true);
             $ext        = pathinfo($sourcePath, PATHINFO_EXTENSION);
             $fileName   = sprintf('%s-cover.%s', $book->getSlug(), $ext);
@@ -87,7 +87,13 @@ class PublishController extends AppController {
             // copy cover image
             FS::copy($sourcePath, $targetPath);
 
-            $this->generateXHTMLPage('coverpage', NULL, ['fileName' => $fileName]);
+            $viewVars = [
+                'fileName'  => $fileName,
+                'imageData' => $imageData,
+                'bodyClass' => 'nopadding',
+            ];
+
+            $this->generateXHTMLPage('coverpage', NULL, $viewVars);
         }
     }
 
@@ -105,7 +111,7 @@ class PublishController extends AppController {
     // generate dedication page only if there's book dedication
     private function generateDedicationPage(Book $book): void {
         if ($book->getDedication()) {
-            $this->generateXHTMLPage('dedication');
+            $this->generateXHTMLPage('dedication', 'intro');
         }
     }
 
@@ -140,24 +146,21 @@ class PublishController extends AppController {
             preg_match_all($footMarkup, $body, $matches);
 
             // cycle through all footnote markup matches (if any)
-            foreach ($matches[1] as $key => $note) {
+            foreach ($matches[2] as $key => $note) {
                 $id          = $key + 1;
 
                 // replace the note button with actual link
-                $placeholder = $matches[0][$key];
-                $replacement = '<sup><a href="#meaning-' . $id . '" id="note-' . $id . '">[' . $id . ']</a></sup>';
+                $placeholder = $matches[1][$key];
+                $replacement = '<a href="#meaning-' . $id . '" id="note-' . $id . '">[' . $id . ']</a>';
                 $body        = str_replace($placeholder, $replacement, $body);
 
                 // decode the note and append it to the footnotes array
                 $footnotes[] = '<a href="#note-' . $id . '" id="meaning-' . $id . '">[' . $id . ']</a> ' . urldecode($note);
             }
-
-            // if there were any footnotes detected,
-            // replace the chapter body with the updated one
-            if ($footnotes) {
-                $chapter->setBody($body);
-            }
         }
+
+        // decode all HTML entities but skip the XHTML-supported ones
+        $chapter->setBody(decode_html($body, ['<', '>', '&']));
 
         return $footnotes;
     }
@@ -190,6 +193,7 @@ class PublishController extends AppController {
             'chapters' => $book->getChaptersAsNestedSet(),
         ];
 
+        $this->generateMiscPage('toc.twig', 'toc.xhtml', $viewVars);
         $this->generateMiscPage('toc.ncx.twig', 'toc.ncx', $viewVars);
     }
 
@@ -226,6 +230,9 @@ class PublishController extends AppController {
         $zip      = new ZipArchive();
         $zip->open($fileName, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
+        // mimetype should be the first file in the archive (epub validation)
+        $zip->addFile($path . '/mimetype', 'mimetype');
+
         $files = new RIIterator(new RDIterator($path), RIIterator::LEAVES_ONLY);
 
         foreach ($files as $name => $file) {
@@ -256,6 +263,7 @@ class PublishController extends AppController {
         header('Content-Length: ' . filesize($fileName));
         ob_end_flush();
         @readfile($fileName);
+        FS::delete($fileName);
         exit;
     }
 

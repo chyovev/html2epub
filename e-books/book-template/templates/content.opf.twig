@@ -1,26 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="pub-id"
-  prefix="dc: http://purl.org/dc/elements/1.1/">
-
-    <metadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:opf="http://www.idpf.org/2007/opf" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/"{% if book.isbn %} unique-identifier="isbn"{% endif %} version="3.0">
+    <metadata>
         <dc:title id="title">{{ book.title|e|trim }}</dc:title>
+        <meta refines="#title" property="title-type">main</meta>
         {% if book.author %}
             <dc:creator id="author">{{ book.author|e|trim }}</dc:creator>
             <meta refines="#author" property="role" scheme="marc:relators">aut</meta>
         {% endif %}
-        <dc:language id="language">{{ book.getLanguage().getLocale()|slice(0, 2) }}</dc:language>
+        <dc:language>{{ book.getLanguage().getLocale()|slice(0, 2) }}</dc:language>
         {% if book.publisher %}
             <dc:publisher>{{ book.publisher|e|trim }}</dc:publisher>
         {% endif %}
         {% if book.publisher or book.author %}
             <dc:rights>{{ book.publisher|default(book.author)|e|trim }}{% if book.year %}, {{ book.year|e|trim }}{% endif %}</dc:rights>
         {% endif %}
-        <meta property="dc:contributor">HTML2ePub</meta>
         {% if book.isbn %}
-            <dc:identifier id="isbn">urn:isbn:{{ book.isbn|e|trim }}</dc:identifier>
+            <dc:identifier id="isbn">urn:isbn:{{ book.isbn|e|replace({'-': ''})|trim }}</dc:identifier>
         {% endif %}
-        <dc:date>{{ book.getCreatedAt('c') }}</dc:date>
-        <meta property="dcterms:modified">{{ book.getUpdatedAt('c') }}</meta>
+        <dc:type>Text</dc:type>
+        <dc:date>{{ book.getCreatedAt('Y-m-d\\TH:i:s\\Z') }}</dc:date>
+        <meta property="dcterms:modified">{{ book.getUpdatedAt('Y-m-d\\TH:i:s\\Z') }}</meta>
+        <meta name="generator" content="HTML2ePub" />
         {% if book.getCoverImageName() %}
             <meta name="cover" content="cover-image" />
         {% endif %}
@@ -29,20 +28,20 @@
     <manifest>
         <item href="css/html2epub.css" id="stylesheet" media-type="text/css" />
         <item href="images/html2epub-logo.jpg" id="html2epub-logo" media-type="image/jpeg" />
-        <item href="images/footnote-line.jpg" id="footnote-line" media-type="image/jpeg" />
         {% if book.getCoverImage() %}
             <item href="images/{{ fileName }}" id="cover-image" media-type="{{ mimeType }}" />
-            <item href="coverpage.xhtml" id="coverpage" media-type="application/xhtml+xml" />
+            <item href="coverpage.xhtml" id="coverpage" media-type="application/xhtml+xml" properties="svg" />
         {% endif %}
         <item href="titlepage.xhtml" id="titlepage" media-type="application/xhtml+xml" />
         {% if book.getDedication() %}
-            <item href="dedication.xhtml" id="dedication" media-type="application/xhtml+xml" />
+            <item href="intro.xhtml" id="intro" media-type="application/xhtml+xml" />
         {% endif %}
         {% for item in chapters %}
             <item href="{{ item.getPartNumber() }}.xhtml" id="{{ item.getPartNumber() }}" media-type="application/xhtml+xml" />
         {% endfor %}
         <item href="copyright.xhtml" id="copyright" media-type="application/xhtml+xml" />
         <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml" />
+        <item href="toc.xhtml" id="nav" media-type="application/xhtml+xml" properties="nav" />
     </manifest>
 
     <spine toc="ncx">
@@ -51,11 +50,12 @@
         {% endif %}
         <itemref idref="titlepage"/>
         {% if book.getDedication() %}
-            <itemref idref="dedication"/>
+            <itemref idref="intro"/>
         {% endif %}
         {% for item in chapters %}
             <itemref idref="{{ item.getPartNumber() }}"/>
         {% endfor %}
+        <itemref idref="nav" />
         <itemref idref="copyright"/>
     </spine>
 

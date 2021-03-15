@@ -1,0 +1,10 @@
+{% if chapters %}
+<ol>
+    {% for item in chapters %}
+    <li>
+        <a href="{{ item.getPartNumber() }}.xhtml">{{ item.getTitle()|e|trim }}</a>
+        {{ include('toc-sublevel.twig', {chapters: item.getChildren()}) }}
+    </li>
+    {% endfor %}
+</ol>
+{% endif %}
