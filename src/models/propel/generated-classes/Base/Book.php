@@ -162,6 +162,14 @@ abstract class Book implements ActiveRecordInterface
     protected $extra_info;
 
     /**
+     * The value for the include_font field.
+     *
+     * Note: this column has a database default value of: false
+     * @var        boolean
+     */
+    protected $include_font;
+
+    /**
      * The value for the cover_image field.
      *
      * @var        string
@@ -233,6 +241,7 @@ abstract class Book implements ActiveRecordInterface
     public function applyDefaultValues()
     {
         $this->language_id = 0;
+        $this->include_font = false;
     }
 
     /**
@@ -573,6 +582,26 @@ abstract class Book implements ActiveRecordInterface
     }
 
     /**
+     * Get the [include_font] column value.
+     *
+     * @return boolean
+     */
+    public function getIncludeFont()
+    {
+        return $this->include_font;
+    }
+
+    /**
+     * Get the [include_font] column value.
+     *
+     * @return boolean
+     */
+    public function isIncludeFont()
+    {
+        return $this->getIncludeFont();
+    }
+
+    /**
      * Get the [cover_image] column value.
      *
      * @return string
@@ -847,6 +876,34 @@ abstract class Book implements ActiveRecordInterface
     } // setExtraInfo()
 
     /**
+     * Sets the value of the [include_font] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\Book The current object (for fluent API support)
+     */
+    public function setIncludeFont($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->include_font !== $v) {
+            $this->include_font = $v;
+            $this->modifiedColumns[BookTableMap::COL_INCLUDE_FONT] = true;
+        }
+
+        return $this;
+    } // setIncludeFont()
+
+    /**
      * Set the value of [cover_image] column.
      *
      * @param string $v new value
@@ -920,6 +977,10 @@ abstract class Book implements ActiveRecordInterface
                 return false;
             }
 
+            if ($this->include_font !== false) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -979,16 +1040,19 @@ abstract class Book implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : BookTableMap::translateFieldName('ExtraInfo', TableMap::TYPE_PHPNAME, $indexType)];
             $this->extra_info = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : BookTableMap::translateFieldName('CoverImage', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : BookTableMap::translateFieldName('IncludeFont', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->include_font = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : BookTableMap::translateFieldName('CoverImage', TableMap::TYPE_PHPNAME, $indexType)];
             $this->cover_image = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : BookTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : BookTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : BookTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 14 + $startcol : BookTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -1001,7 +1065,7 @@ abstract class Book implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 14; // 14 = BookTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 15; // 15 = BookTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Book'), 0, $e);
@@ -1287,6 +1351,9 @@ abstract class Book implements ActiveRecordInterface
         if ($this->isColumnModified(BookTableMap::COL_EXTRA_INFO)) {
             $modifiedColumns[':p' . $index++]  = 'extra_info';
         }
+        if ($this->isColumnModified(BookTableMap::COL_INCLUDE_FONT)) {
+            $modifiedColumns[':p' . $index++]  = 'include_font';
+        }
         if ($this->isColumnModified(BookTableMap::COL_COVER_IMAGE)) {
             $modifiedColumns[':p' . $index++]  = 'cover_image';
         }
@@ -1339,6 +1406,9 @@ abstract class Book implements ActiveRecordInterface
                         break;
                     case 'extra_info':
                         $stmt->bindValue($identifier, $this->extra_info, PDO::PARAM_STR);
+                        break;
+                    case 'include_font':
+                        $stmt->bindValue($identifier, (int) $this->include_font, PDO::PARAM_INT);
                         break;
                     case 'cover_image':
                         $stmt->bindValue($identifier, $this->cover_image, PDO::PARAM_STR);
@@ -1445,12 +1515,15 @@ abstract class Book implements ActiveRecordInterface
                 return $this->getExtraInfo();
                 break;
             case 11:
-                return $this->getCoverImage();
+                return $this->getIncludeFont();
                 break;
             case 12:
-                return $this->getCreatedAt();
+                return $this->getCoverImage();
                 break;
             case 13:
+                return $this->getCreatedAt();
+                break;
+            case 14:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1494,16 +1567,17 @@ abstract class Book implements ActiveRecordInterface
             $keys[8] => $this->getYear(),
             $keys[9] => $this->getIsbn(),
             $keys[10] => $this->getExtraInfo(),
-            $keys[11] => $this->getCoverImage(),
-            $keys[12] => $this->getCreatedAt(),
-            $keys[13] => $this->getUpdatedAt(),
+            $keys[11] => $this->getIncludeFont(),
+            $keys[12] => $this->getCoverImage(),
+            $keys[13] => $this->getCreatedAt(),
+            $keys[14] => $this->getUpdatedAt(),
         );
-        if ($result[$keys[12]] instanceof \DateTimeInterface) {
-            $result[$keys[12]] = $result[$keys[12]]->format('c');
-        }
-
         if ($result[$keys[13]] instanceof \DateTimeInterface) {
             $result[$keys[13]] = $result[$keys[13]]->format('c');
+        }
+
+        if ($result[$keys[14]] instanceof \DateTimeInterface) {
+            $result[$keys[14]] = $result[$keys[14]]->format('c');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1610,12 +1684,15 @@ abstract class Book implements ActiveRecordInterface
                 $this->setExtraInfo($value);
                 break;
             case 11:
-                $this->setCoverImage($value);
+                $this->setIncludeFont($value);
                 break;
             case 12:
-                $this->setCreatedAt($value);
+                $this->setCoverImage($value);
                 break;
             case 13:
+                $this->setCreatedAt($value);
+                break;
+            case 14:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1678,13 +1755,16 @@ abstract class Book implements ActiveRecordInterface
             $this->setExtraInfo($arr[$keys[10]]);
         }
         if (array_key_exists($keys[11], $arr)) {
-            $this->setCoverImage($arr[$keys[11]]);
+            $this->setIncludeFont($arr[$keys[11]]);
         }
         if (array_key_exists($keys[12], $arr)) {
-            $this->setCreatedAt($arr[$keys[12]]);
+            $this->setCoverImage($arr[$keys[12]]);
         }
         if (array_key_exists($keys[13], $arr)) {
-            $this->setUpdatedAt($arr[$keys[13]]);
+            $this->setCreatedAt($arr[$keys[13]]);
+        }
+        if (array_key_exists($keys[14], $arr)) {
+            $this->setUpdatedAt($arr[$keys[14]]);
         }
     }
 
@@ -1759,6 +1839,9 @@ abstract class Book implements ActiveRecordInterface
         }
         if ($this->isColumnModified(BookTableMap::COL_EXTRA_INFO)) {
             $criteria->add(BookTableMap::COL_EXTRA_INFO, $this->extra_info);
+        }
+        if ($this->isColumnModified(BookTableMap::COL_INCLUDE_FONT)) {
+            $criteria->add(BookTableMap::COL_INCLUDE_FONT, $this->include_font);
         }
         if ($this->isColumnModified(BookTableMap::COL_COVER_IMAGE)) {
             $criteria->add(BookTableMap::COL_COVER_IMAGE, $this->cover_image);
@@ -1865,6 +1948,7 @@ abstract class Book implements ActiveRecordInterface
         $copyObj->setYear($this->getYear());
         $copyObj->setIsbn($this->getIsbn());
         $copyObj->setExtraInfo($this->getExtraInfo());
+        $copyObj->setIncludeFont($this->getIncludeFont());
         $copyObj->setCoverImage($this->getCoverImage());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
@@ -2224,6 +2308,7 @@ abstract class Book implements ActiveRecordInterface
         $this->year = null;
         $this->isbn = null;
         $this->extra_info = null;
+        $this->include_font = null;
         $this->cover_image = null;
         $this->created_at = null;
         $this->updated_at = null;

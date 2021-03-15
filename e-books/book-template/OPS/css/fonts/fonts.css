@@ -1,0 +1,27 @@
+@font-face {
+  font-family: "Liberation Serif";
+  font-style: normal;
+  font-weight: normal;
+  src: url(LiberationSerif-Regular.ttf);
+}
+@font-face {
+  font-family: "Liberation Serif";
+  font-style: normal;
+  font-weight: bold;
+  src: url(LiberationSerif-Bold.ttf);
+}
+@font-face {
+  font-family: "Liberation Serif";
+  font-style: italic;
+  font-weight: normal;
+  src: url(LiberationSerif-Italic.ttf);
+}
+@font-face {
+  font-family: "Liberation Serif";
+  font-style: italic;
+  font-weight: bold;
+  src: url(LiberationSerif-BoldItalic.ttf);
+}
+body {
+  font-family: "Liberation Serif", serif;
+}

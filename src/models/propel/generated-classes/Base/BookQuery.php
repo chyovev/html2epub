@@ -31,6 +31,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildBookQuery orderByYear($order = Criteria::ASC) Order by the year column
  * @method     ChildBookQuery orderByIsbn($order = Criteria::ASC) Order by the isbn column
  * @method     ChildBookQuery orderByExtraInfo($order = Criteria::ASC) Order by the extra_info column
+ * @method     ChildBookQuery orderByIncludeFont($order = Criteria::ASC) Order by the include_font column
  * @method     ChildBookQuery orderByCoverImage($order = Criteria::ASC) Order by the cover_image column
  * @method     ChildBookQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildBookQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
@@ -46,6 +47,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildBookQuery groupByYear() Group by the year column
  * @method     ChildBookQuery groupByIsbn() Group by the isbn column
  * @method     ChildBookQuery groupByExtraInfo() Group by the extra_info column
+ * @method     ChildBookQuery groupByIncludeFont() Group by the include_font column
  * @method     ChildBookQuery groupByCoverImage() Group by the cover_image column
  * @method     ChildBookQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildBookQuery groupByUpdatedAt() Group by the updated_at column
@@ -94,6 +96,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildBook findOneByYear(int $year) Return the first ChildBook filtered by the year column
  * @method     ChildBook findOneByIsbn(string $isbn) Return the first ChildBook filtered by the isbn column
  * @method     ChildBook findOneByExtraInfo(string $extra_info) Return the first ChildBook filtered by the extra_info column
+ * @method     ChildBook findOneByIncludeFont(boolean $include_font) Return the first ChildBook filtered by the include_font column
  * @method     ChildBook findOneByCoverImage(string $cover_image) Return the first ChildBook filtered by the cover_image column
  * @method     ChildBook findOneByCreatedAt(string $created_at) Return the first ChildBook filtered by the created_at column
  * @method     ChildBook findOneByUpdatedAt(string $updated_at) Return the first ChildBook filtered by the updated_at column *
@@ -112,6 +115,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildBook requireOneByYear(int $year) Return the first ChildBook filtered by the year column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildBook requireOneByIsbn(string $isbn) Return the first ChildBook filtered by the isbn column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildBook requireOneByExtraInfo(string $extra_info) Return the first ChildBook filtered by the extra_info column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildBook requireOneByIncludeFont(boolean $include_font) Return the first ChildBook filtered by the include_font column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildBook requireOneByCoverImage(string $cover_image) Return the first ChildBook filtered by the cover_image column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildBook requireOneByCreatedAt(string $created_at) Return the first ChildBook filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildBook requireOneByUpdatedAt(string $updated_at) Return the first ChildBook filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -128,6 +132,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildBook[]|ObjectCollection findByYear(int $year) Return ChildBook objects filtered by the year column
  * @method     ChildBook[]|ObjectCollection findByIsbn(string $isbn) Return ChildBook objects filtered by the isbn column
  * @method     ChildBook[]|ObjectCollection findByExtraInfo(string $extra_info) Return ChildBook objects filtered by the extra_info column
+ * @method     ChildBook[]|ObjectCollection findByIncludeFont(boolean $include_font) Return ChildBook objects filtered by the include_font column
  * @method     ChildBook[]|ObjectCollection findByCoverImage(string $cover_image) Return ChildBook objects filtered by the cover_image column
  * @method     ChildBook[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildBook objects filtered by the created_at column
  * @method     ChildBook[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildBook objects filtered by the updated_at column
@@ -229,7 +234,7 @@ abstract class BookQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, title, subtitle, slug, author, dedication, language_id, publisher, year, isbn, extra_info, cover_image, created_at, updated_at FROM books WHERE id = :p0';
+        $sql = 'SELECT id, title, subtitle, slug, author, dedication, language_id, publisher, year, isbn, extra_info, include_font, cover_image, created_at, updated_at FROM books WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -642,6 +647,33 @@ abstract class BookQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(BookTableMap::COL_EXTRA_INFO, $extraInfo, $comparison);
+    }
+
+    /**
+     * Filter the query on the include_font column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByIncludeFont(true); // WHERE include_font = true
+     * $query->filterByIncludeFont('yes'); // WHERE include_font = true
+     * </code>
+     *
+     * @param     boolean|string $includeFont The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildBookQuery The current query, for fluid interface
+     */
+    public function filterByIncludeFont($includeFont = null, $comparison = null)
+    {
+        if (is_string($includeFont)) {
+            $includeFont = in_array(strtolower($includeFont), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(BookTableMap::COL_INCLUDE_FONT, $includeFont, $comparison);
     }
 
     /**

@@ -19,7 +19,7 @@ class PublishController extends AppController {
         // generate epub by creating all files, archiving them
         // as ZIP (with the epub extension) and serving the output
         $this->setBookPath($book);
-        $this->prepareFolder();
+        $this->prepareFolder($book);
         $this->generateCoverPage($book);
         $this->generateTitlePage($book);
         $this->generateCopyrightPage($book);
@@ -39,7 +39,7 @@ class PublishController extends AppController {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    private function prepareFolder(): void {
+    private function prepareFolder(Book $book): void {
         $path     = $this->bookPath;
         $basename = FS::getName($path);
 
@@ -52,7 +52,7 @@ class PublishController extends AppController {
         }
 
         // copy template files
-        $this->copyBookTemplates($path);
+        $this->copyBookTemplates($path, $book);
 
         // set book templates view folder when generating xhtml files
         $this->setViewsPath(BOOKS_PATH . '/book-template/templates');
@@ -61,14 +61,21 @@ class PublishController extends AppController {
     ///////////////////////////////////////////////////////////////////////////
     // copy the files that are the same
     // between all books (like stylesheets, mimetype, etc.)
-    private function copyBookTemplates(string $targetFolder) {
+    private function copyBookTemplates(string $targetFolder, Book $book) {
         $sourceFolder = BOOKS_PATH . '/book-template';
 
         $itemsToCopy  = [
             '/META-INF',
-            '/OPS',
+            '/OPS/images',
+            '/OPS/css/html2epub.css',
             '/mimetype',
         ];
+
+        // if fonts are to be included, copy the ttf files
+        // and the respective stylesheet
+        if ($book->getIncludeFont()) {
+            $itemsToCopy[] = '/OPS/css/fonts';
+        }
 
         foreach ($itemsToCopy as $item) {
             FS::copy($sourceFolder.$item, $targetFolder.$item);

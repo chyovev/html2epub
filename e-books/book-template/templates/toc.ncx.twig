@@ -3,7 +3,7 @@
     <head>
         {% if book.getIsbn() %}
             <meta name="dtb:uid" content="urn:isbn:{{ book.getIsbn()|e|trim }}"/>
-        { %else %}
+        {% else %}
             <meta name="dtb:uid" content="urn:uuid:{{ book.getIdAsUuidString()|e|trim }}"/>
         {% endif %}
         <meta name="dtb:depth" content="{{ book.getDepth() }}" />

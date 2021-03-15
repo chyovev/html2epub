@@ -58,7 +58,7 @@ class BookTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 14;
+    const NUM_COLUMNS = 15;
 
     /**
      * The number of lazy-loaded columns
@@ -68,7 +68,7 @@ class BookTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 14;
+    const NUM_HYDRATE_COLUMNS = 15;
 
     /**
      * the column name for the id field
@@ -126,6 +126,11 @@ class BookTableMap extends TableMap
     const COL_EXTRA_INFO = 'books.extra_info';
 
     /**
+     * the column name for the include_font field
+     */
+    const COL_INCLUDE_FONT = 'books.include_font';
+
+    /**
      * the column name for the cover_image field
      */
     const COL_COVER_IMAGE = 'books.cover_image';
@@ -152,11 +157,11 @@ class BookTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Title', 'Subtitle', 'Slug', 'Author', 'Dedication', 'LanguageId', 'Publisher', 'Year', 'Isbn', 'ExtraInfo', 'CoverImage', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'title', 'subtitle', 'slug', 'author', 'dedication', 'languageId', 'publisher', 'year', 'isbn', 'extraInfo', 'coverImage', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(BookTableMap::COL_ID, BookTableMap::COL_TITLE, BookTableMap::COL_SUBTITLE, BookTableMap::COL_SLUG, BookTableMap::COL_AUTHOR, BookTableMap::COL_DEDICATION, BookTableMap::COL_LANGUAGE_ID, BookTableMap::COL_PUBLISHER, BookTableMap::COL_YEAR, BookTableMap::COL_ISBN, BookTableMap::COL_EXTRA_INFO, BookTableMap::COL_COVER_IMAGE, BookTableMap::COL_CREATED_AT, BookTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'title', 'subtitle', 'slug', 'author', 'dedication', 'language_id', 'publisher', 'year', 'isbn', 'extra_info', 'cover_image', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, )
+        self::TYPE_PHPNAME       => array('Id', 'Title', 'Subtitle', 'Slug', 'Author', 'Dedication', 'LanguageId', 'Publisher', 'Year', 'Isbn', 'ExtraInfo', 'IncludeFont', 'CoverImage', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'title', 'subtitle', 'slug', 'author', 'dedication', 'languageId', 'publisher', 'year', 'isbn', 'extraInfo', 'includeFont', 'coverImage', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(BookTableMap::COL_ID, BookTableMap::COL_TITLE, BookTableMap::COL_SUBTITLE, BookTableMap::COL_SLUG, BookTableMap::COL_AUTHOR, BookTableMap::COL_DEDICATION, BookTableMap::COL_LANGUAGE_ID, BookTableMap::COL_PUBLISHER, BookTableMap::COL_YEAR, BookTableMap::COL_ISBN, BookTableMap::COL_EXTRA_INFO, BookTableMap::COL_INCLUDE_FONT, BookTableMap::COL_COVER_IMAGE, BookTableMap::COL_CREATED_AT, BookTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'title', 'subtitle', 'slug', 'author', 'dedication', 'language_id', 'publisher', 'year', 'isbn', 'extra_info', 'include_font', 'cover_image', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
     );
 
     /**
@@ -166,11 +171,11 @@ class BookTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Title' => 1, 'Subtitle' => 2, 'Slug' => 3, 'Author' => 4, 'Dedication' => 5, 'LanguageId' => 6, 'Publisher' => 7, 'Year' => 8, 'Isbn' => 9, 'ExtraInfo' => 10, 'CoverImage' => 11, 'CreatedAt' => 12, 'UpdatedAt' => 13, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'title' => 1, 'subtitle' => 2, 'slug' => 3, 'author' => 4, 'dedication' => 5, 'languageId' => 6, 'publisher' => 7, 'year' => 8, 'isbn' => 9, 'extraInfo' => 10, 'coverImage' => 11, 'createdAt' => 12, 'updatedAt' => 13, ),
-        self::TYPE_COLNAME       => array(BookTableMap::COL_ID => 0, BookTableMap::COL_TITLE => 1, BookTableMap::COL_SUBTITLE => 2, BookTableMap::COL_SLUG => 3, BookTableMap::COL_AUTHOR => 4, BookTableMap::COL_DEDICATION => 5, BookTableMap::COL_LANGUAGE_ID => 6, BookTableMap::COL_PUBLISHER => 7, BookTableMap::COL_YEAR => 8, BookTableMap::COL_ISBN => 9, BookTableMap::COL_EXTRA_INFO => 10, BookTableMap::COL_COVER_IMAGE => 11, BookTableMap::COL_CREATED_AT => 12, BookTableMap::COL_UPDATED_AT => 13, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'title' => 1, 'subtitle' => 2, 'slug' => 3, 'author' => 4, 'dedication' => 5, 'language_id' => 6, 'publisher' => 7, 'year' => 8, 'isbn' => 9, 'extra_info' => 10, 'cover_image' => 11, 'created_at' => 12, 'updated_at' => 13, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Title' => 1, 'Subtitle' => 2, 'Slug' => 3, 'Author' => 4, 'Dedication' => 5, 'LanguageId' => 6, 'Publisher' => 7, 'Year' => 8, 'Isbn' => 9, 'ExtraInfo' => 10, 'IncludeFont' => 11, 'CoverImage' => 12, 'CreatedAt' => 13, 'UpdatedAt' => 14, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'title' => 1, 'subtitle' => 2, 'slug' => 3, 'author' => 4, 'dedication' => 5, 'languageId' => 6, 'publisher' => 7, 'year' => 8, 'isbn' => 9, 'extraInfo' => 10, 'includeFont' => 11, 'coverImage' => 12, 'createdAt' => 13, 'updatedAt' => 14, ),
+        self::TYPE_COLNAME       => array(BookTableMap::COL_ID => 0, BookTableMap::COL_TITLE => 1, BookTableMap::COL_SUBTITLE => 2, BookTableMap::COL_SLUG => 3, BookTableMap::COL_AUTHOR => 4, BookTableMap::COL_DEDICATION => 5, BookTableMap::COL_LANGUAGE_ID => 6, BookTableMap::COL_PUBLISHER => 7, BookTableMap::COL_YEAR => 8, BookTableMap::COL_ISBN => 9, BookTableMap::COL_EXTRA_INFO => 10, BookTableMap::COL_INCLUDE_FONT => 11, BookTableMap::COL_COVER_IMAGE => 12, BookTableMap::COL_CREATED_AT => 13, BookTableMap::COL_UPDATED_AT => 14, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'title' => 1, 'subtitle' => 2, 'slug' => 3, 'author' => 4, 'dedication' => 5, 'language_id' => 6, 'publisher' => 7, 'year' => 8, 'isbn' => 9, 'extra_info' => 10, 'include_font' => 11, 'cover_image' => 12, 'created_at' => 13, 'updated_at' => 14, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
     );
 
     /**
@@ -201,6 +206,7 @@ class BookTableMap extends TableMap
         $this->addColumn('year', 'Year', 'INTEGER', false, null, null);
         $this->addColumn('isbn', 'Isbn', 'VARCHAR', false, 255, null);
         $this->addColumn('extra_info', 'ExtraInfo', 'LONGVARCHAR', false, null, null);
+        $this->addColumn('include_font', 'IncludeFont', 'BOOLEAN', true, 1, false);
         $this->addColumn('cover_image', 'CoverImage', 'VARCHAR', false, 255, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
@@ -403,6 +409,7 @@ class BookTableMap extends TableMap
             $criteria->addSelectColumn(BookTableMap::COL_YEAR);
             $criteria->addSelectColumn(BookTableMap::COL_ISBN);
             $criteria->addSelectColumn(BookTableMap::COL_EXTRA_INFO);
+            $criteria->addSelectColumn(BookTableMap::COL_INCLUDE_FONT);
             $criteria->addSelectColumn(BookTableMap::COL_COVER_IMAGE);
             $criteria->addSelectColumn(BookTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(BookTableMap::COL_UPDATED_AT);
@@ -418,6 +425,7 @@ class BookTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.year');
             $criteria->addSelectColumn($alias . '.isbn');
             $criteria->addSelectColumn($alias . '.extra_info');
+            $criteria->addSelectColumn($alias . '.include_font');
             $criteria->addSelectColumn($alias . '.cover_image');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');

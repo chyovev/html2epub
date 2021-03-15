@@ -13,6 +13,7 @@ var App = {
         App.initNestable(4);
         App.initTinyMce();
         App.setFormSnapshot();
+        App.initTooltip();
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -42,6 +43,9 @@ var App = {
     ///////////////////////////////////////////////////////////////////////////
     unsetAjaxInProgress: function() {
         App.isAjaxInProgress = false;
+
+        // init tooltip for newly added elements
+        App.initTooltip();
     },
 
     ///////////////////////////////////////////////////////////////////////////
@@ -792,7 +796,12 @@ var App = {
                 });      
             }
         );
-    }
+    },
+
+    ///////////////////////////////////////////////////////////////////////////
+    initTooltip: function() {
+        $('[title]').tooltip({trigger : 'hover'}); 
+    },
 
 }
 

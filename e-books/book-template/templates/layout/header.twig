@@ -3,6 +3,9 @@
 <head>
     <title>{{ metaTitle|default(book.getTitle())|e }}</title>
     <link rel="stylesheet" type="text/css" href="css/html2epub.css" />
+    {% if book.getIncludeFont() %}
+        <link rel="stylesheet" type="text/css" href="css/fonts/fonts.css" />
+    {% endif %}
     <meta charset="utf-8" />
 </head>
 <body{% if bodyClass %} class="{{ bodyClass }}"{% endif %}>

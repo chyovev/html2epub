@@ -1,9 +1,18 @@
-<div class="mb-4 h4 font-weight-bold">
+<div class="mb-4 d-table w-100">
     <span class="cover-preview align-middle rounded">
         {{ include('elements/book-cover-image.twig') }}
         <label for="file-button" class="rounded add-image-btn" title="Upload cover image"></label>
     </span>
-    <span class="align-middle" id="section-heading" data-type="book">Book details</span>
+    <span class="h4 font-weight-bold align-middle" id="section-heading" data-type="book">Book details</span>
+
+    <div class="d-table-cell text-right align-bottom">
+        <label class="form-control-label small-caps mr-1" for="include_font"><abbr title="Some devices have trouble displaying non-ASCII characters (such as Cyrillic letters) unless the font is included in the ePub">Include font</abbr></label>
+        <label class="switch">
+            <input type="checkbox" name="include_font" id="include_font"{% if book.getIncludeFont() %} checked="checked"{% endif %} />
+            <span class="slider round"></span>
+        </label>
+    </div>
+
 </div>
 
 

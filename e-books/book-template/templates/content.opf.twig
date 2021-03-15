@@ -28,6 +28,14 @@
     </metadata>
 
     <manifest>
+        {% if book.getIncludeFont() %}
+            <item id="ls-r" href="css/fonts/LiberationSerif-Regular.ttf" media-type="application/vnd.ms-opentype" />
+            <item id="ls-b" href="css/fonts/LiberationSerif-Bold.ttf" media-type="application/vnd.ms-opentype" />
+            <item id="ls-i" href="css/fonts/LiberationSerif-Italic.ttf" media-type="application/vnd.ms-opentype" />
+            <item id="ls-bi" href="css/fonts/LiberationSerif-BoldItalic.ttf" media-type="application/vnd.ms-opentype" />
+            <item id="ls-license" href="css/fonts/LICENSE" media-type="text/plain" />
+            <item id="fonts-stylesheet" href="css/fonts/fonts.css" media-type="text/css" />
+        {% endif %}
         <item href="css/html2epub.css" id="stylesheet" media-type="text/css" />
         <item href="images/html2epub-logo.jpg" id="html2epub-logo" media-type="image/jpeg" />
         {% if book.getCoverImage() %}

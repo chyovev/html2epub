@@ -17,6 +17,7 @@
         <column name="year" type="integer" sqlType="int(11) unsigned" />
         <column name="isbn" type="varchar" size="255" />
         <column name="extra_info" type="longvarchar" />
+        <column name="include_font" type="boolean" defaultValue="0" required="true" />
 
         <foreign-key foreignTable="languages" phpName="Language">
             <reference local="language_id" foreign="id"/>

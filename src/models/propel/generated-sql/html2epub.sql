@@ -22,6 +22,7 @@ CREATE TABLE `books`
     `year` int(11) unsigned,
     `isbn` VARCHAR(255),
     `extra_info` TEXT,
+    `include_font` TINYINT(1) DEFAULT 0 NOT NULL,
     `cover_image` VARCHAR(255),
     `created_at` DATETIME,
     `updated_at` DATETIME,
