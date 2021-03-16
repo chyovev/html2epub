@@ -800,7 +800,8 @@ var App = {
 
     ///////////////////////////////////////////////////////////////////////////
     initTooltip: function() {
-        $('[title]').tooltip({trigger : 'hover'}); 
+        // don't init tooltip on tox elements (tinymce)
+        $('[title]:not([class*="tox"])').tooltip({trigger : 'hover'}); 
     },
 
 }

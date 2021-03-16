@@ -28,7 +28,7 @@ class Book extends BaseBook
     ///////////////////////////////////////////////////////////////////////////
     // when a book has been deleted, delete its generated epub content, too
     public function postDelete(ConnectionInterface $con = null) {
-        $path = BOOKS_PATH . '/generated/' . $book->getId();
+        $path = BOOKS_PATH . '/generated/' . $this->getId();
         FS::deleteFolder($path);
     }
 

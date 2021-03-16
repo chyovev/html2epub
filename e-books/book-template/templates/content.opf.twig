@@ -6,7 +6,7 @@
             <dc:creator id="author">{{ book.author|e|trim }}</dc:creator>
             <meta refines="#author" property="role" scheme="marc:relators">aut</meta>
         {% endif %}
-        <dc:language>{{ book.getLanguage().getLocale()|slice(0, 2) }}</dc:language>
+        <dc:language>{{ locale }}</dc:language>
         {% if book.publisher %}
             <dc:publisher>{{ book.publisher|e|trim }}</dc:publisher>
         {% endif %}

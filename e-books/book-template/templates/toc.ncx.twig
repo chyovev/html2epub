@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="{{ book.getLanguage().getLocale()|slice(0, 2) }}">
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="{{ locale }}">
     <head>
         {% if book.getIsbn() %}
             <meta name="dtb:uid" content="urn:isbn:{{ book.getIsbn()|e|trim }}"/>

@@ -35,7 +35,12 @@ class PublishController extends AppController {
     ///////////////////////////////////////////////////////////////////////////
     private function setBookPath(Book $book) {
         $this->bookPath = BOOKS_PATH . '/generated/' . $book->getId();
-        $this->_setViewVars(['book' => $book]);
+
+        $globals =[
+            'book'   => $book,
+            'locale' => $book->getLanguage()->getLocale(),
+        ];
+        $this->_setViewVars($globals);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -45,6 +50,7 @@ class PublishController extends AppController {
 
         // try to create the folder
         FS::createFolder($path);
+        FS::deleteFolderContents($path);
             
         // make sure its writeable
         if ( ! FS::isWriteable($path)) {
@@ -76,6 +82,10 @@ class PublishController extends AppController {
         if ($book->getIncludeFont()) {
             $itemsToCopy[] = '/OPS/css/fonts';
         }
+
+        // the target css folder needs to exist in order
+        // to copy files in it
+        FS::createFolder($targetFolder . '/OPS/css');
 
         foreach ($itemsToCopy as $item) {
             FS::copy($sourceFolder.$item, $targetFolder.$item);

@@ -244,4 +244,14 @@ abstract class Router {
         $requestParams = self::$requestParams;
         return $requestParams[$param] ?? NULL;
     }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    public static function redirect($target, int $code = 301): void {
+        // if the passed argument is a params array,
+        // use the router function to get its address
+        $url = is_array($target) ? self::url($target) : (string) $target;
+
+        header('Location: ' . $url, true, $code);
+        exit;
+    }
 }

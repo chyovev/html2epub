@@ -1,4 +1,4 @@
-<h1 class="center {% if chapter.getBody() %}chapter-title{% else %}no-body{% endif %}">{{ chapter.getTitle()|e }}</h1>
+<h2 class="center {% if chapter.getBody() %}chapter-title{% else %}no-body{% endif %}">{{ chapter.getTitle()|e }}</h2>
 
 {% if chapter.getBody() %}
     <div{% if footnotes %} class="pb-1"{% endif %}>

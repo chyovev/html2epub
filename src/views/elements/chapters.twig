@@ -1,6 +1,6 @@
 <ol class="dd-list"{% if level == 0 %} id="chapters"{% endif %} data-level="{{ level }}">
     {% for item in chapters %}
-    <li class="dd-item{% if item.getUpdatedAt() %} modified{% endif %}{% if item.getSlugAsString() == chapter.id %} active{% endif %}" data-id="{{ item.getSlugAsString() }}">
+    <li class="dd-item{% if item.getUpdatedAt() %} modified{% endif %}{% if item.getSlugAsString() == slug %} active{% endif %}" data-id="{{ item.getSlugAsString() }}">
         
         <div class="dd-handle">
             <span class="title"><a href="{{ custom_url([{'controller': 'chapters', 'action': 'edit', 'book': book.slug, 'chapter': item.getSlugAsString()}]) }}" class="edit-chapter no-handle">{{ item.getTitle()|e }}</a></span>

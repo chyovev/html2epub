@@ -13,10 +13,10 @@ body.nopadding {
     margin: 0px;
 }
 .chapter-title {
-  margin-top: 20%;
+  padding-top: 20%;
 }
 .no-body {
-  margin-top: 40%;
+  padding-top: 40%;
 }
 
 .center {
@@ -30,6 +30,9 @@ body.nopadding {
 }
 .full {
   text-align: justify;
+}
+.no-bold {
+  font-weight: initial;
 }
 p {
   margin: 0px;
@@ -63,5 +66,9 @@ p.noindent {
 
 /* table of contents */
 nav ol {
-    list-style: disc;
+    list-style: none;
+    padding-left: 2em;
+}
+nav > ol {
+    padding: 0px;
 }

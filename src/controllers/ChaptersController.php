@@ -26,6 +26,7 @@ class ChaptersController extends AppController {
             'metaTitle'   => $chapter->getTitle() . ' | ' . $book->getTitle(),
             'title'       => $book->getTitle(),
             'chapter'     => $chapter->toArray(),
+            'slug'        => $chapter->getSlugAsString(),
             'toc'         => $book->getChaptersAsNestedSet(),
             'wideHeader'  => true,
             'breadcrumbs' => $breadcrumbs,
