@@ -136,7 +136,7 @@ class LanguageTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('locale', 'Locale', 'VARCHAR', true, 10, null);
+        $this->addColumn('locale', 'Locale', 'CHAR', true, 2, null);
         $this->addColumn('language', 'Language', 'VARCHAR', true, 30, null);
     } // initialize()
 

@@ -1,5 +1,5 @@
 {% if book.author %}
-    <h3 class="chapter-title center pb-1 no-bold">{{ book.author|e }}</h3>
+    <h3 class="chapter-title center pb-1 noindent">{{ book.author|e }}</h3>
 {% endif %}
 <h1 class="center{% if not book.author %} no-body{% endif %}">{{ book.title|e }}</h1>
 {% if book.subtitle %}

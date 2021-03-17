@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/" unique-identifier="{% if book.isbn %}isbn{% else %}uuid{% endif %}" version="3.0">
     <metadata>
         <dc:title id="title">{{ book.title|e|trim }}</dc:title>
@@ -69,15 +70,4 @@
         <itemref idref="copyright"/>
     </spine>
 
-    <guide>
-        {% if book.getCoverImage() %}
-            <reference type="coverpage" title="Book Cover" href="coverpage.xhtml" />
-        {% else %}
-            <reference type="titlepage" title="Title Page" href="titlepage.xhtml" />
-        {% endif %}
-        {% for item in tree %}
-            <reference type="text" title="{{ item.getTitle()|e|trim }}" href="{{ item.getPartNumber() }}.xhtml" />
-        {% endfor %}
-        <reference type="copyright-page" title="HTML2ePub" href="copyright.xhtml" />
-    </guide>
 </package>

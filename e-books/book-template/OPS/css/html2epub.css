@@ -34,12 +34,18 @@ body.nopadding {
 .no-bold {
   font-weight: initial;
 }
+h3 {
+  font-weight: initial;
+}
 p {
   margin: 0px;
   text-indent: 2em;
 }
 p.noindent {
   text-indent: 0em;
+}
+li {
+    margin: 0px;
 }
 .pb-1 { padding-bottom: 1em; }
 .pt-1 { padding-top: 1em; }
@@ -71,4 +77,7 @@ nav ol {
 }
 nav > ol {
     padding: 0px;
+}
+a {
+    color: #28468C;
 }

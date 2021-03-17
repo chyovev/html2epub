@@ -66,7 +66,7 @@
         <column name="book_id" type="integer" sqlType="int(11) unsigned" default="0" required="true" />
         <column name="title" type="varchar" size="255" required="true" />
         <column name="slug"  type="binary" size="16" sqlType="binary(16)" required="true" />
-        <column name="body" type="longvarchar" />
+        <column name="body" type="clob" />
 
         <foreign-key foreignTable="books" phpName="Book" onDelete="CASCADE">
             <reference local="book_id" foreign="id"/>
@@ -90,7 +90,7 @@
             <parameter name="title_maxlength" value="{column: title, validator: Length,   options: {max: 255, allowEmptyString: false}}" />
 
             <parameter name="slug_unique"    value="{column: slug, validator: Unique,   options: {message: A chapter with this slug already exists.}}" />
-            <parameter name="body_maxlength" value="{column: body, validator: Length,   options: {max: 65535}}" />
+            <parameter name="body_maxlength" value="{column: body, validator: Length,   options: {max: 16777215}}" />
         </behavior>
     </table>
 
@@ -101,7 +101,7 @@
         </unique>
 
         <column name="id" type="integer" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true" />
-        <column name="locale" type="varchar" size="10" required="true" />
+        <column name="locale" type="char" size="2" required="true" />
         <column name="language" type="varchar" size="30" required="true" />
     </table>
 

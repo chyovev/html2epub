@@ -2682,7 +2682,7 @@ abstract class Chapter implements ActiveRecordInterface
         $metadata->addPropertyConstraint('title', new NotBlank(array ('allowNull' => false,)));
         $metadata->addPropertyConstraint('title', new Length(array ('max' => 255,'allowEmptyString' => false,)));
         $metadata->addPropertyConstraint('slug', new Unique(array ('message' => 'A chapter with this slug already exists.',)));
-        $metadata->addPropertyConstraint('body', new Length(array ('max' => 65535,)));
+        $metadata->addPropertyConstraint('body', new Length(array ('max' => 16777215,)));
     }
 
     /**

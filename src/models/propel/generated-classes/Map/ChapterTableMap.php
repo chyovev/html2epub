@@ -174,7 +174,7 @@ class ChapterTableMap extends TableMap
         $this->addForeignKey('book_id', 'BookId', 'INTEGER', 'books', 'id', true, null, 0);
         $this->addColumn('title', 'Title', 'VARCHAR', true, 255, null);
         $this->addColumn('slug', 'Slug', 'BINARY', true, 16, null);
-        $this->addColumn('body', 'Body', 'LONGVARCHAR', false, null, null);
+        $this->addColumn('body', 'Body', 'CLOB', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('tree_left', 'TreeLeft', 'INTEGER', false, null, null);
         $this->addColumn('tree_right', 'TreeRight', 'INTEGER', false, null, null);
@@ -207,7 +207,7 @@ class ChapterTableMap extends TableMap
         return array(
             'nested_set' => array('left_column' => 'tree_left', 'right_column' => 'tree_right', 'level_column' => 'tree_level', 'use_scope' => 'true', 'scope_column' => 'book_id', 'method_proxies' => 'false', ),
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'true', ),
-            'validate' => array('title_notnull' => array ('column' => 'title','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'title_maxlength' => array ('column' => 'title','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_unique' => array ('column' => 'slug','validator' => 'Unique','options' => array ('message' => 'A chapter with this slug already exists.',),), 'body_maxlength' => array ('column' => 'body','validator' => 'Length','options' => array ('max' => 65535,),), ),
+            'validate' => array('title_notnull' => array ('column' => 'title','validator' => 'NotBlank','options' => array ('allowNull' => false,),), 'title_maxlength' => array ('column' => 'title','validator' => 'Length','options' => array ('max' => 255,'allowEmptyString' => false,),), 'slug_unique' => array ('column' => 'slug','validator' => 'Unique','options' => array ('message' => 'A chapter with this slug already exists.',),), 'body_maxlength' => array ('column' => 'body','validator' => 'Length','options' => array ('max' => 16777215,),), ),
         );
     } // getBehaviors()
 

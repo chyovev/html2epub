@@ -46,7 +46,7 @@ CREATE TABLE `chapters`
     `book_id` int(11) unsigned DEFAULT 0 NOT NULL,
     `title` VARCHAR(255) NOT NULL,
     `slug` binary(16) NOT NULL,
-    `body` TEXT,
+    `body` LONGTEXT,
     `updated_at` DATETIME,
     `tree_left` INTEGER,
     `tree_right` INTEGER,
@@ -70,7 +70,7 @@ DROP TABLE IF EXISTS `languages`;
 CREATE TABLE `languages`
 (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `locale` VARCHAR(10) NOT NULL,
+    `locale` CHAR(2) NOT NULL,
     `language` VARCHAR(30) NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE INDEX `locale` (`locale`)
