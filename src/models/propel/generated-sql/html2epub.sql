@@ -4,6 +4,21 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ---------------------------------------------------------------------
+-- languages
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `languages`;
+
+CREATE TABLE `languages`
+(
+    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+    `locale` CHAR(2) NOT NULL,
+    `language` VARCHAR(30) NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `locale` (`locale`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
 -- books
 -- ---------------------------------------------------------------------
 
@@ -59,21 +74,6 @@ CREATE TABLE `chapters`
         FOREIGN KEY (`book_id`)
         REFERENCES `books` (`id`)
         ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- ---------------------------------------------------------------------
--- languages
--- ---------------------------------------------------------------------
-
-DROP TABLE IF EXISTS `languages`;
-
-CREATE TABLE `languages`
-(
-    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `locale` CHAR(2) NOT NULL,
-    `language` VARCHAR(30) NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE INDEX `locale` (`locale`)
 ) ENGINE=InnoDB;
 
 # This restores the fkey checks, after having unset them earlier

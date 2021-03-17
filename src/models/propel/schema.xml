@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <database name="html2epub">
+
+    <table name="languages" phpName="Language">
+        <unique name="locale">
+            <unique-column name="locale" />
+        </unique>
+
+        <column name="id" type="integer" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true" />
+        <column name="locale" type="char" size="2" required="true" />
+        <column name="language" type="varchar" size="30" required="true" />
+    </table>
     
     <table name="books" phpName="Book">
         <unique name="slug">
@@ -92,17 +102,6 @@
             <parameter name="slug_unique"    value="{column: slug, validator: Unique,   options: {message: A chapter with this slug already exists.}}" />
             <parameter name="body_maxlength" value="{column: body, validator: Length,   options: {max: 16777215}}" />
         </behavior>
-    </table>
-
-
-    <table name="languages" phpName="Language">
-        <unique name="locale">
-            <unique-column name="locale" />
-        </unique>
-
-        <column name="id" type="integer" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true" />
-        <column name="locale" type="char" size="2" required="true" />
-        <column name="language" type="varchar" size="30" required="true" />
     </table>
 
 </database>
