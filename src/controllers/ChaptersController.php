@@ -60,6 +60,7 @@ class ChaptersController extends AppController {
         }
 
         $book->setChapters($chapters);
+        $book->setUpdatedAt(new \DateTimeImmutable());
 
         try {
             $status = (bool) $book->save();
@@ -156,6 +157,10 @@ class ChaptersController extends AppController {
         // (this is also why it's not set in the preUpdate model listener)
         if ($chapter->isModified()) {
             $chapter->setUpdatedAt(new \DateTimeImmutable());
+
+            // update book's updated_at field on chapter update as well
+            $book->setUpdatedAt(new \DateTimeImmutable());
+            $chapter->setBook($book);
         }
 
         $status      = (bool) $this->saveWithValidation($chapter);

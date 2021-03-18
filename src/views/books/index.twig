@@ -31,15 +31,15 @@
                 {% if book.getCoverImageSrc() %}
                     <a href="{{ book.getCoverImageSrc() }}" target="_blank"><img src="{{ book.getCoverImageSrc() }}" class="rounded thumb" /></a>
                 {% endif %}
-                <a href="{{ custom_url([{'action': 'edit', 'book': book.slug}]) }}">{{ book.title|e }}</a>
+                <a href="{{ custom_url([{'action': 'edit', 'book': book.getSlug()}]) }}">{{ book.getTitle()|e }}</a>
             </td>
-            <td>{{ book.author|e|default('--') }}</td>
-            <td>{{ book.created_at|date('d.m.Y @ H:i') }}</td>
-            <td>{{ book.updated_at|date('d.m.Y @ H:i') }}</td>
+            <td>{{ book.getAuthor()|e|default('--') }}</td>
+            <td>{{ book.getCreatedAt()|date('d.m.Y @ H:i') }}</td>
+            <td>{{ book.getUpdatedAt()|date('d.m.Y @ H:i') }}</td>
             <td class="text-center">
-                <a href="{{ custom_url([{controller: 'publish', action: 'index', book: book.slug}]) }}" class="btn btn-sm btn-success">Download</a>
-                <a href="{{ custom_url([{'action': 'edit', 'book': book.slug}]) }}" class="btn btn-sm btn-primary">Edit</a>
-                <a href="{{ custom_url([{'action': 'delete', 'book': book.slug}]) }}" class="btn btn-sm btn-danger delete">Delete</a>
+                <a href="{{ custom_url([{controller: 'publish', action: 'index', book: book.getSlug()}]) }}" class="btn btn-sm btn-success">Download</a>
+                <a href="{{ custom_url([{'action': 'edit', 'book': book.getSlug()}]) }}" class="btn btn-sm btn-primary">Edit</a>
+                <a href="{{ custom_url([{'action': 'delete', 'book': book.getSlug()}]) }}" class="btn btn-sm btn-danger delete">Delete</a>
             </td>
         </tr>
         {% endfor %}
