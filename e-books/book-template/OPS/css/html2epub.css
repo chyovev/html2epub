@@ -32,10 +32,10 @@ body.nopadding {
   text-align: justify;
 }
 .no-bold {
-  font-weight: initial;
+  font-weight: normal;
 }
 h3 {
-  font-weight: initial;
+  font-weight: normal;
 }
 p {
   margin: 0px;

@@ -9,7 +9,7 @@
 
 <div class="row mr-1 ml-1 mr-sm-5 ml-sm-5">
 <div class="table-responsive mb-4">
-    {% if not books %}
+    {% if books.isEmpty() %}
         <div class="text-center h5 m-5 p-5">
             No books are currently added.<br />
             To add a book, click <a href="{{ custom_url([{'action': 'add'}]) }}">here</a>.

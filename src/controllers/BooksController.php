@@ -4,7 +4,7 @@ class BooksController extends AppController {
 
     ///////////////////////////////////////////////////////////////////////////
     public function index() {
-        $books = BookQuery::create()->orderById();
+        $books = BookQuery::create()->orderById()->find();
         $this->displayFullPage('books/index', ['books' => $books]);
     }
 
