@@ -208,9 +208,10 @@ class PublishController extends AppController {
     private function generateTOC(Book $book): void {
         $viewVars = [
             'chapters' => $book->getChaptersAsNestedSet(),
+            'metaTitle' => 'Table of Contents',
         ];
 
-        $this->generateMiscPage('toc.twig', 'toc.xhtml', $viewVars);
+        $this->generateXHTMLPage('toc', NULL, $viewVars);
         $this->generateMiscPage('toc.ncx.twig', 'toc.ncx', $viewVars);
     }
 
