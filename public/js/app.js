@@ -219,6 +219,7 @@ var App = {
             },
             style_formats: [
                 { title: 'Font style', items: [
+                    { title: 'Drop Cap',      inline: 'span', classes: 'drop-cap' },
                     { title: 'Small Caps',    inline: 'span', classes: 'small-caps' },
                     { title: 'Bold',          inline: 'strong' },
                     { title: 'Italic',        inline: 'em' },
@@ -238,6 +239,7 @@ var App = {
                     { title: 'Heading 3', block: 'h3' },
                 ] },
             ],
+            preview_styles: 'font-family font-weight font-style text-decoration text-transform color background-color border border-radius outline text-shadow',
             custom_undo_redo_levels: 10,
             paste_as_text: true,
             indentation: '2em',

@@ -64,6 +64,13 @@ li {
   font-variant: small-caps;
   font-size: 1.1em;
 }
+.drop-cap {
+  float:left;
+  font-size:2.789em;
+  line-height: 0.7;
+  margin-right:0.05em;
+  margin-top:0.113em;
+}
 
 /* copyright page */
 .copyright p {
